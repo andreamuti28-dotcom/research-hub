@@ -8,6 +8,7 @@ import { checkAdminStatus } from "@/lib/admin-papers.functions";
 import {
   getSiteSettings,
   updateSiteSettings,
+  uploadSitePortrait,
 } from "@/lib/site-settings.functions";
 import { cropTo4x5Jpeg } from "@/lib/image-crop";
 
@@ -39,6 +40,7 @@ function AdminSettingsPage() {
   const checkAdmin = useServerFn(checkAdminStatus);
   const getSettings = useServerFn(getSiteSettings);
   const updateFn = useServerFn(updateSiteSettings);
+  const uploadPortrait = useServerFn(uploadSitePortrait);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const adminQuery = useQuery({
@@ -114,13 +116,15 @@ function AdminSettingsPage() {
     setUploading(true);
     try {
       const processed = await cropTo4x5Jpeg(file);
-      const path = `portrait-${Date.now()}.jpg`;
-      const { error } = await supabase.storage
-        .from("site-assets")
-        .upload(path, processed, { upsert: true, contentType: "image/jpeg" });
-      if (error) throw error;
-      const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
-      const publicUrl = `${data.publicUrl}?v=${Date.now()}`;
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Impossibile leggere l'immagine."));
+        reader.readAsDataURL(processed);
+      });
+      const { publicUrl } = await uploadPortrait({
+        data: { fileName: file.name, mimeType: "image/jpeg", base64 },
+      });
       setForm((f) => (f ? { ...f, portraitUrl: publicUrl } : f));
     } catch (e) {
       setUploadError(e instanceof Error ? e.message : "Upload fallito");
