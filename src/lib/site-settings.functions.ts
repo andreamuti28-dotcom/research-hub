@@ -92,3 +92,45 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+const uploadPortraitSchema = z.object({
+  fileName: z.string().trim().min(1).max(255),
+  mimeType: z.literal("image/jpeg"),
+  base64: z.string().min(1),
+});
+
+export const uploadSitePortrait = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => uploadPortraitSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const encoded = data.base64.includes(",")
+      ? data.base64.split(",").pop()
+      : data.base64;
+    if (!encoded) throw new Error("Immagine non valida.");
+
+    const binary = atob(encoded);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    const safeName =
+      data.fileName
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "homepage-photo";
+    const path = `homepage/${Date.now()}-${safeName}.jpg`;
+
+    const { error } = await supabaseAdmin.storage
+      .from("site-assets")
+      .upload(path, bytes.buffer, {
+        contentType: data.mimeType,
+        upsert: false,
+      });
+    if (error) throw new Error(error.message);
+
+    const { data: publicData } = supabaseAdmin.storage
+      .from("site-assets")
+      .getPublicUrl(path);
+
+    return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
+  });

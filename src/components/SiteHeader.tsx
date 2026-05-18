@@ -27,7 +27,7 @@ export function SiteHeader() {
             className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-foreground text-background rounded-xs hover:bg-primary transition-colors whitespace-nowrap"
           >
             <span className="hidden sm:inline">Area Riservata</span>
-            <span className="sm:hidden">Admin</span>
+            <span className="sm:hidden">Utente</span>
           </Link>
         </div>
       </div>
