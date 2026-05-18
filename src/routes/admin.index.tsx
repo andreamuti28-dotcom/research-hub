@@ -107,107 +107,110 @@ function AdminDashboard() {
 
   return (
     <AdminShell title="Dashboard CMS">
-      <div className="grid md:grid-cols-3 gap-4 mb-10">
-        <StatCard label="Visualizzazioni totali" value={totalViews.toLocaleString("it-IT")} />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
+        <StatCard label="Visualizzazioni" value={totalViews.toLocaleString("it-IT")} />
         <StatCard label="Download PDF" value={totalDownloads.toLocaleString("it-IT")} />
-        <StatCard label="Paper pubblicati" value={`${published} / ${papers.length}`} />
+        <StatCard label="Pubblicati" value={`${published} / ${papers.length}`} />
       </div>
 
-      {papers.length > 0 && (
-        <div className="grid md:grid-cols-2 gap-4 mb-10">
+      {papers.length > 0 && (totalViews > 0 || totalDownloads > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-10">
           <RankingPanel title="Top per visualizzazioni" items={topByViews} field="views" max={maxViews} />
           <RankingPanel title="Top per download" items={topByDownloads} field="downloads" max={maxDownloads} />
         </div>
       )}
 
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70">
           Paper
         </h2>
         <Link
           to="/admin/new"
-          className="px-4 py-2 bg-background text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+          className="px-3 sm:px-4 py-2 bg-background text-foreground font-display text-[10px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors whitespace-nowrap"
         >
-          + Nuovo Paper
+          + Nuovo
         </Link>
       </div>
 
-      <div className="border border-surface-dark-muted overflow-hidden">
-        {papers.length === 0 ? (
-          <div className="p-8 text-center font-mono text-xs uppercase tracking-widest text-surface-dark-foreground/50">
-            Nessun paper. Inizia creando il primo.
-          </div>
-        ) : (
-          <table className="w-full text-left font-mono text-xs">
-            <thead className="bg-surface-dark-muted/40 text-surface-dark-foreground/60 uppercase tracking-widest text-[10px]">
-              <tr>
-                <th className="p-4">Titolo</th>
-                <th className="p-4 hidden md:table-cell">Data</th>
-                <th className="p-4 hidden md:table-cell text-right">Views</th>
-                <th className="p-4 hidden md:table-cell text-right">PDF</th>
-                <th className="p-4">Stato</th>
-                <th className="p-4 text-right">Azioni</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-dark-muted">
-              {papers.map((p) => (
-                <tr key={p.id} className="hover:bg-surface-dark-muted/20">
-                  <td className="p-4 text-background font-serif text-sm">{p.title}</td>
-                  <td className="p-4 hidden md:table-cell text-surface-dark-foreground/70">
-                    {formatDateShort(p.published_date)}
-                  </td>
-                  <td className="p-4 hidden md:table-cell text-right tabular-nums">
-                    {p.views}
-                  </td>
-                  <td className="p-4 hidden md:table-cell text-right tabular-nums">
-                    {p.downloads}
-                  </td>
-                  <td className="p-4">
-                    {p.is_published ? (
-                      <span className="px-2 py-0.5 bg-emerald-900/40 text-emerald-400 border border-emerald-800">
-                        PUBBLICATO
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 bg-surface-dark-muted text-surface-dark-foreground/70">
-                        BOZZA
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-4 text-right">
-                    <div className="inline-flex gap-3">
-                      <Link
-                        to="/admin/edit/$id"
-                        params={{ id: p.id }}
-                        className="text-primary hover:text-background uppercase font-bold"
-                      >
-                        Modifica
-                      </Link>
-                      {pendingDelete === p.id ? (
-                        <button
-                          type="button"
-                          onClick={() => deleteMutation.mutate(p.id)}
-                          disabled={deleteMutation.isPending}
-                          className="text-destructive hover:text-background uppercase font-bold"
-                        >
-                          Conferma?
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setPendingDelete(p.id)}
-                          className="text-surface-dark-foreground/70 hover:text-destructive uppercase font-bold"
-                        >
-                          Elimina
-                        </button>
-                      )}
-                    </div>
-                  </td>
+      {papers.length === 0 ? (
+        <div className="border border-surface-dark-muted p-8 text-center font-mono text-xs uppercase tracking-widest text-surface-dark-foreground/50">
+          Nessun paper. Inizia creando il primo.
+        </div>
+      ) : (
+        <>
+          {/* Desktop table */}
+          <div className="hidden md:block border border-surface-dark-muted overflow-hidden">
+            <table className="w-full text-left font-mono text-xs">
+              <thead className="bg-surface-dark-muted/40 text-surface-dark-foreground/60 uppercase tracking-widest text-[10px]">
+                <tr>
+                  <th className="p-4">Titolo</th>
+                  <th className="p-4">Data</th>
+                  <th className="p-4 text-right">Views</th>
+                  <th className="p-4 text-right">PDF</th>
+                  <th className="p-4">Stato</th>
+                  <th className="p-4 text-right">Azioni</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+              </thead>
+              <tbody className="divide-y divide-surface-dark-muted">
+                {papers.map((p) => (
+                  <tr key={p.id} className="hover:bg-surface-dark-muted/20">
+                    <td className="p-4 text-background font-serif text-sm">{p.title}</td>
+                    <td className="p-4 text-surface-dark-foreground/70">{formatDateShort(p.published_date)}</td>
+                    <td className="p-4 text-right tabular-nums">{p.views}</td>
+                    <td className="p-4 text-right tabular-nums">{p.downloads}</td>
+                    <td className="p-4">
+                      {p.is_published ? (
+                        <span className="px-2 py-0.5 bg-emerald-900/40 text-emerald-400 border border-emerald-800">PUBBLICATO</span>
+                      ) : (
+                        <span className="px-2 py-0.5 bg-surface-dark-muted text-surface-dark-foreground/70">BOZZA</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-right">
+                      <div className="inline-flex gap-3">
+                        <Link to="/admin/edit/$id" params={{ id: p.id }} className="text-primary hover:text-background uppercase font-bold">Modifica</Link>
+                        {pendingDelete === p.id ? (
+                          <button type="button" onClick={() => deleteMutation.mutate(p.id)} disabled={deleteMutation.isPending} className="text-destructive hover:text-background uppercase font-bold">Conferma?</button>
+                        ) : (
+                          <button type="button" onClick={() => setPendingDelete(p.id)} className="text-surface-dark-foreground/70 hover:text-destructive uppercase font-bold">Elimina</button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {papers.map((p) => (
+              <div key={p.id} className="border border-surface-dark-muted p-4 bg-surface-dark-muted/20">
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <h3 className="text-background font-serif text-sm leading-snug break-words flex-1">{p.title}</h3>
+                  {p.is_published ? (
+                    <span className="font-mono text-[9px] px-2 py-0.5 bg-emerald-900/40 text-emerald-400 border border-emerald-800 uppercase tracking-wider shrink-0">Pub</span>
+                  ) : (
+                    <span className="font-mono text-[9px] px-2 py-0.5 bg-surface-dark-muted text-surface-dark-foreground/70 uppercase tracking-wider shrink-0">Bozza</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60 mb-3">
+                  <span>{formatDateShort(p.published_date)}</span>
+                  <span>{p.views} views</span>
+                  <span>{p.downloads} dl</span>
+                </div>
+                <div className="flex gap-4 font-mono text-[10px] uppercase tracking-widest">
+                  <Link to="/admin/edit/$id" params={{ id: p.id }} className="text-primary font-bold">Modifica</Link>
+                  {pendingDelete === p.id ? (
+                    <button type="button" onClick={() => deleteMutation.mutate(p.id)} disabled={deleteMutation.isPending} className="text-destructive font-bold">Conferma?</button>
+                  ) : (
+                    <button type="button" onClick={() => setPendingDelete(p.id)} className="text-surface-dark-foreground/70 font-bold">Elimina</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </AdminShell>
   );
 }
