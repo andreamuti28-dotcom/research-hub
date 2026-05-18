@@ -17,7 +17,7 @@ export const Route = createFileRoute("/paper/$slug")({
     return {
       meta: paper
         ? [
-            { title: `${paper.title} — Studio / Marco Rossi` },
+            { title: `${paper.title} — Andrea Muti` },
             { name: "description", content: paper.abstract },
             { property: "og:title", content: paper.title },
             { property: "og:description", content: paper.abstract },
