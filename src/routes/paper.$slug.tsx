@@ -99,17 +99,6 @@ function PaperDetail() {
         </header>
 
         <div className="flex flex-wrap gap-3 mb-12 font-display text-[11px] font-bold uppercase tracking-wider border-y border-border py-4">
-          {paper.pdfUrl && (
-            <a
-              href={paper.pdfUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={handlePdfDownload}
-              className="px-4 py-2 bg-foreground text-background hover:bg-primary transition-colors"
-            >
-              Scarica PDF
-            </a>
-          )}
           <a
             href={linkedinShare}
             target="_blank"
@@ -157,13 +146,11 @@ function PdfPreview({
 }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
     const ctrl = new AbortController();
-    // HEAD preflight: detects 404 / CORS / network issues that iframe swallows
     fetch(url, { method: "HEAD", signal: ctrl.signal })
       .then((res) => {
         if (!res.ok) setError(`PDF non disponibile (HTTP ${res.status}).`);
@@ -171,7 +158,6 @@ function PdfPreview({
       .catch((e) => {
         if (e.name !== "AbortError") setError("Impossibile caricare il PDF.");
       });
-    // Safety timeout: if iframe never fires onLoad
     const timer = window.setTimeout(() => setLoading(false), 8000);
     return () => {
       ctrl.abort();
@@ -179,20 +165,11 @@ function PdfPreview({
     };
   }, [url]);
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setError("Impossibile copiare il link.");
-    }
-  };
-
   const handleFullscreen = () => {
     onDownload();
     window.open(url, "_blank", "noopener,noreferrer");
   };
+
 
   return (
     <section className="mt-16 pt-10 border-t border-border">
@@ -207,21 +184,6 @@ function PdfPreview({
             className="px-3 py-2 border border-border hover:border-foreground transition-colors"
           >
             Schermo intero ↗
-          </button>
-          <a
-            href={url}
-            download
-            onClick={onDownload}
-            className="px-3 py-2 bg-foreground text-background hover:bg-primary transition-colors"
-          >
-            Scarica
-          </a>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="px-3 py-2 border border-border hover:border-foreground transition-colors"
-          >
-            {copied ? "✓ Copiato" : "Copia link"}
           </button>
         </div>
       </div>

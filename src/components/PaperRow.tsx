@@ -32,16 +32,6 @@ export function PaperRow({ paper }: { paper: Paper }) {
           >
             Leggi Online
           </Link>
-          {paper.pdfUrl && (
-            <a
-              href={paper.pdfUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="px-4 py-2 border border-border hover:border-foreground transition-colors"
-            >
-              PDF
-            </a>
-          )}
         </div>
       </div>
     </article>
