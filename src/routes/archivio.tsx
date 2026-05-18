@@ -14,13 +14,13 @@ const papersQuery = {
 export const Route = createFileRoute("/archivio")({
   head: () => ({
     meta: [
-      { title: "Archivio — Studio / Marco Rossi" },
+      { title: "Archivio — Andrea Muti" },
       {
         name: "description",
         content:
           "Archivio completo dei paper di ricerca pubblicati. Filtra per categoria o cerca per parola chiave.",
       },
-      { property: "og:title", content: "Archivio — Studio / Marco Rossi" },
+      { property: "og:title", content: "Archivio — Andrea Muti" },
       {
         property: "og:description",
         content: "Tutti i paper di ricerca pubblicati.",
