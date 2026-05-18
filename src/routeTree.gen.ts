@@ -10,18 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ArchivioRouteImport } from './routes/archivio'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
+import { Route as AdminNewRouteImport } from './routes/admin.new'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 
 const ArchivioRoute = ArchivioRouteImport.update({
   id: '/archivio',
   path: '/archivio',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -29,44 +27,98 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PaperSlugRoute = PaperSlugRouteImport.update({
   id: '/paper/$slug',
   path: '/paper/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminNewRoute = AdminNewRouteImport.update({
+  id: '/admin/new',
+  path: '/admin/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminEditIdRoute = AdminEditIdRouteImport.update({
+  id: '/admin/edit/$id',
+  path: '/admin/edit/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/archivio': typeof ArchivioRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/new': typeof AdminNewRoute
   '/paper/$slug': typeof PaperSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/edit/$id': typeof AdminEditIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/archivio': typeof ArchivioRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/new': typeof AdminNewRoute
   '/paper/$slug': typeof PaperSlugRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/edit/$id': typeof AdminEditIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/archivio': typeof ArchivioRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/new': typeof AdminNewRoute
   '/paper/$slug': typeof PaperSlugRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/edit/$id': typeof AdminEditIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/archivio' | '/paper/$slug'
+  fullPaths:
+    | '/'
+    | '/archivio'
+    | '/admin/login'
+    | '/admin/new'
+    | '/paper/$slug'
+    | '/admin/'
+    | '/admin/edit/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/archivio' | '/paper/$slug'
-  id: '__root__' | '/' | '/admin' | '/archivio' | '/paper/$slug'
+  to:
+    | '/'
+    | '/archivio'
+    | '/admin/login'
+    | '/admin/new'
+    | '/paper/$slug'
+    | '/admin'
+    | '/admin/edit/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/archivio'
+    | '/admin/login'
+    | '/admin/new'
+    | '/paper/$slug'
+    | '/admin/'
+    | '/admin/edit/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
   ArchivioRoute: typeof ArchivioRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminNewRoute: typeof AdminNewRoute
   PaperSlugRoute: typeof PaperSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminEditIdRoute: typeof AdminEditIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -78,18 +130,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArchivioRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/paper/$slug': {
@@ -99,15 +151,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaperSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/new': {
+      id: '/admin/new'
+      path: '/admin/new'
+      fullPath: '/admin/new'
+      preLoaderRoute: typeof AdminNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/edit/$id': {
+      id: '/admin/edit/$id'
+      path: '/admin/edit/$id'
+      fullPath: '/admin/edit/$id'
+      preLoaderRoute: typeof AdminEditIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
   ArchivioRoute: ArchivioRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminNewRoute: AdminNewRoute,
   PaperSlugRoute: PaperSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminEditIdRoute: AdminEditIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
