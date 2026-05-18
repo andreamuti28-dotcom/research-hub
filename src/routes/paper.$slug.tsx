@@ -60,16 +60,6 @@ function PaperDetail() {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
   }, [paper.slug]);
 
-  const shareUrl =
-    typeof window !== "undefined" ? window.location.href : "";
-  const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-    shareUrl,
-  )}`;
-
-  const handlePdfDownload = () => {
-    void supabase.rpc("increment_paper_downloads", { _slug: paper.slug });
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
@@ -98,16 +88,6 @@ function PaperDetail() {
           </p>
         </header>
 
-        <div className="flex flex-wrap gap-3 mb-12 font-display text-[11px] font-bold uppercase tracking-wider border-y border-border py-4">
-          <a
-            href={linkedinShare}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="px-4 py-2 border border-border hover:border-foreground transition-colors"
-          >
-            Condividi su LinkedIn
-          </a>
-        </div>
 
         <div className="space-y-6 text-lg leading-[1.75] text-foreground/90">
           {paper.content
