@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { formatDateShort } from "@/data/papers";
@@ -132,46 +132,134 @@ function PaperDetail() {
         </div>
 
         {paper.pdfUrl && (
-          <section className="mt-16 pt-10 border-t border-border">
-            <div className="flex items-baseline justify-between mb-4">
-              <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                Anteprima PDF
-              </h2>
-              <a
-                href={paper.pdfUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                onClick={handlePdfDownload}
-                className="font-display text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground"
-              >
-                Apri a tutto schermo ↗
-              </a>
-            </div>
-            <object
-              data={`${paper.pdfUrl}#view=FitH`}
-              type="application/pdf"
-              className="w-full h-[80vh] min-h-[480px] border border-border bg-muted"
-              aria-label={`Anteprima PDF di ${paper.title}`}
-            >
-              <div className="p-8 text-center text-sm text-muted-foreground font-display">
-                Il tuo browser non supporta l'anteprima PDF inline.{" "}
-                <a
-                  href={paper.pdfUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="underline text-foreground"
-                >
-                  Scarica il PDF
-                </a>
-                .
-              </div>
-            </object>
-          </section>
+          <PdfPreview
+            url={paper.pdfUrl}
+            title={paper.title}
+            onDownload={handlePdfDownload}
+          />
         )}
       </article>
 
       <div className="flex-1" />
       <SiteFooter />
     </div>
+  );
+}
+
+function PdfPreview({
+  url,
+  title,
+  onDownload,
+}: {
+  url: string;
+  title: string;
+  onDownload: () => void;
+}) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    const ctrl = new AbortController();
+    // HEAD preflight: detects 404 / CORS / network issues that iframe swallows
+    fetch(url, { method: "HEAD", signal: ctrl.signal })
+      .then((res) => {
+        if (!res.ok) setError(`PDF non disponibile (HTTP ${res.status}).`);
+      })
+      .catch((e) => {
+        if (e.name !== "AbortError") setError("Impossibile caricare il PDF.");
+      });
+    // Safety timeout: if iframe never fires onLoad
+    const timer = window.setTimeout(() => setLoading(false), 8000);
+    return () => {
+      ctrl.abort();
+      window.clearTimeout(timer);
+    };
+  }, [url]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError("Impossibile copiare il link.");
+    }
+  };
+
+  const handleFullscreen = () => {
+    onDownload();
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <section className="mt-16 pt-10 border-t border-border">
+      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          Anteprima PDF
+        </h2>
+        <div className="flex flex-wrap gap-2 font-display text-[11px] font-bold uppercase tracking-wider">
+          <button
+            type="button"
+            onClick={handleFullscreen}
+            className="px-3 py-2 border border-border hover:border-foreground transition-colors"
+          >
+            Schermo intero ↗
+          </button>
+          <a
+            href={url}
+            download
+            onClick={onDownload}
+            className="px-3 py-2 bg-foreground text-background hover:bg-primary transition-colors"
+          >
+            Scarica
+          </a>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="px-3 py-2 border border-border hover:border-foreground transition-colors"
+          >
+            {copied ? "✓ Copiato" : "Copia link"}
+          </button>
+        </div>
+      </div>
+
+      <div className="relative w-full h-[80vh] min-h-[480px] border border-border bg-muted">
+        {loading && !error && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+            <div
+              className="w-8 h-8 border-2 border-border border-t-foreground rounded-full animate-spin"
+              aria-label="Caricamento PDF"
+            />
+            <p className="font-mono text-[10px] uppercase tracking-widest">
+              Caricamento PDF…
+            </p>
+          </div>
+        )}
+        {error ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
+            <p className="font-display text-sm text-foreground">{error}</p>
+            <p className="text-xs text-muted-foreground max-w-prose">
+              Il viewer inline non è disponibile. Puoi comunque aprire o
+              scaricare il file con i pulsanti qui sopra.
+            </p>
+          </div>
+        ) : (
+          <iframe
+            key={url}
+            src={`${url}#view=FitH`}
+            title={`Anteprima PDF di ${title}`}
+            className="w-full h-full"
+            onLoad={() => setLoading(false)}
+            onError={() => {
+              setLoading(false);
+              setError("Errore durante il caricamento del PDF.");
+            }}
+          />
+        )}
+      </div>
+    </section>
   );
 }
