@@ -1,11 +1,14 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { getPaper, formatDateShort } from "@/data/papers";
+import { formatDateShort } from "@/data/papers";
+import { getPublishedPaperBySlug } from "@/lib/papers.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/paper/$slug")({
-  loader: ({ params }) => {
-    const paper = getPaper(params.slug);
+  loader: async ({ params }) => {
+    const paper = await getPublishedPaperBySlug({ data: { slug: params.slug } });
     if (!paper) throw notFound();
     return { paper };
   },
@@ -53,11 +56,19 @@ function NotFound() {
 function PaperDetail() {
   const { paper } = Route.useLoaderData();
 
+  useEffect(() => {
+    void supabase.rpc("increment_paper_views", { _slug: paper.slug });
+  }, [paper.slug]);
+
   const shareUrl =
     typeof window !== "undefined" ? window.location.href : "";
   const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
     shareUrl,
   )}`;
+
+  const handlePdfDownload = () => {
+    void supabase.rpc("increment_paper_downloads", { _slug: paper.slug });
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -73,10 +84,10 @@ function PaperDetail() {
 
         <header className="mb-12 animate-fade-up">
           <div className="font-mono text-xs text-muted-foreground mb-6 flex flex-wrap items-center gap-3">
-            <span>{formatDateShort(paper.date)}</span>
+            <span>{formatDateShort(paper.publishedDate)}</span>
             <span className="text-border">/</span>
             <span className="text-primary uppercase tracking-tighter">
-              {paper.tags.map((t: string) => `#${t}`).join(" ")}
+              {paper.tags.map((t) => `#${t}`).join(" ")}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
@@ -93,6 +104,7 @@ function PaperDetail() {
               href={paper.pdfUrl}
               target="_blank"
               rel="noreferrer noopener"
+              onClick={handlePdfDownload}
               className="px-4 py-2 bg-foreground text-background hover:bg-primary transition-colors"
             >
               Scarica PDF
@@ -108,12 +120,15 @@ function PaperDetail() {
           </a>
         </div>
 
-        <div className="prose-paper space-y-6 text-lg leading-[1.75] text-foreground/90">
-          {paper.content.split("\n\n").map((para: string, i: number) => (
-            <p key={i} className="text-pretty">
-              {para}
-            </p>
-          ))}
+        <div className="space-y-6 text-lg leading-[1.75] text-foreground/90">
+          {paper.content
+            .split("\n\n")
+            .filter((p) => p.trim().length > 0)
+            .map((para, i) => (
+              <p key={i} className="text-pretty">
+                {para}
+              </p>
+            ))}
         </div>
       </article>
 

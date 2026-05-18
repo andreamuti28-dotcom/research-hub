@@ -1,9 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import portrait from "@/assets/portrait.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
-import { papers } from "@/data/papers";
+import { listPublishedPapers } from "@/lib/papers.functions";
+
+const papersQuery = {
+  queryKey: ["papers", "published"] as const,
+  queryFn: () => listPublishedPapers(),
+};
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,17 +28,18 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(papersQuery),
   component: Index,
 });
 
 function Index() {
+  const { data: papers } = useSuspenseQuery(papersQuery);
   const latest = papers.slice(0, 3);
 
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      {/* Hero / Bio */}
       <section className="max-w-6xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-[1fr_400px] gap-16 items-start w-full">
         <div className="animate-fade-up">
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-8 italic">
@@ -68,7 +75,6 @@ function Index() {
         </div>
       </section>
 
-      {/* Ultimi Paper */}
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
@@ -88,11 +94,17 @@ function Index() {
             </Link>
           </div>
 
-          <div className="space-y-px bg-border border border-border">
-            {latest.map((p) => (
-              <PaperRow key={p.slug} paper={p} />
-            ))}
-          </div>
+          {latest.length === 0 ? (
+            <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-background">
+              Nessun paper pubblicato. Accedi all'area riservata per iniziare.
+            </div>
+          ) : (
+            <div className="space-y-px bg-border border border-border">
+              {latest.map((p) => (
+                <PaperRow key={p.id} paper={p} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
