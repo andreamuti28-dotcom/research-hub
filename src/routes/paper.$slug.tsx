@@ -197,21 +197,6 @@ function PdfPreview({
           >
             Schermo intero ↗
           </button>
-          <a
-            href={url}
-            download
-            onClick={onDownload}
-            className="px-3 py-2 bg-foreground text-background hover:bg-primary transition-colors"
-          >
-            Scarica
-          </a>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="px-3 py-2 border border-border hover:border-foreground transition-colors"
-          >
-            {copied ? "✓ Copiato" : "Copia link"}
-          </button>
         </div>
       </div>
 
