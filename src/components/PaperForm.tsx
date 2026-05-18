@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface PaperFormValues {
   slug: string;
@@ -38,7 +39,36 @@ export function PaperForm({
 }) {
   const [values, setValues] = useState<PaperFormValues>(initial);
   const [tagsInput, setTagsInput] = useState(initial.tags.join(", "));
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const handleFileUpload = async (file: File) => {
+    if (file.type !== "application/pdf") {
+      setUploadError("Solo file PDF sono accettati.");
+      return;
+    }
+    if (file.size > 25 * 1024 * 1024) {
+      setUploadError("Il file supera i 25 MB.");
+      return;
+    }
+    setUploadError(null);
+    setUploading(true);
+    const ext = "pdf";
+    const path = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 80)}`;
+    const { error: upErr } = await supabase.storage
+      .from("papers")
+      .upload(path, file, { contentType: "application/pdf", upsert: false });
+    if (upErr) {
+      setUploadError(upErr.message);
+      setUploading(false);
+      return;
+    }
+    const { data } = supabase.storage.from("papers").getPublicUrl(path);
+    update("pdfUrl", data.publicUrl);
+    setUploading(false);
+    void ext;
+  };
 
   const update = <K extends keyof PaperFormValues>(
     key: K,
@@ -132,17 +162,50 @@ export function PaperForm({
             className={inputCls}
           />
         </Field>
-        <Field label="URL PDF (opzionale)">
-          <input
-            type="url"
-            maxLength={500}
-            value={values.pdfUrl}
-            onChange={(e) => update("pdfUrl", e.target.value)}
-            placeholder="https://…"
-            className={inputCls}
-          />
+        <Field label="PDF del paper (opzionale)">
+          <div className="space-y-2">
+            <input
+              type="file"
+              accept="application/pdf"
+              disabled={uploading}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void handleFileUpload(f);
+                e.target.value = "";
+              }}
+              className="block w-full text-xs text-surface-dark-foreground/70 file:mr-3 file:px-3 file:py-2 file:border-0 file:bg-background file:text-foreground file:font-display file:text-[10px] file:font-bold file:uppercase file:tracking-wider file:cursor-pointer hover:file:bg-primary"
+            />
+            {uploading && (
+              <p className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+                Caricamento in corso…
+              </p>
+            )}
+            {uploadError && (
+              <p className="font-mono text-[10px] text-destructive">{uploadError}</p>
+            )}
+            {values.pdfUrl && !uploading && (
+              <div className="flex items-center gap-3 text-[10px] font-mono">
+                <a
+                  href={values.pdfUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary truncate hover:underline"
+                >
+                  📄 PDF caricato
+                </a>
+                <button
+                  type="button"
+                  onClick={() => update("pdfUrl", "")}
+                  className="text-surface-dark-foreground/60 hover:text-destructive uppercase tracking-widest"
+                >
+                  Rimuovi
+                </button>
+              </div>
+            )}
+          </div>
         </Field>
       </div>
+
 
       <label className="flex items-center gap-3 font-display text-sm cursor-pointer">
         <input
