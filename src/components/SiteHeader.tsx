@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function SiteHeader() {
   const { name } = useSiteSettings();
@@ -12,7 +13,7 @@ export function SiteHeader() {
         >
           {name}
         </Link>
-        <div className="flex gap-6 md:gap-8 items-center text-sm font-display uppercase tracking-wider">
+        <div className="flex gap-4 md:gap-6 items-center text-sm font-display uppercase tracking-wider">
           <Link
             to="/archivio"
             className="hover:text-primary transition-colors"
@@ -20,6 +21,7 @@ export function SiteHeader() {
           >
             Archivio
           </Link>
+          <ThemeToggle />
           <Link
             to="/admin"
             className="px-3 py-1 bg-foreground text-background rounded-xs hover:bg-primary transition-colors"
