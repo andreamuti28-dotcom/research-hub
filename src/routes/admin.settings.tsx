@@ -112,14 +112,15 @@ function AdminSettingsPage() {
     setUploadError(null);
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const path = `portrait-${Date.now()}.${ext}`;
+      const processed = await cropTo4x5Jpeg(file);
+      const path = `portrait-${Date.now()}.jpg`;
       const { error } = await supabase.storage
         .from("site-assets")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, processed, { upsert: true, contentType: "image/jpeg" });
       if (error) throw error;
       const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
-      setForm((f) => (f ? { ...f, portraitUrl: data.publicUrl } : f));
+      const publicUrl = `${data.publicUrl}?v=${Date.now()}`;
+      setForm((f) => (f ? { ...f, portraitUrl: publicUrl } : f));
     } catch (e) {
       setUploadError(e instanceof Error ? e.message : "Upload fallito");
     } finally {
