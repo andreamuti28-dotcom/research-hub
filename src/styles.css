@@ -111,6 +111,9 @@
 
   html {
     font-family: var(--font-serif);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
@@ -118,6 +121,9 @@
     color: var(--color-foreground);
     font-family: var(--font-serif);
     -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    touch-action: pan-y;
+    overscroll-behavior-y: auto;
   }
 
   ::selection {
