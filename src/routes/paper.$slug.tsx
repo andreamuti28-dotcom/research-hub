@@ -87,7 +87,7 @@ function PaperDetail() {
             <span>{formatDateShort(paper.publishedDate)}</span>
             <span className="text-border">/</span>
             <span className="text-primary uppercase tracking-tighter">
-              {paper.tags.map((t) => `#${t}`).join(" ")}
+              {paper.tags.map((t: string) => `#${t}`).join(" ")}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
@@ -123,8 +123,8 @@ function PaperDetail() {
         <div className="space-y-6 text-lg leading-[1.75] text-foreground/90">
           {paper.content
             .split("\n\n")
-            .filter((p) => p.trim().length > 0)
-            .map((para, i) => (
+            .filter((p: string) => p.trim().length > 0)
+            .map((para: string, i: number) => (
               <p key={i} className="text-pretty">
                 {para}
               </p>
