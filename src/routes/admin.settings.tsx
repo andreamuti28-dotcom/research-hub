@@ -189,7 +189,7 @@ function AdminSettingsPage() {
                 <div className="font-mono text-[11px] text-destructive">{uploadError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                Consigliato: ritratto verticale (rapporto 4:5), max 5MB.
+                L'immagine viene ritagliata automaticamente in formato 4:5. Nessun limite di peso.
               </p>
             </div>
           </div>
