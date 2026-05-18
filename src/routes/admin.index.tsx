@@ -29,14 +29,26 @@ export const Route = createFileRoute("/admin/")({
 function AdminDashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const checkAdmin = useServerFn(checkAdminStatus);
   const listFn = useServerFn(listAllPapers);
   const deleteFn = useServerFn(deletePaper);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
   const adminQuery = useQuery({
     queryKey: ["admin", "status"],
-    queryFn: () => checkAdmin(),
+    queryFn: async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const uid = sessionData.session?.user.id;
+      if (!uid) return { isAdmin: false };
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", uid)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (error) throw error;
+      return { isAdmin: !!data };
+    },
+    retry: 1,
   });
 
   const papersQuery = useQuery({
