@@ -99,17 +99,6 @@ function PaperDetail() {
         </header>
 
         <div className="flex flex-wrap gap-3 mb-12 font-display text-[11px] font-bold uppercase tracking-wider border-y border-border py-4">
-          {paper.pdfUrl && (
-            <a
-              href={paper.pdfUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              onClick={handlePdfDownload}
-              className="px-4 py-2 bg-foreground text-background hover:bg-primary transition-colors"
-            >
-              Scarica PDF
-            </a>
-          )}
           <a
             href={linkedinShare}
             target="_blank"
