@@ -41,6 +41,13 @@ export function AdminShell({
               >
                 Nuovo Paper
               </Link>
+              <Link
+                to="/admin/settings"
+                className="hover:text-background transition-colors"
+                activeProps={{ className: "text-background" }}
+              >
+                Profilo & Sito
+              </Link>
             </div>
           </div>
           <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-widest">
