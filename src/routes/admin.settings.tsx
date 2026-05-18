@@ -112,14 +112,15 @@ function AdminSettingsPage() {
     setUploadError(null);
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const path = `portrait-${Date.now()}.${ext}`;
+      const processed = await cropTo4x5Jpeg(file);
+      const path = `portrait-${Date.now()}.jpg`;
       const { error } = await supabase.storage
         .from("site-assets")
-        .upload(path, file, { upsert: true, contentType: file.type });
+        .upload(path, processed, { upsert: true, contentType: "image/jpeg" });
       if (error) throw error;
       const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
-      setForm((f) => (f ? { ...f, portraitUrl: data.publicUrl } : f));
+      const publicUrl = `${data.publicUrl}?v=${Date.now()}`;
+      setForm((f) => (f ? { ...f, portraitUrl: publicUrl } : f));
     } catch (e) {
       setUploadError(e instanceof Error ? e.message : "Upload fallito");
     } finally {
@@ -188,7 +189,7 @@ function AdminSettingsPage() {
                 <div className="font-mono text-[11px] text-destructive">{uploadError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                Consigliato: ritratto verticale (rapporto 4:5), max 5MB.
+                L'immagine viene ritagliata automaticamente in formato 4:5. Nessun limite di peso.
               </p>
             </div>
           </div>
@@ -279,4 +280,53 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       {children}
     </label>
   );
+}
+
+
+
+async function cropTo4x5Jpeg(file: File): Promise<Blob> {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Il file selezionato non è un'immagine.");
+  }
+  const dataUrl: string = await new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result as string);
+    r.onerror = () => rej(new Error("Impossibile leggere il file."));
+    r.readAsDataURL(file);
+  });
+  const img: HTMLImageElement = await new Promise((res, rej) => {
+    const i = new Image();
+    i.onload = () => res(i);
+    i.onerror = () => rej(new Error("Immagine non valida."));
+    i.src = dataUrl;
+  });
+
+  const targetRatio = 4 / 5;
+  const srcRatio = img.width / img.height;
+  let sx = 0, sy = 0, sw = img.width, sh = img.height;
+  if (srcRatio > targetRatio) {
+    sw = img.height * targetRatio;
+    sx = (img.width - sw) / 2;
+  } else if (srcRatio < targetRatio) {
+    sh = img.width / targetRatio;
+    sy = (img.height - sh) / 2;
+  }
+
+  const outW = Math.min(1200, Math.round(sw));
+  const outH = Math.round(outW / targetRatio);
+  const canvas = document.createElement("canvas");
+  canvas.width = outW;
+  canvas.height = outH;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Canvas non disponibile.");
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+  const blob: Blob = await new Promise((res, rej) =>
+    canvas.toBlob(
+      (b) => (b ? res(b) : rej(new Error("Conversione immagine fallita."))),
+      "image/jpeg",
+      0.9,
+    ),
+  );
+  return blob;
 }
