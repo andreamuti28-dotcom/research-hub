@@ -146,13 +146,11 @@ function PdfPreview({
 }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
     const ctrl = new AbortController();
-    // HEAD preflight: detects 404 / CORS / network issues that iframe swallows
     fetch(url, { method: "HEAD", signal: ctrl.signal })
       .then((res) => {
         if (!res.ok) setError(`PDF non disponibile (HTTP ${res.status}).`);
@@ -160,7 +158,6 @@ function PdfPreview({
       .catch((e) => {
         if (e.name !== "AbortError") setError("Impossibile caricare il PDF.");
       });
-    // Safety timeout: if iframe never fires onLoad
     const timer = window.setTimeout(() => setLoading(false), 8000);
     return () => {
       ctrl.abort();
@@ -168,20 +165,11 @@ function PdfPreview({
     };
   }, [url]);
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setError("Impossibile copiare il link.");
-    }
-  };
-
   const handleFullscreen = () => {
     onDownload();
     window.open(url, "_blank", "noopener,noreferrer");
   };
+
 
   return (
     <section className="mt-16 pt-10 border-t border-border">
