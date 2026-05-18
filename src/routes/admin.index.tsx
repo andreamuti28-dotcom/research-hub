@@ -89,6 +89,11 @@ function AdminDashboard() {
   const totalDownloads = papers.reduce((s, p) => s + (p.downloads ?? 0), 0);
   const published = papers.filter((p) => p.is_published).length;
 
+  const topByViews = [...papers].sort((a, b) => (b.views ?? 0) - (a.views ?? 0)).slice(0, 5);
+  const topByDownloads = [...papers].sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0)).slice(0, 5);
+  const maxViews = Math.max(1, ...topByViews.map((p) => p.views ?? 0));
+  const maxDownloads = Math.max(1, ...topByDownloads.map((p) => p.downloads ?? 0));
+
   return (
     <AdminShell title="Dashboard CMS">
       <div className="grid md:grid-cols-3 gap-4 mb-10">
@@ -96,6 +101,13 @@ function AdminDashboard() {
         <StatCard label="Download PDF" value={totalDownloads.toLocaleString("it-IT")} />
         <StatCard label="Paper pubblicati" value={`${published} / ${papers.length}`} />
       </div>
+
+      {papers.length > 0 && (
+        <div className="grid md:grid-cols-2 gap-4 mb-10">
+          <RankingPanel title="Top per visualizzazioni" items={topByViews} field="views" max={maxViews} />
+          <RankingPanel title="Top per download" items={topByDownloads} field="downloads" max={maxDownloads} />
+        </div>
+      )}
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
@@ -198,6 +210,51 @@ function StatCard({ label, value }: { label: string; value: string }) {
       <div className="text-3xl font-display text-background tabular-nums">
         {value}
       </div>
+    </div>
+  );
+}
+
+function RankingPanel({
+  title,
+  items,
+  field,
+  max,
+}: {
+  title: string;
+  items: Array<{ id: string; title: string; views: number; downloads: number }>;
+  field: "views" | "downloads";
+  max: number;
+}) {
+  return (
+    <div className="bg-surface-dark-muted/30 p-6 border border-surface-dark-muted">
+      <div className="text-surface-dark-foreground/50 font-mono text-[10px] uppercase tracking-widest mb-4">
+        {title}
+      </div>
+      {items.length === 0 ? (
+        <div className="font-mono text-[10px] text-surface-dark-foreground/40">
+          Nessun dato
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {items.map((p) => {
+            const value = p[field] ?? 0;
+            const pct = Math.max(2, Math.round((value / max) * 100));
+            return (
+              <li key={p.id} className="space-y-1">
+                <div className="flex items-baseline justify-between gap-3 text-xs">
+                  <span className="text-background font-serif truncate">{p.title}</span>
+                  <span className="font-mono tabular-nums text-surface-dark-foreground/80">
+                    {value.toLocaleString("it-IT")}
+                  </span>
+                </div>
+                <div className="h-1 bg-surface-dark-muted overflow-hidden">
+                  <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
