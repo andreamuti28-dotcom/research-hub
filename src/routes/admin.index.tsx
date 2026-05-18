@@ -89,6 +89,11 @@ function AdminDashboard() {
   const totalDownloads = papers.reduce((s, p) => s + (p.downloads ?? 0), 0);
   const published = papers.filter((p) => p.is_published).length;
 
+  const topByViews = [...papers].sort((a, b) => (b.views ?? 0) - (a.views ?? 0)).slice(0, 5);
+  const topByDownloads = [...papers].sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0)).slice(0, 5);
+  const maxViews = Math.max(1, ...topByViews.map((p) => p.views ?? 0));
+  const maxDownloads = Math.max(1, ...topByDownloads.map((p) => p.downloads ?? 0));
+
   return (
     <AdminShell title="Dashboard CMS">
       <div className="grid md:grid-cols-3 gap-4 mb-10">
@@ -96,6 +101,13 @@ function AdminDashboard() {
         <StatCard label="Download PDF" value={totalDownloads.toLocaleString("it-IT")} />
         <StatCard label="Paper pubblicati" value={`${published} / ${papers.length}`} />
       </div>
+
+      {papers.length > 0 && (
+        <div className="grid md:grid-cols-2 gap-4 mb-10">
+          <RankingPanel title="Top per visualizzazioni" items={topByViews} field="views" max={maxViews} />
+          <RankingPanel title="Top per download" items={topByDownloads} field="downloads" max={maxDownloads} />
+        </div>
+      )}
 
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
