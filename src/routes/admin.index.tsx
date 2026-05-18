@@ -5,7 +5,6 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
 import {
-  checkAdminStatus,
   listAllPapers,
   deletePaper,
 } from "@/lib/admin-papers.functions";
