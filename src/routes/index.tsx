@@ -14,13 +14,13 @@ const papersQuery = {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Studio / Marco Rossi — Ricerca autonoma" },
+      { title: "Andrea Muti — Ricerca autonoma" },
       {
         name: "description",
         content:
           "Archivio di paper e saggi di ricerca indipendente sull'intersezione tra etica digitale, infrastrutture e cognizione.",
       },
-      { property: "og:title", content: "Studio / Marco Rossi — Ricerca autonoma" },
+      { property: "og:title", content: "Andrea Muti — Ricerca autonoma" },
       {
         property: "og:description",
         content:
@@ -67,7 +67,7 @@ function Index() {
         <div className="animate-fade-up [animation-delay:200ms]">
           <img
             src={portrait}
-            alt="Ritratto editoriale in bianco e nero di Marco Rossi"
+            alt="Ritratto editoriale in bianco e nero di Andrea Muti"
             width={800}
             height={1000}
             className="w-full aspect-[4/5] object-cover bg-surface outline-1 -outline-offset-1 outline-black/5 rounded-xs"

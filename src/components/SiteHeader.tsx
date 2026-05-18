@@ -8,7 +8,7 @@ export function SiteHeader() {
           to="/"
           className="font-display font-bold tracking-tighter text-lg uppercase"
         >
-          Studio / Marco Rossi
+          Andrea Muti
         </Link>
         <div className="flex gap-6 md:gap-8 items-center text-sm font-display uppercase tracking-wider">
           <Link

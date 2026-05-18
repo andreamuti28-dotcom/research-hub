@@ -72,13 +72,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Studio / Marco Rossi — Ricerca autonoma" },
+      { title: "Andrea Muti — Ricerca autonoma" },
       {
         name: "description",
         content:
           "Archivio di paper e saggi di ricerca indipendente sull'intersezione tra etica digitale, infrastrutture e cognizione.",
       },
-      { name: "author", content: "Marco Rossi" },
+      { name: "author", content: "Andrea Muti" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
