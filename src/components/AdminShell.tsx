@@ -17,64 +17,46 @@ export function AdminShell({
   return (
     <div className="min-h-screen bg-surface-dark text-surface-dark-foreground flex flex-col">
       <nav className="border-b border-surface-dark-muted bg-surface-dark/95 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link
-              to="/admin"
-              className="font-display font-bold tracking-tighter uppercase text-sm"
-            >
-              CMS / Studio
-            </Link>
-            <div className="hidden md:flex gap-6 font-display text-[11px] uppercase tracking-widest">
-              <Link
-                to="/admin"
-                activeOptions={{ exact: true }}
-                className="hover:text-background transition-colors"
-                activeProps={{ className: "text-background" }}
-              >
-                Dashboard
-              </Link>
-              <Link
-                to="/admin/new"
-                className="hover:text-background transition-colors"
-                activeProps={{ className: "text-background" }}
-              >
-                Nuovo Paper
-              </Link>
-              <Link
-                to="/admin/settings"
-                className="hover:text-background transition-colors"
-                activeProps={{ className: "text-background" }}
-              >
-                Profilo & Sito
-              </Link>
-            </div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
+          <Link
+            to="/admin"
+            className="font-display font-bold tracking-tighter uppercase text-xs sm:text-sm shrink-0"
+          >
+            CMS
+          </Link>
+          <div className="hidden md:flex gap-6 font-display text-[11px] uppercase tracking-widest mr-auto ml-8">
+            <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Dashboard</Link>
+            <Link to="/admin/new" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
+            <Link to="/admin/settings" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Profilo</Link>
           </div>
-          <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-widest">
-            <Link
-              to="/"
-              target="_blank"
-              className="hover:text-background transition-colors"
-            >
-              ↗ Vista pubblica
-            </Link>
+          <div className="flex items-center gap-2 sm:gap-3 font-mono text-[10px] uppercase tracking-widest shrink-0">
+            <Link to="/" target="_blank" className="hidden sm:inline hover:text-background transition-colors">↗ Pubblico</Link>
             <button
               type="button"
               onClick={onLogout}
-              className="px-3 py-1 border border-surface-dark-muted hover:border-background hover:text-background transition-colors"
+              className="px-2 sm:px-3 py-1 border border-surface-dark-muted hover:border-background hover:text-background transition-colors"
             >
               Esci
             </button>
           </div>
         </div>
+        {/* Mobile sub-nav */}
+        <div className="md:hidden border-t border-surface-dark-muted bg-surface-dark/95 overflow-x-auto">
+          <div className="flex gap-4 px-4 py-2 font-display text-[10px] uppercase tracking-widest whitespace-nowrap">
+            <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background" activeProps={{ className: "text-background" }}>Dashboard</Link>
+            <Link to="/admin/new" className="hover:text-background" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
+            <Link to="/admin/settings" className="hover:text-background" activeProps={{ className: "text-background" }}>Profilo</Link>
+            <Link to="/" target="_blank" className="hover:text-background ml-auto">↗ Pubblico</Link>
+          </div>
+        </div>
       </nav>
 
-      <main className="flex-1 max-w-6xl mx-auto px-6 py-10 md:py-14 w-full">
-        <div className="mb-10">
+      <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 md:py-14 w-full">
+        <div className="mb-6 sm:mb-10">
           <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60 mb-2">
             /admin
           </div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tighter text-background">
+          <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold tracking-tighter text-background break-words">
             {title}
           </h1>
         </div>
