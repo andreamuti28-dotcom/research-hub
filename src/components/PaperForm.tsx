@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface PaperFormValues {
   slug: string;
