@@ -185,14 +185,7 @@ export function PaperForm({
             )}
             {values.pdfUrl && !uploading && (
               <div className="flex items-center gap-3 text-[10px] font-mono">
-                <a
-                  href={values.pdfUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary truncate hover:underline"
-                >
-                  📄 PDF caricato
-                </a>
+                <span className="text-primary truncate">📄 PDF caricato</span>
                 <button
                   type="button"
                   onClick={() => update("pdfUrl", "")}
