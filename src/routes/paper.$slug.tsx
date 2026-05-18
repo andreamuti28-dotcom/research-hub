@@ -132,41 +132,11 @@ function PaperDetail() {
         </div>
 
         {paper.pdfUrl && (
-          <section className="mt-16 pt-10 border-t border-border">
-            <div className="flex items-baseline justify-between mb-4">
-              <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                Anteprima PDF
-              </h2>
-              <a
-                href={paper.pdfUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                onClick={handlePdfDownload}
-                className="font-display text-[11px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground"
-              >
-                Apri a tutto schermo ↗
-              </a>
-            </div>
-            <object
-              data={`${paper.pdfUrl}#view=FitH`}
-              type="application/pdf"
-              className="w-full h-[80vh] min-h-[480px] border border-border bg-muted"
-              aria-label={`Anteprima PDF di ${paper.title}`}
-            >
-              <div className="p-8 text-center text-sm text-muted-foreground font-display">
-                Il tuo browser non supporta l'anteprima PDF inline.{" "}
-                <a
-                  href={paper.pdfUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="underline text-foreground"
-                >
-                  Scarica il PDF
-                </a>
-                .
-              </div>
-            </object>
-          </section>
+          <PdfPreview
+            url={paper.pdfUrl}
+            title={paper.title}
+            onDownload={handlePdfDownload}
+          />
         )}
       </article>
 
