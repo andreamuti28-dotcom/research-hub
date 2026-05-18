@@ -4,9 +4,9 @@ import { formatDate } from "@/data/papers";
 
 export function PaperRow({ paper }: { paper: Paper }) {
   return (
-    <article className="group bg-background p-8 md:grid md:grid-cols-[200px_1fr] gap-12 transition-colors hover:bg-surface">
+    <article className="group bg-background p-6 md:p-8 md:grid md:grid-cols-[200px_1fr] gap-12 transition-colors hover:bg-surface">
       <div className="font-mono text-xs text-muted-foreground mb-4 md:mb-0">
-        <div className="mb-1 uppercase">{formatDate(paper.date)}</div>
+        <div className="mb-1 uppercase">{formatDate(paper.publishedDate)}</div>
         <div className="text-primary uppercase tracking-tighter">
           {paper.tags.map((t) => `#${t}`).join(" ")}
         </div>
@@ -32,7 +32,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
           >
             Leggi Online
           </Link>
-          {paper.pdfUrl ? (
+          {paper.pdfUrl && (
             <a
               href={paper.pdfUrl}
               target="_blank"
@@ -41,14 +41,6 @@ export function PaperRow({ paper }: { paper: Paper }) {
             >
               PDF
             </a>
-          ) : (
-            <button
-              type="button"
-              className="px-4 py-2 border border-border hover:border-foreground transition-colors"
-              onClick={(e) => e.preventDefault()}
-            >
-              PDF
-            </button>
           )}
         </div>
       </div>

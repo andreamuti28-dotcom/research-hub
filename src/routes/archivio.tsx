@@ -1,9 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
-import { papers, allTags } from "@/data/papers";
+import { listPublishedPapers } from "@/lib/papers.functions";
+
+const papersQuery = {
+  queryKey: ["papers", "published"] as const,
+  queryFn: () => listPublishedPapers(),
+};
 
 export const Route = createFileRoute("/archivio")({
   head: () => ({
@@ -21,12 +27,19 @@ export const Route = createFileRoute("/archivio")({
       },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(papersQuery),
   component: Archivio,
 });
 
 function Archivio() {
+  const { data: papers } = useSuspenseQuery(papersQuery);
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
+
+  const allTags = useMemo(
+    () => Array.from(new Set(papers.flatMap((p) => p.tags))).sort(),
+    [papers],
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -39,7 +52,7 @@ function Archivio() {
         p.tags.some((t) => t.toLowerCase().includes(q))
       );
     });
-  }, [query, tag]);
+  }, [papers, query, tag]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -88,7 +101,7 @@ function Archivio() {
         ) : (
           <div className="space-y-px bg-border border border-border">
             {filtered.map((p) => (
-              <PaperRow key={p.slug} paper={p} />
+              <PaperRow key={p.id} paper={p} />
             ))}
           </div>
         )}
