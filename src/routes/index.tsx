@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
 import { listPublishedPapers } from "@/lib/papers.functions";
+import { siteSettingsQuery } from "@/hooks/use-site-settings";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -28,13 +29,19 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(papersQuery),
+  loader: ({ context }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(papersQuery),
+      context.queryClient.ensureQueryData(siteSettingsQuery),
+    ]),
   component: Index,
 });
 
 function Index() {
   const { data: papers } = useSuspenseQuery(papersQuery);
+  const { data: settings } = useSuspenseQuery(siteSettingsQuery);
   const latest = papers.slice(0, 3);
+  const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -43,19 +50,12 @@ function Index() {
       <section className="max-w-6xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-[1fr_400px] gap-16 items-start w-full">
         <div className="animate-fade-up">
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-8 italic">
-            Esplorando l'intersezione tra{" "}
-            <span className="text-primary">Etica Digitale</span> e
-            Infrastrutture.
+            {settings.heroTitle}
           </h1>
           <div className="max-w-[55ch] text-lg md:text-xl leading-relaxed text-pretty space-y-6">
-            <p>
-              Sono un ricercatore indipendente basato a Milano. Mi occupo di
-              come le architetture software influenzano il comportamento
-              sociale. Questo spazio è il mio archivio di paper, saggi e
-              riflessioni tecniche.
-            </p>
+            <p className="whitespace-pre-line">{settings.heroIntro}</p>
             <a
-              href="https://www.linkedin.com"
+              href={settings.linkedinUrl}
               target="_blank"
               rel="noreferrer noopener"
               className="inline-flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
@@ -66,8 +66,8 @@ function Index() {
         </div>
         <div className="animate-fade-up [animation-delay:200ms]">
           <img
-            src={portrait}
-            alt="Ritratto editoriale in bianco e nero di Andrea Muti"
+            src={portraitSrc}
+            alt={`Ritratto editoriale di ${settings.name}`}
             width={800}
             height={1000}
             className="w-full aspect-[4/5] object-cover bg-surface outline-1 -outline-offset-1 outline-black/5 rounded-xs"
