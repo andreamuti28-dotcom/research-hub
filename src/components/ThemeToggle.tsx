@@ -1,41 +1,33 @@
 import { useTheme, type ThemeChoice } from "@/hooks/use-theme";
 import { Monitor, Moon, Sun } from "lucide-react";
 
-const options: { value: ThemeChoice; label: string; Icon: typeof Sun }[] = [
-  { value: "light", label: "Tema chiaro", Icon: Sun },
-  { value: "system", label: "Tema automatico", Icon: Monitor },
-  { value: "dark", label: "Tema scuro", Icon: Moon },
-];
+const order: ThemeChoice[] = ["light", "dark", "system"];
+const labels: Record<ThemeChoice, string> = {
+  light: "Chiaro",
+  dark: "Scuro",
+  system: "Auto",
+};
+
+function Icon({ theme }: { theme: ThemeChoice }) {
+  const cls = "w-4 h-4";
+  if (theme === "light") return <Sun className={cls} strokeWidth={2} />;
+  if (theme === "dark") return <Moon className={cls} strokeWidth={2} />;
+  return <Monitor className={cls} strokeWidth={2} />;
+}
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const next = order[(order.indexOf(theme) + 1) % order.length];
+
   return (
-    <div
-      role="radiogroup"
-      aria-label="Selettore tema"
-      className="inline-flex items-center border border-border rounded-xs overflow-hidden"
+    <button
+      type="button"
+      onClick={() => setTheme(next)}
+      aria-label={`Tema: ${labels[theme]}. Clicca per passare a ${labels[next]}`}
+      title={`Tema: ${labels[theme]} → ${labels[next]}`}
+      className="inline-flex items-center justify-center w-8 h-8 rounded-xs border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
     >
-      {options.map(({ value, label, Icon }) => {
-        const active = theme === value;
-        return (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            aria-label={label}
-            title={label}
-            onClick={() => setTheme(value)}
-            className={`p-1.5 transition-colors ${
-              active
-                ? "bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Icon className="w-3.5 h-3.5" strokeWidth={2} />
-          </button>
-        );
-      })}
-    </div>
+      <Icon theme={theme} />
+    </button>
   );
 }
