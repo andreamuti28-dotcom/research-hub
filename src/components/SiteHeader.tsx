@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function SiteHeader() {
+  const { name } = useSiteSettings();
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -8,7 +10,7 @@ export function SiteHeader() {
           to="/"
           className="font-display font-bold tracking-tighter text-lg uppercase"
         >
-          Andrea Muti
+          {name}
         </Link>
         <div className="flex gap-6 md:gap-8 items-center text-sm font-display uppercase tracking-wider">
           <Link

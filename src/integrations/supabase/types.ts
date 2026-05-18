@@ -62,6 +62,39 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          hero_intro: string
+          hero_title: string
+          id: string
+          linkedin_url: string
+          name: string
+          portrait_url: string | null
+          singleton: boolean
+          updated_at: string
+        }
+        Insert: {
+          hero_intro?: string
+          hero_title?: string
+          id?: string
+          linkedin_url?: string
+          name?: string
+          portrait_url?: string | null
+          singleton?: boolean
+          updated_at?: string
+        }
+        Update: {
+          hero_intro?: string
+          hero_title?: string
+          id?: string
+          linkedin_url?: string
+          name?: string
+          portrait_url?: string | null
+          singleton?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
