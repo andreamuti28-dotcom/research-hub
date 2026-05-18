@@ -101,11 +101,7 @@ function PaperDetail() {
         </div>
 
         {paper.pdfUrl && (
-          <PdfPreview
-            url={paper.pdfUrl}
-            title={paper.title}
-            onDownload={handlePdfDownload}
-          />
+          <PdfPreview url={paper.pdfUrl} title={paper.title} />
         )}
       </article>
 
@@ -115,15 +111,7 @@ function PaperDetail() {
   );
 }
 
-function PdfPreview({
-  url,
-  title,
-  onDownload,
-}: {
-  url: string;
-  title: string;
-  onDownload: () => void;
-}) {
+function PdfPreview({ url, title }: { url: string; title: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -145,30 +133,16 @@ function PdfPreview({
     };
   }, [url]);
 
-  const handleFullscreen = () => {
-    onDownload();
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-
   return (
     <section className="mt-16 pt-10 border-t border-border">
-      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-        <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-          Anteprima PDF
-        </h2>
-        <div className="flex flex-wrap gap-2 font-display text-[11px] font-bold uppercase tracking-wider">
-          <button
-            type="button"
-            onClick={handleFullscreen}
-            className="px-3 py-2 border border-border hover:border-foreground transition-colors"
-          >
-            Schermo intero ↗
-          </button>
-        </div>
-      </div>
+      <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
+        Lettura PDF
+      </h2>
 
-      <div className="relative w-full h-[80vh] min-h-[480px] border border-border bg-muted">
+      <div
+        className="relative w-full h-[80vh] min-h-[480px] border border-border bg-muted"
+        onContextMenu={(e) => e.preventDefault()}
+      >
         {loading && !error && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
             <div
@@ -183,16 +157,12 @@ function PdfPreview({
         {error ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
             <p className="font-display text-sm text-foreground">{error}</p>
-            <p className="text-xs text-muted-foreground max-w-prose">
-              Il viewer inline non è disponibile. Puoi comunque aprire o
-              scaricare il file con i pulsanti qui sopra.
-            </p>
           </div>
         ) : (
           <iframe
             key={url}
-            src={`${url}#view=FitH`}
-            title={`Anteprima PDF di ${title}`}
+            src={`${url}#toolbar=0&navpanes=0&view=FitH`}
+            title={`Lettura PDF di ${title}`}
             className="w-full h-full"
             onLoad={() => setLoading(false)}
             onError={() => {
@@ -205,3 +175,4 @@ function PdfPreview({
     </section>
   );
 }
+
