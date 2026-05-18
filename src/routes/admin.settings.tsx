@@ -9,6 +9,7 @@ import {
   getSiteSettings,
   updateSiteSettings,
 } from "@/lib/site-settings.functions";
+import { cropTo4x5Jpeg } from "@/lib/image-crop";
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
