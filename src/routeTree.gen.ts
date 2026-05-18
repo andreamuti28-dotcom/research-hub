@@ -13,6 +13,7 @@ import { Route as ArchivioRouteImport } from './routes/archivio'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
@@ -37,6 +38,11 @@ const PaperSlugRoute = PaperSlugRouteImport.update({
   path: '/paper/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminNewRoute = AdminNewRouteImport.update({
   id: '/admin/new',
   path: '/admin/new',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/archivio': typeof ArchivioRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/paper/$slug': typeof PaperSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/archivio': typeof ArchivioRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/paper/$slug': typeof PaperSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/archivio': typeof ArchivioRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/paper/$slug': typeof PaperSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/archivio'
     | '/admin/login'
     | '/admin/new'
+    | '/admin/settings'
     | '/paper/$slug'
     | '/admin/'
     | '/admin/edit/$id'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/archivio'
     | '/admin/login'
     | '/admin/new'
+    | '/admin/settings'
     | '/paper/$slug'
     | '/admin'
     | '/admin/edit/$id'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/archivio'
     | '/admin/login'
     | '/admin/new'
+    | '/admin/settings'
     | '/paper/$slug'
     | '/admin/'
     | '/admin/edit/$id'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   ArchivioRoute: typeof ArchivioRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewRoute: typeof AdminNewRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   PaperSlugRoute: typeof PaperSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PaperSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/new': {
       id: '/admin/new'
       path: '/admin/new'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArchivioRoute: ArchivioRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNewRoute: AdminNewRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   PaperSlugRoute: PaperSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminEditIdRoute: AdminEditIdRoute,
@@ -187,3 +208,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
