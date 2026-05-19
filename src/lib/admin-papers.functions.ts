@@ -15,12 +15,23 @@ async function assertAdmin(userId: string) {
 }
 
 const paperInputSchema = z.object({
-  slug: z
-    .string()
-    .trim()
-    .min(1, "Slug obbligatorio")
-    .max(120)
-    .regex(/^[a-z0-9-]+$/, "Solo minuscole, numeri e trattini"),
+  slug: z.preprocess(
+    (val) =>
+      typeof val === "string"
+        ? val
+            .trim()
+            .toLowerCase()
+            .normalize("NFKD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "")
+        : val,
+    z
+      .string()
+      .min(1, "Slug obbligatorio")
+      .max(120)
+      .regex(/^[a-z0-9-]+$/, "Solo minuscole, numeri e trattini"),
+  ),
   title: z.string().trim().min(1, "Titolo obbligatorio").max(300),
   abstract: z.string().trim().min(1, "Abstract obbligatorio").max(1000),
   content: z.string().max(100_000).default(""),
