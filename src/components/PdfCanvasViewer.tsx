@@ -1,17 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
 
-type PdfDoc = {
-  numPages: number;
-  getPage: (n: number) => Promise<{
-    getViewport: (opts: { scale: number }) => { width: number; height: number };
-    render: (ctx: {
-      canvasContext: CanvasRenderingContext2D;
-      viewport: { width: number; height: number };
-    }) => { promise: Promise<void> };
-  }>;
-};
-
 let pdfjsPromise: Promise<typeof import("pdfjs-dist")> | null = null;
 async function loadPdfjs() {
   if (!pdfjsPromise) {
