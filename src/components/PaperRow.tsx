@@ -48,14 +48,14 @@ export function PaperRow({ paper }: { paper: Paper }) {
             {t("paper.readOnline")}
           </Link>
           {paper.pdfUrl && (
-            <a
-              href={`${paper.pdfUrl}#toolbar=0&navpanes=0&view=FitH`}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/paper/$slug"
+              params={{ slug: paper.slug }}
+              hash="pdf-reader"
               className="px-4 py-2 border border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors"
             >
               {t("paper.pdf")}
-            </a>
+            </Link>
           )}
         </div>
       </div>

@@ -185,7 +185,7 @@ function PdfPreview({
   t: ReturnType<typeof useT>;
 }) {
   return (
-    <section className="mt-16 pt-10 border-t border-border">
+    <section id="pdf-reader" className="mt-16 pt-10 border-t border-border scroll-mt-24">
       <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
         {t("paper.pdfHeading")}
       </h2>
