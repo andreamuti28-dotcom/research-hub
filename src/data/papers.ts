@@ -16,9 +16,15 @@ export interface Paper {
 }
 
 export function formatLanguage(lang: PaperLanguage): string {
-  if (lang === "it") return "IT";
-  if (lang === "en") return "EN";
-  return "IT · EN";
+  if (lang === "it") return "🇮🇹";
+  if (lang === "en") return "🇬🇧";
+  return "🇮🇹 🇬🇧";
+}
+
+export function languageLabel(lang: PaperLanguage): string {
+  if (lang === "it") return "Italiano";
+  if (lang === "en") return "Inglese";
+  return "Italiano e Inglese";
 }
 
 export function formatDate(iso: string): string {
