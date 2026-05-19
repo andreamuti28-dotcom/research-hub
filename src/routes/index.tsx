@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
 import { listPublishedPapers } from "@/lib/papers.functions";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
+import { useT } from "@/lib/i18n";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -40,6 +41,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { data: papers } = useSuspenseQuery(papersQuery);
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
+  const t = useT();
   const latest = papers.slice(0, 3);
   const portraitSrc = settings.portraitUrl ?? portrait;
 
@@ -60,7 +62,7 @@ function Index() {
               rel="noreferrer noopener"
               className="inline-flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
             >
-              LinkedIn Profile
+              {t("home.linkedin")}
             </a>
           </div>
         </div>
@@ -80,23 +82,23 @@ function Index() {
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                Pubblicazioni recenti
+                {t("home.latestKicker")}
               </div>
               <h2 className="text-3xl font-display font-bold tracking-tighter">
-                Ultimi Paper
+                {t("home.latestTitle")}
               </h2>
             </div>
             <Link
               to="/archivio"
               className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all self-start md:self-auto"
             >
-              Vedi tutto l'archivio →
+              {t("home.seeArchive")}
             </Link>
           </div>
 
           {latest.length === 0 ? (
             <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-background">
-              Nessun paper pubblicato. Accedi all'area riservata per iniziare.
+              {t("home.empty")}
             </div>
           ) : (
             <div className="space-y-px bg-border border border-border">

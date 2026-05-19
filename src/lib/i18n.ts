@@ -1,0 +1,104 @@
+import { useLanguage } from "@/hooks/use-language";
+
+const dict = {
+  it: {
+    "nav.archive": "Archivio",
+    "nav.userArea": "Area Riservata",
+    "nav.userShort": "Utente",
+    "footer.research": "Ricerca Autonoma",
+    "paper.readOnline": "Leggi Online",
+    "paper.pdf": "PDF",
+    "paper.languageLabel": "Lingua",
+    "lang.it": "Italiano",
+    "lang.en": "Inglese",
+    "lang.both": "Italiano e Inglese",
+    "home.latestKicker": "Pubblicazioni recenti",
+    "home.latestTitle": "Ultimi Paper",
+    "home.seeArchive": "Vedi tutto l'archivio →",
+    "home.empty": "Nessun paper pubblicato. Accedi all'area riservata per iniziare.",
+    "home.linkedin": "LinkedIn Profile",
+    "archive.kicker": "Archivio completo",
+    "archive.title": "Ricerca Pubblicata",
+    "archive.intro": (n: number) =>
+      `${n} paper indicizzati. Cerca nel testo completo, filtra per tag o anno e ordina per rilevanza.`,
+    "archive.searchPlaceholder": "Cerca per titolo, abstract, contenuto o tag…",
+    "archive.allTags": "Tutti i tag",
+    "archive.allYears": "Tutti gli anni",
+    "archive.sort.recent": "Più recenti",
+    "archive.sort.oldest": "Più vecchi",
+    "archive.sort.views": "Più visti",
+    "archive.sort.title": "Titolo (A→Z)",
+    "archive.reset": "Reset",
+    "archive.results": (n: number) => `${n} ${n === 1 ? "risultato" : "risultati"}`,
+    "archive.empty": "Nessun paper trovato.",
+    "paper.back": "← Archivio",
+    "paper.readingMin": (n: number) => `${n} min di lettura`,
+    "paper.views": (n: number) => `${n} visualizzazioni`,
+    "paper.toc": "Indice",
+    "paper.pdfHeading": "Lettura PDF",
+    "paper.pdfLoading": "Caricamento PDF…",
+    "paper.pdfUnavailable": (s: number) => `PDF non disponibile (HTTP ${s}).`,
+    "paper.pdfLoadError": "Impossibile caricare il PDF.",
+    "paper.pdfRenderError": "Errore durante il caricamento del PDF.",
+    "paper.notFound": "Paper non trovato",
+    "paper.backToArchive": "Torna all'archivio",
+    "langToggle.label": (next: string) => `Lingua: passa a ${next}`,
+  },
+  en: {
+    "nav.archive": "Archive",
+    "nav.userArea": "Members Area",
+    "nav.userShort": "User",
+    "footer.research": "Independent Research",
+    "paper.readOnline": "Read Online",
+    "paper.pdf": "PDF",
+    "paper.languageLabel": "Language",
+    "lang.it": "Italian",
+    "lang.en": "English",
+    "lang.both": "Italian and English",
+    "home.latestKicker": "Recent publications",
+    "home.latestTitle": "Latest Papers",
+    "home.seeArchive": "See full archive →",
+    "home.empty": "No papers published yet. Sign in to the members area to begin.",
+    "home.linkedin": "LinkedIn Profile",
+    "archive.kicker": "Full archive",
+    "archive.title": "Published Research",
+    "archive.intro": (n: number) =>
+      `${n} indexed papers. Search full text, filter by tag or year, and sort by relevance.`,
+    "archive.searchPlaceholder": "Search by title, abstract, content or tag…",
+    "archive.allTags": "All tags",
+    "archive.allYears": "All years",
+    "archive.sort.recent": "Most recent",
+    "archive.sort.oldest": "Oldest",
+    "archive.sort.views": "Most viewed",
+    "archive.sort.title": "Title (A→Z)",
+    "archive.reset": "Reset",
+    "archive.results": (n: number) => `${n} ${n === 1 ? "result" : "results"}`,
+    "archive.empty": "No papers found.",
+    "paper.back": "← Archive",
+    "paper.readingMin": (n: number) => `${n} min read`,
+    "paper.views": (n: number) => `${n} views`,
+    "paper.toc": "Contents",
+    "paper.pdfHeading": "PDF Reader",
+    "paper.pdfLoading": "Loading PDF…",
+    "paper.pdfUnavailable": (s: number) => `PDF not available (HTTP ${s}).`,
+    "paper.pdfLoadError": "Could not load the PDF.",
+    "paper.pdfRenderError": "Error while loading the PDF.",
+    "paper.notFound": "Paper not found",
+    "paper.backToArchive": "Back to archive",
+    "langToggle.label": (next: string) => `Language: switch to ${next}`,
+  },
+} as const;
+
+type Key = keyof (typeof dict)["it"];
+
+export function useT() {
+  const { lang } = useLanguage();
+  return function t<K extends Key>(
+    key: K,
+    ...args: (typeof dict)["it"][K] extends (...a: infer A) => string ? A : []
+  ): string {
+    const entry = dict[lang][key] as unknown;
+    if (typeof entry === "function") return (entry as (...a: unknown[]) => string)(...args);
+    return entry as string;
+  };
+}

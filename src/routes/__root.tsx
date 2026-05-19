@@ -8,6 +8,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { themeBootstrapScript } from "@/hooks/use-theme";
+import { langBootstrapScript } from "@/hooks/use-language";
 
 import appCss from "../styles.css?url";
 
@@ -109,6 +110,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
+        <script dangerouslySetInnerHTML={{ __html: langBootstrapScript }} />
       </head>
       <body>
         {children}

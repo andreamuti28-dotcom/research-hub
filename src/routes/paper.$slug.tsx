@@ -11,6 +11,7 @@ import {
   renderMathHtml,
   estimateReadingMinutes,
 } from "@/lib/paper-reading";
+import { useT } from "@/lib/i18n";
 
 
 export const Route = createFileRoute("/paper/$slug")({
@@ -38,6 +39,7 @@ export const Route = createFileRoute("/paper/$slug")({
 });
 
 function NotFound() {
+  const t = useT();
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
@@ -46,13 +48,13 @@ function NotFound() {
           404
         </div>
         <h1 className="text-3xl font-display font-bold tracking-tighter italic mb-6">
-          Paper non trovato
+          {t("paper.notFound")}
         </h1>
         <Link
           to="/archivio"
           className="inline-block px-4 py-2 bg-foreground text-background font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors"
         >
-          Torna all'archivio
+          {t("paper.backToArchive")}
         </Link>
       </div>
       <SiteFooter />
@@ -62,6 +64,7 @@ function NotFound() {
 
 function PaperDetail() {
   const { paper } = Route.useLoaderData();
+  const t = useT();
 
   useEffect(() => {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
@@ -85,19 +88,19 @@ function PaperDetail() {
           to="/archivio"
           className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-12 inline-block"
         >
-          ← Archivio
+          {t("paper.back")}
         </Link>
 
         <header className="mb-12 animate-fade-up max-w-3xl">
           <div className="font-mono text-xs text-muted-foreground mb-6 flex flex-wrap items-center gap-3">
             <span>{formatDateShort(paper.publishedDate)}</span>
             <span className="text-border">/</span>
-            <span>{readingMinutes} min di lettura</span>
+            <span>{t("paper.readingMin", readingMinutes)}</span>
             <span className="text-border">/</span>
-            <span>{paper.views} visualizzazioni</span>
+            <span>{t("paper.views", paper.views)}</span>
             <span className="text-border">/</span>
             <span className="text-primary uppercase tracking-tighter">
-              {paper.tags.map((t: string) => `#${t}`).join(" ")}
+              {paper.tags.map((tg: string) => `#${tg}`).join(" ")}
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
@@ -133,7 +136,7 @@ function PaperDetail() {
             <aside className="hidden lg:block">
               <div className="sticky top-24">
                 <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-                  Indice
+                  {t("paper.toc")}
                 </div>
                 <nav className="space-y-2 border-l border-border pl-4">
                   {toc.map((entry) => (
@@ -152,7 +155,7 @@ function PaperDetail() {
         </div>
 
         {paper.pdfUrl && (
-          <PdfPreview url={paper.pdfUrl} title={paper.title} />
+          <PdfPreview url={paper.pdfUrl} title={paper.title} t={t} />
         )}
       </article>
 
@@ -163,7 +166,15 @@ function PaperDetail() {
 }
 
 
-function PdfPreview({ url, title }: { url: string; title: string }) {
+function PdfPreview({
+  url,
+  title,
+  t,
+}: {
+  url: string;
+  title: string;
+  t: ReturnType<typeof useT>;
+}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -173,22 +184,22 @@ function PdfPreview({ url, title }: { url: string; title: string }) {
     const ctrl = new AbortController();
     fetch(url, { method: "HEAD", signal: ctrl.signal })
       .then((res) => {
-        if (!res.ok) setError(`PDF non disponibile (HTTP ${res.status}).`);
+        if (!res.ok) setError(t("paper.pdfUnavailable", res.status));
       })
       .catch((e) => {
-        if (e.name !== "AbortError") setError("Impossibile caricare il PDF.");
+        if (e.name !== "AbortError") setError(t("paper.pdfLoadError"));
       });
     const timer = window.setTimeout(() => setLoading(false), 8000);
     return () => {
       ctrl.abort();
       window.clearTimeout(timer);
     };
-  }, [url]);
+  }, [url, t]);
 
   return (
     <section className="mt-16 pt-10 border-t border-border">
       <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
-        Lettura PDF
+        {t("paper.pdfHeading")}
       </h2>
 
       <div
@@ -199,10 +210,10 @@ function PdfPreview({ url, title }: { url: string; title: string }) {
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
             <div
               className="w-8 h-8 border-2 border-border border-t-foreground rounded-full animate-spin"
-              aria-label="Caricamento PDF"
+              aria-label={t("paper.pdfLoading")}
             />
             <p className="font-mono text-[10px] uppercase tracking-widest">
-              Caricamento PDF…
+              {t("paper.pdfLoading")}
             </p>
           </div>
         )}
@@ -214,12 +225,12 @@ function PdfPreview({ url, title }: { url: string; title: string }) {
           <iframe
             key={url}
             src={`${url}#toolbar=0&navpanes=0&view=FitH`}
-            title={`Lettura PDF di ${title}`}
+            title={title}
             className="w-full h-full"
             onLoad={() => setLoading(false)}
             onError={() => {
               setLoading(false);
-              setError("Errore durante il caricamento del PDF.");
+              setError(t("paper.pdfRenderError"));
             }}
           />
         )}
