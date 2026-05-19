@@ -29,7 +29,24 @@ export function parseContent(raw: string): {
   const toc: TocEntry[] = [];
   const seen = new Map<string, number>();
 
-  const paragraphs = raw.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+  // Protect multiline math blocks ($$..$$, \[..\], \begin..\end) so the
+  // paragraph splitter doesn't break them in half.
+  const placeholders: string[] = [];
+  const protect = (s: string) =>
+    s.replace(
+      /\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\begin\{([a-zA-Z*]+)\}[\s\S]+?\\end\{\1\}/g,
+      (m) => {
+        const i = placeholders.push(m) - 1;
+        return `\u0000MATH${i}\u0000`;
+      },
+    );
+  const restore = (s: string) =>
+    s.replace(/\u0000MATH(\d+)\u0000/g, (_, i) => placeholders[Number(i)]);
+
+  const paragraphs = protect(raw)
+    .split(/\n\n+/)
+    .map((p) => restore(p.trim()))
+    .filter(Boolean);
 
   for (const para of paragraphs) {
     if (para.startsWith("## ")) {
