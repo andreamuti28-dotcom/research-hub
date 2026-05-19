@@ -2,10 +2,12 @@ import { Link } from "@tanstack/react-router";
 import type { Paper } from "@/data/papers";
 import { formatDate, formatLanguage } from "@/data/papers";
 import { useT } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
 
 export function PaperRow({ paper }: { paper: Paper }) {
   const t = useT();
+  const { lang } = useLanguage();
   const [title, abstract] = useTranslated([paper.title, paper.abstract]);
   const langLabel =
     paper.language === "it"
