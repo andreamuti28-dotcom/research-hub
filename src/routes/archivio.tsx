@@ -31,28 +31,73 @@ export const Route = createFileRoute("/archivio")({
   component: Archivio,
 });
 
+type SortKey = "recent" | "oldest" | "views" | "title";
+
 function Archivio() {
   const { data: papers } = useSuspenseQuery(papersQuery);
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
+  const [year, setYear] = useState<string>("");
+  const [sort, setSort] = useState<SortKey>("recent");
 
   const allTags = useMemo(
     () => Array.from(new Set(papers.flatMap((p) => p.tags))).sort(),
     [papers],
   );
 
+  const allYears = useMemo(
+    () =>
+      Array.from(
+        new Set(papers.map((p) => new Date(p.publishedDate).getFullYear())),
+      ).sort((a, b) => b - a),
+    [papers],
+  );
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return papers.filter((p) => {
+    const result = papers.filter((p) => {
       if (tag && !p.tags.includes(tag)) return false;
+      if (year && String(new Date(p.publishedDate).getFullYear()) !== year)
+        return false;
       if (!q) return true;
       return (
         p.title.toLowerCase().includes(q) ||
         p.abstract.toLowerCase().includes(q) ||
+        p.content.toLowerCase().includes(q) ||
         p.tags.some((t) => t.toLowerCase().includes(q))
       );
     });
-  }, [papers, query, tag]);
+
+    const sorted = [...result];
+    switch (sort) {
+      case "recent":
+        sorted.sort(
+          (a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate),
+        );
+        break;
+      case "oldest":
+        sorted.sort(
+          (a, b) => +new Date(a.publishedDate) - +new Date(b.publishedDate),
+        );
+        break;
+      case "views":
+        sorted.sort((a, b) => b.views - a.views);
+        break;
+      case "title":
+        sorted.sort((a, b) => a.title.localeCompare(b.title, "it"));
+        break;
+    }
+    return sorted;
+  }, [papers, query, tag, year, sort]);
+
+  const resetFilters = () => {
+    setQuery("");
+    setTag("");
+    setYear("");
+    setSort("recent");
+  };
+
+  const hasFilters = query || tag || year || sort !== "recent";
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -67,31 +112,67 @@ function Archivio() {
             Ricerca Pubblicata
           </h1>
           <p className="max-w-[55ch] text-lg text-muted-foreground leading-relaxed">
-            {papers.length} paper indicizzati. Filtra per tag o cerca per
-            parola chiave.
+            {papers.length} paper indicizzati. Cerca nel testo completo, filtra
+            per tag o anno e ordina per rilevanza.
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-10">
+        <div className="flex flex-col gap-3 mb-6">
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cerca per titolo, abstract o tag…"
-            className="bg-background border border-border px-4 py-2.5 text-sm font-display focus:outline-none focus:ring-1 focus:ring-primary flex-1 md:max-w-md"
+            placeholder="Cerca per titolo, abstract, contenuto o tag…"
+            className="bg-background border border-border px-4 py-2.5 text-sm font-display focus:outline-none focus:ring-1 focus:ring-primary w-full"
           />
-          <select
-            value={tag}
-            onChange={(e) => setTag(e.target.value)}
-            className="bg-background border border-border px-4 py-2.5 text-sm font-display focus:outline-none focus:ring-1 focus:ring-primary"
-          >
-            <option value="">Tutti i tag</option>
-            {allTags.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+          <div className="flex flex-wrap gap-3">
+            <select
+              value={tag}
+              onChange={(e) => setTag(e.target.value)}
+              className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="">Tutti i tag</option>
+              {allTags.map((t) => (
+                <option key={t} value={t}>
+                  #{t}
+                </option>
+              ))}
+            </select>
+            <select
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="">Tutti gli anni</option>
+              {allYears.map((y) => (
+                <option key={y} value={String(y)}>
+                  {y}
+                </option>
+              ))}
+            </select>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortKey)}
+              className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
+            >
+              <option value="recent">Più recenti</option>
+              <option value="oldest">Più vecchi</option>
+              <option value="views">Più visti</option>
+              <option value="title">Titolo (A→Z)</option>
+            </select>
+            {hasFilters && (
+              <button
+                onClick={resetFilters}
+                className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground border border-transparent hover:border-border transition-colors"
+              >
+                Reset
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
+          {filtered.length} {filtered.length === 1 ? "risultato" : "risultati"}
         </div>
 
         {filtered.length === 0 ? (
@@ -112,3 +193,4 @@ function Archivio() {
     </div>
   );
 }
+
