@@ -1,8 +1,9 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import "katex/dist/katex.min.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { PdfCanvasViewer } from "@/components/PdfCanvasViewer";
 import { formatDateShort } from "@/data/papers";
 import { getPublishedPaperBySlug } from "@/lib/papers.functions";
 import { supabase } from "@/integrations/supabase/client";
