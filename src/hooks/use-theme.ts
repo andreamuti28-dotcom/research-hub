@@ -1,28 +1,24 @@
 import { useEffect, useState, useCallback } from "react";
 
-export type ThemeChoice = "light" | "dark" | "system";
+export type ThemeChoice = "light" | "dark";
 const STORAGE_KEY = "theme";
 
-function getSystem(): "light" | "dark" {
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
 function readChoice(): ThemeChoice {
-  if (typeof window === "undefined") return "system";
+  if (typeof window === "undefined") return "light";
   const v = window.localStorage.getItem(STORAGE_KEY);
-  return v === "light" || v === "dark" || v === "system" ? v : "system";
+  if (v === "light" || v === "dark") return v;
+  // Migrate legacy "system" by resolving once
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function apply(choice: ThemeChoice) {
   if (typeof document === "undefined") return;
-  const resolved = choice === "system" ? getSystem() : choice;
-  document.documentElement.classList.toggle("dark", resolved === "dark");
-  document.documentElement.style.colorScheme = resolved;
+  document.documentElement.classList.toggle("dark", choice === "dark");
+  document.documentElement.style.colorScheme = choice;
 }
 
 export function useTheme() {
-  const [choice, setChoice] = useState<ThemeChoice>("system");
+  const [choice, setChoice] = useState<ThemeChoice>("light");
 
   useEffect(() => {
     setChoice(readChoice());
@@ -30,11 +26,6 @@ export function useTheme() {
 
   useEffect(() => {
     apply(choice);
-    if (choice !== "system") return;
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => apply("system");
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
   }, [choice]);
 
   const setTheme = useCallback((next: ThemeChoice) => {
@@ -48,9 +39,11 @@ export function useTheme() {
 // Inline script string to prevent FOUC — runs before React hydrates
 export const themeBootstrapScript = `
 (function(){try{
-  var t = localStorage.getItem('theme') || 'system';
-  var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  document.documentElement.classList.toggle('dark', dark);
-  document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  var t = localStorage.getItem('theme');
+  if (t !== 'light' && t !== 'dark') {
+    t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.classList.toggle('dark', t === 'dark');
+  document.documentElement.style.colorScheme = t;
 }catch(e){}})();
 `;

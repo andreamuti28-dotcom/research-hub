@@ -18,7 +18,7 @@ export const translateBatch = createServerFn({ method: "POST" })
 
     const numbered = texts
       .map((t, i) => `[[${i}]]\n${t}`)
-      .join("\n\n---\n\n");
+      .join("\n\n[[END]]\n\n");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -59,7 +59,11 @@ export const translateBatch = createServerFn({ method: "POST" })
     const out = [...texts];
     for (const item of parsed.translations ?? []) {
       if (typeof item.i === "number" && item.i >= 0 && item.i < out.length) {
-        out[item.i] = item.text;
+        const cleaned = item.text
+          .replace(/\s*\[\[END\]\]\s*/g, "")
+          .replace(/^\s*-{3,}\s*|\s*-{3,}\s*$/g, "")
+          .trim();
+        out[item.i] = cleaned;
       }
     }
     return { translations: out };
