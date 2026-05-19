@@ -67,6 +67,7 @@ function NotFound() {
 function PaperDetail() {
   const { paper } = Route.useLoaderData();
   const t = useT();
+  const { lang } = useLanguage();
 
   useEffect(() => {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
