@@ -19,11 +19,11 @@ export function PaperRow({ paper }: { paper: Paper }) {
   return (
     <article className="group relative bg-background p-6 md:p-8 md:grid md:grid-cols-[200px_1fr] gap-12 transition-colors hover:bg-surface">
       <span
-        className="absolute top-4 right-4 md:top-6 md:right-6 text-lg md:text-xl leading-none select-none"
+        className="absolute top-4 right-4 md:top-6 md:right-6 leading-none select-none"
         title={langLabel}
         aria-label={`${t("paper.languageLabel")}: ${langLabel}`}
       >
-        {formatLanguage(paper.language)}
+        <LanguageFlags language={paper.language} className="inline-block w-5 md:w-6 h-auto align-middle" />
       </span>
       <div className="font-mono text-xs text-muted-foreground mb-4 md:mb-0">
         <div className="mb-1 uppercase">{formatDate(paper.publishedDate, lang)}</div>
