@@ -1,7 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import type { Paper } from "@/data/papers";
+import type { Paper, PaperLanguage } from "@/data/papers";
+
+const SELECT_COLS =
+  "id, slug, title, abstract, content, tags, pdf_url, published_date, is_published, views, downloads, language";
 
 function mapPaper(row: {
   id: string;
@@ -15,6 +18,7 @@ function mapPaper(row: {
   is_published: boolean;
   views: number;
   downloads: number;
+  language: string | null;
 }): Paper {
   return {
     id: row.id,
@@ -28,6 +32,7 @@ function mapPaper(row: {
     isPublished: row.is_published,
     views: row.views,
     downloads: row.downloads,
+    language: (row.language ?? "it") as PaperLanguage,
   };
 }
 
@@ -35,9 +40,7 @@ export const listPublishedPapers = createServerFn({ method: "GET" }).handler(
   async () => {
     const { data, error } = await supabaseAdmin
       .from("papers")
-      .select(
-        "id, slug, title, abstract, content, tags, pdf_url, published_date, is_published, views, downloads",
-      )
+      .select(SELECT_COLS)
       .eq("is_published", true)
       .order("published_date", { ascending: false });
 
@@ -53,9 +56,7 @@ export const getPublishedPaperBySlug = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
       .from("papers")
-      .select(
-        "id, slug, title, abstract, content, tags, pdf_url, published_date, is_published, views, downloads",
-      )
+      .select(SELECT_COLS)
       .eq("slug", data.slug)
       .eq("is_published", true)
       .maybeSingle();
