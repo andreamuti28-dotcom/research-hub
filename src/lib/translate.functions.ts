@@ -18,7 +18,7 @@ export const translateBatch = createServerFn({ method: "POST" })
 
     const numbered = texts
       .map((t, i) => `[[${i}]]\n${t}`)
-      .join("\n\n---\n\n");
+      .join("\n\n[[END]]\n\n");
 
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
