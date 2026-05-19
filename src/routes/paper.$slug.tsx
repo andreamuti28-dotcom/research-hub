@@ -102,7 +102,7 @@ function PaperDetail() {
 
         <header className="mb-12 animate-fade-up max-w-3xl">
           <div className="font-mono text-xs text-muted-foreground mb-6 flex flex-wrap items-center gap-3">
-            <span>{formatDateShort(paper.publishedDate)}</span>
+            <span>{formatDateShort(paper.publishedDate, lang)}</span>
             <span className="text-border">/</span>
             <span>{t("paper.readingMin", readingMinutes)}</span>
             <span className="text-border">/</span>
