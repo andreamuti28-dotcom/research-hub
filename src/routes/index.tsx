@@ -57,10 +57,10 @@ function Index() {
       <section className="max-w-6xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-[1fr_400px] gap-16 items-start w-full">
         <div className="animate-fade-up">
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-8 italic">
-            {settings.heroTitle}
+            {heroTitle}
           </h1>
           <div className="max-w-[55ch] text-lg md:text-xl leading-relaxed text-pretty space-y-6">
-            <p className="whitespace-pre-line">{settings.heroIntro}</p>
+            <p className="whitespace-pre-line">{heroIntro}</p>
             <a
               href={settings.linkedinUrl}
               target="_blank"
