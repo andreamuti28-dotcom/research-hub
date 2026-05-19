@@ -233,7 +233,7 @@ function PdfPreview({
         ) : (
           <iframe
             key={url}
-            src={`${url}#toolbar=0&navpanes=0&view=FitH`}
+            src={`${url}#toolbar=0&navpanes=0&view=Fit&page=1`}
             title={title}
             className="w-full h-full"
             onLoad={() => setLoading(false)}
