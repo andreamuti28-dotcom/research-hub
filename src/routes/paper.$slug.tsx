@@ -12,6 +12,7 @@ import {
   estimateReadingMinutes,
 } from "@/lib/paper-reading";
 import { useT } from "@/lib/i18n";
+import { useTranslated } from "@/hooks/use-translated";
 
 
 export const Route = createFileRoute("/paper/$slug")({
