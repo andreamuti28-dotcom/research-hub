@@ -67,11 +67,20 @@ function PaperDetail() {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
   }, [paper.slug]);
 
+  const { blocks, toc } = useMemo(
+    () => parseContent(paper.content),
+    [paper.content],
+  );
+  const readingMinutes = useMemo(
+    () => estimateReadingMinutes(paper.content),
+    [paper.content],
+  );
+
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <article className="max-w-3xl mx-auto px-6 py-16 md:py-24 w-full">
+      <article className="max-w-6xl mx-auto px-6 py-16 md:py-24 w-full">
         <Link
           to="/archivio"
           className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-12 inline-block"
@@ -79,9 +88,13 @@ function PaperDetail() {
           ← Archivio
         </Link>
 
-        <header className="mb-12 animate-fade-up">
+        <header className="mb-12 animate-fade-up max-w-3xl">
           <div className="font-mono text-xs text-muted-foreground mb-6 flex flex-wrap items-center gap-3">
             <span>{formatDateShort(paper.publishedDate)}</span>
+            <span className="text-border">/</span>
+            <span>{readingMinutes} min di lettura</span>
+            <span className="text-border">/</span>
+            <span>{paper.views} visualizzazioni</span>
             <span className="text-border">/</span>
             <span className="text-primary uppercase tracking-tighter">
               {paper.tags.map((t: string) => `#${t}`).join(" ")}
@@ -95,16 +108,47 @@ function PaperDetail() {
           </p>
         </header>
 
+        <div className="lg:grid lg:grid-cols-[1fr_220px] lg:gap-12">
+          <div className="space-y-6 text-lg leading-[1.75] text-foreground/90 max-w-[68ch]">
+            {blocks.map((block, i) =>
+              block.type === "h2" ? (
+                <h2
+                  key={i}
+                  id={block.id}
+                  className="text-2xl md:text-3xl font-display font-bold tracking-tight italic pt-6 scroll-mt-24"
+                >
+                  {block.text}
+                </h2>
+              ) : (
+                <p
+                  key={i}
+                  className="text-pretty"
+                  dangerouslySetInnerHTML={{ __html: renderMathHtml(block.text) }}
+                />
+              ),
+            )}
+          </div>
 
-        <div className="space-y-6 text-lg leading-[1.75] text-foreground/90">
-          {paper.content
-            .split("\n\n")
-            .filter((p: string) => p.trim().length > 0)
-            .map((para: string, i: number) => (
-              <p key={i} className="text-pretty">
-                {para}
-              </p>
-            ))}
+          {toc.length > 0 && (
+            <aside className="hidden lg:block">
+              <div className="sticky top-24">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
+                  Indice
+                </div>
+                <nav className="space-y-2 border-l border-border pl-4">
+                  {toc.map((entry) => (
+                    <a
+                      key={entry.id}
+                      href={`#${entry.id}`}
+                      className="block text-sm text-muted-foreground hover:text-foreground transition-colors leading-snug"
+                    >
+                      {entry.text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            </aside>
+          )}
         </div>
 
         {paper.pdfUrl && (
@@ -117,6 +161,7 @@ function PaperDetail() {
     </div>
   );
 }
+
 
 function PdfPreview({ url, title }: { url: string; title: string }) {
   const [loading, setLoading] = useState(true);
