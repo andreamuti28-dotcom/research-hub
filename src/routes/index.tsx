@@ -7,6 +7,7 @@ import { PaperRow } from "@/components/PaperRow";
 import { listPublishedPapers } from "@/lib/papers.functions";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
 import { useT } from "@/lib/i18n";
+import { useTranslated } from "@/hooks/use-translated";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
