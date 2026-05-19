@@ -1,13 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import type { Paper } from "@/data/papers";
-import { formatDate, formatLanguage } from "@/data/papers";
+import { formatDate, formatLanguage, languageLabel } from "@/data/papers";
 
 export function PaperRow({ paper }: { paper: Paper }) {
   return (
     <article className="group relative bg-background p-6 md:p-8 md:grid md:grid-cols-[200px_1fr] gap-12 transition-colors hover:bg-surface">
       <span
-        className="absolute top-4 right-4 md:top-6 md:right-6 px-2 py-1 border border-border bg-background/80 backdrop-blur font-mono text-[10px] uppercase tracking-widest text-muted-foreground"
-        aria-label={`Lingua: ${formatLanguage(paper.language)}`}
+        className="absolute top-4 right-4 md:top-6 md:right-6 text-lg md:text-xl leading-none select-none"
+        title={languageLabel(paper.language)}
+        aria-label={`Lingua: ${languageLabel(paper.language)}`}
       >
         {formatLanguage(paper.language)}
       </span>
