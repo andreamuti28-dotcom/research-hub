@@ -25,7 +25,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
         {formatLanguage(paper.language)}
       </span>
       <div className="font-mono text-xs text-muted-foreground mb-4 md:mb-0">
-        <div className="mb-1 uppercase">{formatDate(paper.publishedDate)}</div>
+        <div className="mb-1 uppercase">{formatDate(paper.publishedDate, lang)}</div>
         <div className="text-primary uppercase tracking-tighter">
           {paper.tags.map((tag) => `#${tag}`).join(" ")}
         </div>
