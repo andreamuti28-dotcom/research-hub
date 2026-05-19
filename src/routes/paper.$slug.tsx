@@ -12,6 +12,7 @@ import {
   estimateReadingMinutes,
 } from "@/lib/paper-reading";
 import { useT } from "@/lib/i18n";
+import { useTranslated } from "@/hooks/use-translated";
 
 
 export const Route = createFileRoute("/paper/$slug")({
@@ -70,13 +71,19 @@ function PaperDetail() {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
   }, [paper.slug]);
 
+  const [tTitle, tAbstract, tContent] = useTranslated([
+    paper.title,
+    paper.abstract,
+    paper.content,
+  ]);
+
   const { blocks, toc } = useMemo(
-    () => parseContent(paper.content),
-    [paper.content],
+    () => parseContent(tContent),
+    [tContent],
   );
   const readingMinutes = useMemo(
-    () => estimateReadingMinutes(paper.content),
-    [paper.content],
+    () => estimateReadingMinutes(tContent),
+    [tContent],
   );
 
   return (
@@ -104,10 +111,10 @@ function PaperDetail() {
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
-            {paper.title}
+            {tTitle}
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed text-pretty max-w-[60ch]">
-            {paper.abstract}
+            {tAbstract}
           </p>
         </header>
 
