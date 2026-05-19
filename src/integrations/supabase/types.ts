@@ -22,6 +22,7 @@ export type Database = {
           downloads: number
           id: string
           is_published: boolean
+          language: string
           pdf_url: string | null
           published_date: string
           slug: string
@@ -37,6 +38,7 @@ export type Database = {
           downloads?: number
           id?: string
           is_published?: boolean
+          language?: string
           pdf_url?: string | null
           published_date?: string
           slug: string
@@ -52,6 +54,7 @@ export type Database = {
           downloads?: number
           id?: string
           is_published?: boolean
+          language?: string
           pdf_url?: string | null
           published_date?: string
           slug?: string

@@ -27,6 +27,7 @@ export function AdminShell({
           <div className="hidden md:flex gap-6 font-display text-[11px] uppercase tracking-widest mr-auto ml-8">
             <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Dashboard</Link>
             <Link to="/admin/new" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
+            <Link to="/admin/users" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Utenti</Link>
             <Link to="/admin/settings" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Profilo</Link>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 font-mono text-[10px] uppercase tracking-widest shrink-0">
@@ -45,6 +46,7 @@ export function AdminShell({
           <div className="flex gap-4 px-4 py-2 font-display text-[10px] uppercase tracking-widest whitespace-nowrap">
             <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background" activeProps={{ className: "text-background" }}>Dashboard</Link>
             <Link to="/admin/new" className="hover:text-background" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
+            <Link to="/admin/users" className="hover:text-background" activeProps={{ className: "text-background" }}>Utenti</Link>
             <Link to="/admin/settings" className="hover:text-background" activeProps={{ className: "text-background" }}>Profilo</Link>
             <Link to="/" target="_blank" className="hover:text-background ml-auto">↗ Pubblico</Link>
           </div>

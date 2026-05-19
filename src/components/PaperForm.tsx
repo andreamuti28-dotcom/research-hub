@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import type { PaperLanguage } from "@/data/papers";
 
 export interface PaperFormValues {
   slug: string;
@@ -11,6 +12,7 @@ export interface PaperFormValues {
   pdfUrl: string;
   publishedDate: string;
   isPublished: boolean;
+  language: PaperLanguage;
 }
 
 export const emptyPaperForm: PaperFormValues = {
@@ -22,6 +24,7 @@ export const emptyPaperForm: PaperFormValues = {
   pdfUrl: "",
   publishedDate: new Date().toISOString().slice(0, 10),
   isPublished: true,
+  language: "it",
 };
 
 export function PaperForm({
@@ -199,6 +202,18 @@ export function PaperForm({
         </Field>
       </div>
 
+
+      <Field label="Lingua del paper">
+        <select
+          value={values.language}
+          onChange={(e) => update("language", e.target.value as PaperLanguage)}
+          className={inputCls}
+        >
+          <option value="it">Italiano</option>
+          <option value="en">Inglese</option>
+          <option value="both">Italiano + Inglese</option>
+        </select>
+      </Field>
 
       <label className="flex items-center gap-3 font-display text-sm cursor-pointer">
         <input

@@ -13,6 +13,7 @@ import { Route as ArchivioRouteImport } from './routes/archivio'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -36,6 +37,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const PaperSlugRoute = PaperSlugRouteImport.update({
   id: '/paper/$slug',
   path: '/paper/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
@@ -65,6 +71,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/paper/$slug': typeof PaperSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
@@ -75,6 +82,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/paper/$slug': typeof PaperSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/paper/$slug': typeof PaperSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
@@ -98,6 +107,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/new'
     | '/admin/settings'
+    | '/admin/users'
     | '/paper/$slug'
     | '/admin/'
     | '/admin/edit/$id'
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/new'
     | '/admin/settings'
+    | '/admin/users'
     | '/paper/$slug'
     | '/admin'
     | '/admin/edit/$id'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/new'
     | '/admin/settings'
+    | '/admin/users'
     | '/paper/$slug'
     | '/admin/'
     | '/admin/edit/$id'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   PaperSlugRoute: typeof PaperSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/paper/$slug'
       fullPath: '/paper/$slug'
       preLoaderRoute: typeof PaperSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/settings': {
@@ -201,6 +221,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminNewRoute: AdminNewRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  AdminUsersRoute: AdminUsersRoute,
   PaperSlugRoute: PaperSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminEditIdRoute: AdminEditIdRoute,

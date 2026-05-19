@@ -48,6 +48,7 @@ function EditPaper() {
           pdfUrl: v.pdfUrl ? v.pdfUrl : null,
           publishedDate: v.publishedDate,
           isPublished: v.isPublished,
+          language: v.language,
         },
       }),
     onSuccess: () => {
@@ -86,6 +87,7 @@ function EditPaper() {
     pdfUrl: p.pdf_url ?? "",
     publishedDate: p.published_date,
     isPublished: p.is_published,
+    language: (p.language ?? "it") as PaperFormValues["language"],
   };
 
   return (
