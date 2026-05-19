@@ -137,6 +137,11 @@ function LoginPage() {
               {error}
             </div>
           )}
+          {info && (
+            <div className="border border-primary/30 bg-primary/5 text-foreground px-4 py-3 text-sm font-display">
+              {info}
+            </div>
+          )}
           <button
             type="submit"
             disabled={loading}
