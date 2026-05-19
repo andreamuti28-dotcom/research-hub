@@ -17,6 +17,7 @@ async function loadPdfjs() {
 
 export function PdfCanvasViewer({ url }: { url: string }) {
   const t = useT();
+  const pdfLoadError = t("paper.pdfLoadError");
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +70,7 @@ export function PdfCanvasViewer({ url }: { url: string }) {
       } catch (e) {
         if (!cancelled) {
           console.error(e);
-          setError(t("paper.pdfLoadError"));
+          setError(pdfLoadError);
           setLoading(false);
         }
       }
@@ -78,7 +79,7 @@ export function PdfCanvasViewer({ url }: { url: string }) {
     return () => {
       cancelled = true;
     };
-  }, [url, t]);
+  }, [url, pdfLoadError]);
 
   return (
     <div
