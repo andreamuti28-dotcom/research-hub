@@ -160,6 +160,7 @@ function LoginPage() {
             type="button"
             onClick={() => {
               setError(null);
+              setInfo(null);
               setMode(mode === "login" ? "signup" : "login");
             }}
             className="font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
