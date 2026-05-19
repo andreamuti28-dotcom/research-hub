@@ -43,9 +43,26 @@ function AdminSettingsPage() {
   const uploadPortrait = useServerFn(uploadSitePortrait);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [sessionReady, setSessionReady] = useState(false);
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (mounted) setSessionReady(!!data.session);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setSessionReady(!!session);
+    });
+    return () => {
+      mounted = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
   const adminQuery = useQuery({
     queryKey: ["admin", "status"],
     queryFn: () => checkAdmin(),
+    enabled: sessionReady,
+    retry: false,
   });
 
   const settingsQuery = useQuery({
