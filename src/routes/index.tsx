@@ -43,6 +43,10 @@ function Index() {
   const { data: papers } = useSuspenseQuery(papersQuery);
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
   const t = useT();
+  const [heroTitle, heroIntro] = useTranslated([
+    settings.heroTitle,
+    settings.heroIntro,
+  ]);
   const latest = papers.slice(0, 3);
   const portraitSrc = settings.portraitUrl ?? portrait;
 
