@@ -40,6 +40,7 @@ function NewPaper() {
           pdfUrl: v.pdfUrl ? v.pdfUrl : null,
           publishedDate: v.publishedDate,
           isPublished: v.isPublished,
+          language: v.language,
         },
       }),
     onSuccess: () => {
