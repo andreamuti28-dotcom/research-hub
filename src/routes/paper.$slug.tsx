@@ -177,73 +177,18 @@ function PaperDetail() {
 
 function PdfPreview({
   url,
-  title,
   t,
 }: {
   url: string;
   title: string;
   t: ReturnType<typeof useT>;
 }) {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    const ctrl = new AbortController();
-    fetch(url, { method: "HEAD", signal: ctrl.signal })
-      .then((res) => {
-        if (!res.ok) setError(t("paper.pdfUnavailable", res.status));
-      })
-      .catch((e) => {
-        if (e.name !== "AbortError") setError(t("paper.pdfLoadError"));
-      });
-    const timer = window.setTimeout(() => setLoading(false), 8000);
-    return () => {
-      ctrl.abort();
-      window.clearTimeout(timer);
-    };
-  }, [url, t]);
-
   return (
     <section className="mt-16 pt-10 border-t border-border">
       <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
         {t("paper.pdfHeading")}
       </h2>
-
-      <div
-        className="relative w-full h-[80vh] min-h-[480px] border border-border bg-muted"
-        onContextMenu={(e) => e.preventDefault()}
-      >
-        {loading && !error && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-muted-foreground">
-            <div
-              className="w-8 h-8 border-2 border-border border-t-foreground rounded-full animate-spin"
-              aria-label={t("paper.pdfLoading")}
-            />
-            <p className="font-mono text-[10px] uppercase tracking-widest">
-              {t("paper.pdfLoading")}
-            </p>
-          </div>
-        )}
-        {error ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
-            <p className="font-display text-sm text-foreground">{error}</p>
-          </div>
-        ) : (
-          <iframe
-            key={url}
-            src={`${url}#toolbar=0&navpanes=0&view=Fit&page=1`}
-            title={title}
-            className="w-full h-full"
-            onLoad={() => setLoading(false)}
-            onError={() => {
-              setLoading(false);
-              setError(t("paper.pdfRenderError"));
-            }}
-          />
-        )}
-      </div>
+      <PdfCanvasViewer url={url} />
     </section>
   );
 }
