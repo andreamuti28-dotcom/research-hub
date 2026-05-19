@@ -71,13 +71,19 @@ function PaperDetail() {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
   }, [paper.slug]);
 
+  const [tTitle, tAbstract, tContent] = useTranslated([
+    paper.title,
+    paper.abstract,
+    paper.content,
+  ]);
+
   const { blocks, toc } = useMemo(
-    () => parseContent(paper.content),
-    [paper.content],
+    () => parseContent(tContent),
+    [tContent],
   );
   const readingMinutes = useMemo(
-    () => estimateReadingMinutes(paper.content),
-    [paper.content],
+    () => estimateReadingMinutes(tContent),
+    [tContent],
   );
 
   return (
