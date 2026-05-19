@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
 import { listPublishedPapers } from "@/lib/papers.functions";
+import { useT } from "@/lib/i18n";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -35,6 +36,7 @@ type SortKey = "recent" | "oldest" | "views" | "title";
 
 function Archivio() {
   const { data: papers } = useSuspenseQuery(papersQuery);
+  const t = useT();
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
   const [year, setYear] = useState<string>("");
@@ -106,14 +108,13 @@ function Archivio() {
       <section className="max-w-6xl mx-auto px-6 py-16 md:py-24 w-full">
         <div className="mb-12 md:mb-16 animate-fade-up">
           <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-            Archivio completo
+            {t("archive.kicker")}
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter italic mb-6">
-            Ricerca Pubblicata
+            {t("archive.title")}
           </h1>
           <p className="max-w-[55ch] text-lg text-muted-foreground leading-relaxed">
-            {papers.length} paper indicizzati. Cerca nel testo completo, filtra
-            per tag o anno e ordina per rilevanza.
+            {t("archive.intro", papers.length)}
           </p>
         </div>
 
@@ -122,7 +123,7 @@ function Archivio() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cerca per titolo, abstract, contenuto o tag…"
+            placeholder={t("archive.searchPlaceholder")}
             className="bg-background border border-border px-4 py-2.5 text-sm font-display focus:outline-none focus:ring-1 focus:ring-primary w-full"
           />
           <div className="flex flex-wrap gap-3">
@@ -131,10 +132,10 @@ function Archivio() {
               onChange={(e) => setTag(e.target.value)}
               className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              <option value="">Tutti i tag</option>
-              {allTags.map((t) => (
-                <option key={t} value={t}>
-                  #{t}
+              <option value="">{t("archive.allTags")}</option>
+              {allTags.map((tg) => (
+                <option key={tg} value={tg}>
+                  #{tg}
                 </option>
               ))}
             </select>
@@ -143,7 +144,7 @@ function Archivio() {
               onChange={(e) => setYear(e.target.value)}
               className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              <option value="">Tutti gli anni</option>
+              <option value="">{t("archive.allYears")}</option>
               {allYears.map((y) => (
                 <option key={y} value={String(y)}>
                   {y}
@@ -155,29 +156,29 @@ function Archivio() {
               onChange={(e) => setSort(e.target.value as SortKey)}
               className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
             >
-              <option value="recent">Più recenti</option>
-              <option value="oldest">Più vecchi</option>
-              <option value="views">Più visti</option>
-              <option value="title">Titolo (A→Z)</option>
+              <option value="recent">{t("archive.sort.recent")}</option>
+              <option value="oldest">{t("archive.sort.oldest")}</option>
+              <option value="views">{t("archive.sort.views")}</option>
+              <option value="title">{t("archive.sort.title")}</option>
             </select>
             {hasFilters && (
               <button
                 onClick={resetFilters}
                 className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground border border-transparent hover:border-border transition-colors"
               >
-                Reset
+                {t("archive.reset")}
               </button>
             )}
           </div>
         </div>
 
         <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-          {filtered.length} {filtered.length === 1 ? "risultato" : "risultati"}
+          {t("archive.results", filtered.length)}
         </div>
 
         {filtered.length === 0 ? (
           <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-            Nessun paper trovato.
+            {t("archive.empty")}
           </div>
         ) : (
           <div className="space-y-px bg-border border border-border">
