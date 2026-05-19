@@ -1,0 +1,1 @@
+ALTER TABLE public.papers ADD COLUMN IF NOT EXISTS language text NOT NULL DEFAULT 'it' CHECK (language IN ('it','en','both'));
