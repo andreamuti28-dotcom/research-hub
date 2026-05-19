@@ -59,7 +59,11 @@ export const translateBatch = createServerFn({ method: "POST" })
     const out = [...texts];
     for (const item of parsed.translations ?? []) {
       if (typeof item.i === "number" && item.i >= 0 && item.i < out.length) {
-        out[item.i] = item.text;
+        const cleaned = item.text
+          .replace(/\s*\[\[END\]\]\s*/g, "")
+          .replace(/^\s*-{3,}\s*|\s*-{3,}\s*$/g, "")
+          .trim();
+        out[item.i] = cleaned;
       }
     }
     return { translations: out };
