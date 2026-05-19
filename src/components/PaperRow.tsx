@@ -2,10 +2,12 @@ import { Link } from "@tanstack/react-router";
 import type { Paper } from "@/data/papers";
 import { formatDate, formatLanguage } from "@/data/papers";
 import { useT } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
 
 export function PaperRow({ paper }: { paper: Paper }) {
   const t = useT();
+  const { lang } = useLanguage();
   const [title, abstract] = useTranslated([paper.title, paper.abstract]);
   const langLabel =
     paper.language === "it"
@@ -23,7 +25,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
         {formatLanguage(paper.language)}
       </span>
       <div className="font-mono text-xs text-muted-foreground mb-4 md:mb-0">
-        <div className="mb-1 uppercase">{formatDate(paper.publishedDate)}</div>
+        <div className="mb-1 uppercase">{formatDate(paper.publishedDate, lang)}</div>
         <div className="text-primary uppercase tracking-tighter">
           {paper.tags.map((tag) => `#${tag}`).join(" ")}
         </div>

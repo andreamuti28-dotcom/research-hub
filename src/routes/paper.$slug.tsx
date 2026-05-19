@@ -12,6 +12,7 @@ import {
   estimateReadingMinutes,
 } from "@/lib/paper-reading";
 import { useT } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
 
 
@@ -66,6 +67,7 @@ function NotFound() {
 function PaperDetail() {
   const { paper } = Route.useLoaderData();
   const t = useT();
+  const { lang } = useLanguage();
 
   useEffect(() => {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
@@ -100,7 +102,7 @@ function PaperDetail() {
 
         <header className="mb-12 animate-fade-up max-w-3xl">
           <div className="font-mono text-xs text-muted-foreground mb-6 flex flex-wrap items-center gap-3">
-            <span>{formatDateShort(paper.publishedDate)}</span>
+            <span>{formatDateShort(paper.publishedDate, lang)}</span>
             <span className="text-border">/</span>
             <span>{t("paper.readingMin", readingMinutes)}</span>
             <span className="text-border">/</span>
@@ -231,7 +233,7 @@ function PdfPreview({
         ) : (
           <iframe
             key={url}
-            src={`${url}#toolbar=0&navpanes=0&view=FitH`}
+            src={`${url}#toolbar=0&navpanes=0&view=Fit&page=1`}
             title={title}
             className="w-full h-full"
             onLoad={() => setLoading(false)}

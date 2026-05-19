@@ -27,15 +27,15 @@ export function languageLabel(lang: PaperLanguage): string {
   return "Italiano e Inglese";
 }
 
-export function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("it-IT", {
+export function formatDate(iso: string, lang: "it" | "en" = "it"): string {
+  return new Date(iso).toLocaleDateString(lang === "en" ? "en-GB" : "it-IT", {
     month: "long",
     year: "numeric",
   });
 }
 
-export function formatDateShort(iso: string): string {
-  return new Date(iso).toLocaleDateString("it-IT", {
+export function formatDateShort(iso: string, lang: "it" | "en" = "it"): string {
+  return new Date(iso).toLocaleDateString(lang === "en" ? "en-GB" : "it-IT", {
     day: "2-digit",
     month: "short",
     year: "numeric",
