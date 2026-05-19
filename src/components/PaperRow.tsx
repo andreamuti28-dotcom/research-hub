@@ -31,11 +31,11 @@ export function PaperRow({ paper }: { paper: Paper }) {
       <div>
         <Link to="/paper/$slug" params={{ slug: paper.slug }} className="block">
           <h3 className="text-2xl font-display font-bold tracking-tight mb-4 group-hover:text-primary transition-colors text-balance pr-16">
-            {paper.title}
+            {title}
           </h3>
         </Link>
         <p className="text-muted-foreground max-w-[65ch] mb-8 leading-relaxed">
-          {paper.abstract}
+          {abstract}
         </p>
         <div className="flex flex-wrap gap-3 font-display text-[11px] font-bold uppercase tracking-wider">
           <Link
