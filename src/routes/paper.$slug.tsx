@@ -111,10 +111,10 @@ function PaperDetail() {
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
-            {paper.title}
+            {tTitle}
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed text-pretty max-w-[60ch]">
-            {paper.abstract}
+            {tAbstract}
           </p>
         </header>
 
