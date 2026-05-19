@@ -1,9 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import type { Paper } from "@/data/papers";
-import { formatDate, formatLanguage } from "@/data/papers";
+import { formatDate } from "@/data/papers";
 import { useT } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
+import { LanguageFlags } from "@/components/Flag";
 
 export function PaperRow({ paper }: { paper: Paper }) {
   const t = useT();
