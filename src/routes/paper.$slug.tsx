@@ -12,6 +12,7 @@ import {
   estimateReadingMinutes,
 } from "@/lib/paper-reading";
 import { useT } from "@/lib/i18n";
+import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
 
 
