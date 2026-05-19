@@ -55,66 +55,113 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;");
 }
 
-/** Renders inline KaTeX ($...$) and block ($$...$$). Escapes the rest. */
-export function renderMathHtml(text: string): string {
-  const blockRegex = /\$\$([^$]+)\$\$/g;
-  const inlineRegex = /\$([^$\n]+)\$/g;
+type MathSeg =
+  | { kind: "text"; text: string }
+  | { kind: "math"; tex: string; display: boolean };
 
-  let html = "";
-  let lastIndex = 0;
+/**
+ * Splits text into plain segments and math segments.
+ * Supports: $$...$$, \[...\], \(...\), $...$, and \begin{env}...\end{env}.
+ */
+function tokenizeMath(text: string): MathSeg[] {
+  const segs: MathSeg[] = [];
+  let i = 0;
+  const push = (s: string) => {
+    if (!s) return;
+    const last = segs[segs.length - 1];
+    if (last && last.kind === "text") last.text += s;
+    else segs.push({ kind: "text", text: s });
+  };
 
-  // Block math first
-  const blockMatches: { start: number; end: number; tex: string }[] = [];
-  let m: RegExpExecArray | null;
-  while ((m = blockRegex.exec(text))) {
-    blockMatches.push({ start: m.index, end: blockRegex.lastIndex, tex: m[1] });
-  }
+  while (i < text.length) {
+    const ch = text[i];
 
-  const segments: { text: string; math?: { tex: string; display: boolean } }[] =
-    [];
-  let cursor = 0;
-  for (const bm of blockMatches) {
-    if (bm.start > cursor) segments.push({ text: text.slice(cursor, bm.start) });
-    segments.push({ text: "", math: { tex: bm.tex, display: true } });
-    cursor = bm.end;
-  }
-  if (cursor < text.length) segments.push({ text: text.slice(cursor) });
-
-  for (const seg of segments) {
-    if (seg.math) {
-      try {
-        html += katex.renderToString(seg.math.tex, {
-          displayMode: seg.math.display,
-          throwOnError: false,
-        });
-      } catch {
-        html += escapeHtml(`$$${seg.math.tex}$$`);
+    // $$ ... $$ (display, multiline)
+    if (ch === "$" && text[i + 1] === "$") {
+      const end = text.indexOf("$$", i + 2);
+      if (end !== -1) {
+        segs.push({ kind: "math", tex: text.slice(i + 2, end), display: true });
+        i = end + 2;
+        continue;
       }
-      continue;
     }
-    // inline math within text
-    let innerCursor = 0;
-    let im: RegExpExecArray | null;
-    inlineRegex.lastIndex = 0;
-    while ((im = inlineRegex.exec(seg.text))) {
-      html += escapeHtml(seg.text.slice(innerCursor, im.index));
-      try {
-        html += katex.renderToString(im[1], {
-          displayMode: false,
-          throwOnError: false,
-        });
-      } catch {
-        html += escapeHtml(`$${im[1]}$`);
+    // \[ ... \] (display)
+    if (ch === "\\" && text[i + 1] === "[") {
+      const end = text.indexOf("\\]", i + 2);
+      if (end !== -1) {
+        segs.push({ kind: "math", tex: text.slice(i + 2, end), display: true });
+        i = end + 2;
+        continue;
       }
-      innerCursor = inlineRegex.lastIndex;
     }
-    html += escapeHtml(seg.text.slice(innerCursor));
-  }
+    // \( ... \) (inline)
+    if (ch === "\\" && text[i + 1] === "(") {
+      const end = text.indexOf("\\)", i + 2);
+      if (end !== -1) {
+        segs.push({ kind: "math", tex: text.slice(i + 2, end), display: false });
+        i = end + 2;
+        continue;
+      }
+    }
+    // \begin{env} ... \end{env} (display)
+    if (ch === "\\" && text.startsWith("\\begin{", i)) {
+      const nameEnd = text.indexOf("}", i + 7);
+      if (nameEnd !== -1) {
+        const env = text.slice(i + 7, nameEnd);
+        const closer = `\\end{${env}}`;
+        const end = text.indexOf(closer, nameEnd + 1);
+        if (end !== -1) {
+          segs.push({
+            kind: "math",
+            tex: text.slice(i, end + closer.length),
+            display: true,
+          });
+          i = end + closer.length;
+          continue;
+        }
+      }
+    }
+    // $ ... $ (inline, single line)
+    if (ch === "$") {
+      const rest = text.slice(i + 1);
+      const m = /^([^$\n]+)\$/.exec(rest);
+      if (m) {
+        segs.push({ kind: "math", tex: m[1], display: false });
+        i += 1 + m[0].length;
+        continue;
+      }
+    }
 
-  // preserve single line breaks within paragraph
-  return html.replace(/\n/g, "<br />");
-  void lastIndex;
+    push(ch);
+    i++;
+  }
+  return segs;
 }
+
+/** Renders inline/block KaTeX. Escapes everything else. */
+export function renderMathHtml(text: string): string {
+  const segs = tokenizeMath(text);
+  let html = "";
+  for (const seg of segs) {
+    if (seg.kind === "math") {
+      try {
+        html += katex.renderToString(seg.tex, {
+          displayMode: seg.display,
+          throwOnError: false,
+          strict: "ignore",
+          trust: false,
+          output: "html",
+        });
+      } catch {
+        html += escapeHtml(seg.tex);
+      }
+    } else {
+      html += escapeHtml(seg.text);
+    }
+  }
+  return html.replace(/\n/g, "<br />");
+}
+
 
 export function estimateReadingMinutes(text: string): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
