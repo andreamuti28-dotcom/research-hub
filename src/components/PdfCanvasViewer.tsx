@@ -29,7 +29,7 @@ export function PdfCanvasViewer({ url }: { url: string }) {
     (async () => {
       try {
         const pdfjs = await loadPdfjs();
-        const doc = (await pdfjs.getDocument({ url }).promise) as PdfDoc;
+        const doc = await pdfjs.getDocument({ url }).promise;
         if (cancelled) return;
 
         const container = containerRef.current;
