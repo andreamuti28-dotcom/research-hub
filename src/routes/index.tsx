@@ -12,6 +12,8 @@ import { useTranslated } from "@/hooks/use-translated";
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
   queryFn: () => listPublishedPapers(),
+  staleTime: 0,
+  refetchOnMount: "always" as const,
 };
 
 export const Route = createFileRoute("/")({
@@ -47,7 +49,11 @@ function Index() {
     settings.heroTitle,
     settings.heroIntro,
   ]);
-  const latest = papers.slice(0, 3);
+  const featured = settings.featuredPaperIds
+    .map((id) => papers.find((p) => p.id === id))
+    .filter((p): p is (typeof papers)[number] => Boolean(p));
+  const featuredIds = new Set(featured.map((p) => p.id));
+  const latest = papers.filter((p) => !featuredIds.has(p.id)).slice(0, 3);
   const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
