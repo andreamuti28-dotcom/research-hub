@@ -73,6 +73,13 @@ function AdminSettingsPage() {
     enabled: adminQuery.data?.isAdmin === true,
   });
 
+  const listPapersFn = useServerFn(listPublishedPapers);
+  const papersQuery = useQuery({
+    queryKey: ["papers", "published"],
+    queryFn: () => listPapersFn(),
+    enabled: adminQuery.data?.isAdmin === true,
+  });
+
   const [form, setForm] = useState<FormState | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -86,6 +93,7 @@ function AdminSettingsPage() {
         heroIntro: settingsQuery.data.heroIntro,
         linkedinUrl: settingsQuery.data.linkedinUrl,
         portraitUrl: settingsQuery.data.portraitUrl,
+        featuredPaperIds: settingsQuery.data.featuredPaperIds,
       });
     }
   }, [settingsQuery.data, form]);
@@ -95,6 +103,7 @@ function AdminSettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "site-settings"] });
       queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["papers"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     },
