@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
 import { checkAdminStatus } from "@/lib/admin-papers.functions";
+import { listPublishedPapers } from "@/lib/papers.functions";
 import {
   getSiteSettings,
   updateSiteSettings,
@@ -33,6 +34,7 @@ type FormState = {
   heroIntro: string;
   linkedinUrl: string;
   portraitUrl: string | null;
+  featuredPaperIds: string[];
 };
 
 function AdminSettingsPage() {
