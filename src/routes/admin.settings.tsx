@@ -277,6 +277,49 @@ function AdminSettingsPage() {
           </Field>
         </section>
 
+        {/* Paper in evidenza */}
+        <section className="border border-surface-dark-muted p-6 space-y-5">
+          <div>
+            <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+              Paper in evidenza (homepage)
+            </h2>
+            <p className="font-mono text-[10px] text-surface-dark-foreground/50 mt-2 leading-relaxed">
+              Seleziona fino a 3 paper da mettere in evidenza sopra la sezione "Ultimi Paper".
+              Lascia vuoto per nascondere uno slot.
+            </p>
+          </div>
+          {[0, 1, 2].map((slot) => {
+            const value = form.featuredPaperIds[slot] ?? "";
+            const otherSelected = form.featuredPaperIds.filter((_, i) => i !== slot);
+            return (
+              <Field key={slot} label={`Slot ${slot + 1}`}>
+                <select
+                  value={value}
+                  onChange={(e) => {
+                    const next = [...form.featuredPaperIds];
+                    next[slot] = e.target.value;
+                    setForm({
+                      ...form,
+                      featuredPaperIds: next.filter((id) => id && id.length > 0),
+                    });
+                  }}
+                  className={inputCls}
+                >
+                  <option value="">— Nessuno —</option>
+                  {(papersQuery.data ?? [])
+                    .filter((p) => p.id === value || !otherSelected.includes(p.id))
+                    .map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.title}
+                      </option>
+                    ))}
+                </select>
+              </Field>
+            );
+          })}
+        </section>
+
+
         <div className="flex items-center gap-4">
           <button
             type="submit"
