@@ -20,6 +20,7 @@ export type SiteSettings = {
   heroIntro: string;
   linkedinUrl: string;
   portraitUrl: string | null;
+  featuredPaperIds: string[];
 };
 
 const DEFAULTS: SiteSettings = {
@@ -30,23 +31,26 @@ const DEFAULTS: SiteSettings = {
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
   linkedinUrl: "https://www.linkedin.com",
   portraitUrl: null,
+  featuredPaperIds: [],
 };
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(
   async (): Promise<SiteSettings> => {
     const { data, error } = await supabaseAdmin
       .from("site_settings")
-      .select("name, hero_title, hero_intro, linkedin_url, portrait_url")
+      .select("name, hero_title, hero_intro, linkedin_url, portrait_url, featured_paper_ids")
       .eq("singleton", true)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!data) return DEFAULTS;
+    const raw = (data as { featured_paper_ids?: string[] | null }).featured_paper_ids;
     return {
       name: data.name ?? DEFAULTS.name,
       heroTitle: data.hero_title ?? DEFAULTS.heroTitle,
       heroIntro: data.hero_intro ?? DEFAULTS.heroIntro,
       linkedinUrl: data.linkedin_url ?? DEFAULTS.linkedinUrl,
       portraitUrl: data.portrait_url ?? null,
+      featuredPaperIds: Array.isArray(raw) ? raw.slice(0, 3) : [],
     };
   },
 );
@@ -57,6 +61,7 @@ const updateSchema = z.object({
   heroIntro: z.string().trim().min(1).max(2000),
   linkedinUrl: z.string().trim().url().max(500),
   portraitUrl: z.string().trim().url().max(1000).nullable().optional(),
+  featuredPaperIds: z.array(z.string().uuid()).max(3).default([]),
 });
 
 export const updateSiteSettings = createServerFn({ method: "POST" })
@@ -76,6 +81,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       hero_intro: data.heroIntro,
       linkedin_url: data.linkedinUrl,
       portrait_url: data.portraitUrl ?? null,
+      featured_paper_ids: data.featuredPaperIds,
     };
 
     if (existing) {

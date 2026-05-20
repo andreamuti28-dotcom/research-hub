@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
 import { checkAdminStatus } from "@/lib/admin-papers.functions";
+import { listPublishedPapers } from "@/lib/papers.functions";
 import {
   getSiteSettings,
   updateSiteSettings,
@@ -33,6 +34,7 @@ type FormState = {
   heroIntro: string;
   linkedinUrl: string;
   portraitUrl: string | null;
+  featuredPaperIds: string[];
 };
 
 function AdminSettingsPage() {
@@ -71,6 +73,13 @@ function AdminSettingsPage() {
     enabled: adminQuery.data?.isAdmin === true,
   });
 
+  const listPapersFn = useServerFn(listPublishedPapers);
+  const papersQuery = useQuery({
+    queryKey: ["papers", "published"],
+    queryFn: () => listPapersFn(),
+    enabled: adminQuery.data?.isAdmin === true,
+  });
+
   const [form, setForm] = useState<FormState | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -84,6 +93,7 @@ function AdminSettingsPage() {
         heroIntro: settingsQuery.data.heroIntro,
         linkedinUrl: settingsQuery.data.linkedinUrl,
         portraitUrl: settingsQuery.data.portraitUrl,
+        featuredPaperIds: settingsQuery.data.featuredPaperIds,
       });
     }
   }, [settingsQuery.data, form]);
@@ -93,6 +103,7 @@ function AdminSettingsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "site-settings"] });
       queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["papers"] });
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     },
@@ -153,7 +164,10 @@ function AdminSettingsPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form) return;
-    saveMutation.mutate(form);
+    saveMutation.mutate({
+      ...form,
+      featuredPaperIds: form.featuredPaperIds.filter((id) => id && id.length > 0),
+    });
   };
 
   return (
@@ -265,6 +279,50 @@ function AdminSettingsPage() {
             />
           </Field>
         </section>
+
+        {/* Paper in evidenza */}
+        <section className="border border-surface-dark-muted p-6 space-y-5">
+          <div>
+            <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+              Paper in evidenza (homepage)
+            </h2>
+            <p className="font-mono text-[10px] text-surface-dark-foreground/50 mt-2 leading-relaxed">
+              Seleziona fino a 3 paper da mettere in evidenza sopra la sezione "Ultimi Paper".
+              Lascia vuoto per nascondere uno slot.
+            </p>
+          </div>
+          {[0, 1, 2].map((slot) => {
+            const value = form.featuredPaperIds[slot] ?? "";
+            const otherSelected = form.featuredPaperIds.filter((_, i) => i !== slot);
+            return (
+              <Field key={slot} label={`Slot ${slot + 1}`}>
+                <select
+                  value={value}
+                  onChange={(e) => {
+                    const next: string[] = [
+                      form.featuredPaperIds[0] ?? "",
+                      form.featuredPaperIds[1] ?? "",
+                      form.featuredPaperIds[2] ?? "",
+                    ];
+                    next[slot] = e.target.value;
+                    setForm({ ...form, featuredPaperIds: next });
+                  }}
+                  className={inputCls}
+                >
+                  <option value="">— Nessuno —</option>
+                  {(papersQuery.data ?? [])
+                    .filter((p) => p.id === value || !otherSelected.includes(p.id))
+                    .map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.title}
+                      </option>
+                    ))}
+                </select>
+              </Field>
+            );
+          })}
+        </section>
+
 
         <div className="flex items-center gap-4">
           <button

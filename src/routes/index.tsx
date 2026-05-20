@@ -12,6 +12,8 @@ import { useTranslated } from "@/hooks/use-translated";
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
   queryFn: () => listPublishedPapers(),
+  staleTime: 0,
+  refetchOnMount: "always" as const,
 };
 
 export const Route = createFileRoute("/")({
@@ -47,7 +49,11 @@ function Index() {
     settings.heroTitle,
     settings.heroIntro,
   ]);
-  const latest = papers.slice(0, 3);
+  const featured = settings.featuredPaperIds
+    .map((id) => papers.find((p) => p.id === id))
+    .filter((p): p is (typeof papers)[number] => Boolean(p));
+  const featuredIds = new Set(featured.map((p) => p.id));
+  const latest = papers.filter((p) => !featuredIds.has(p.id)).slice(0, 3);
   const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
@@ -81,6 +87,26 @@ function Index() {
           />
         </div>
       </section>
+
+      {featured.length > 0 && (
+        <section className="border-t border-border bg-background py-20 md:py-24">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="mb-12 md:mb-16">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                {t("home.featuredKicker")}
+              </div>
+              <h2 className="text-3xl font-display font-bold tracking-tighter italic">
+                {t("home.featuredTitle")}
+              </h2>
+            </div>
+            <div className="space-y-px bg-border border border-border">
+              {featured.map((p) => (
+                <PaperRow key={p.id} paper={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
