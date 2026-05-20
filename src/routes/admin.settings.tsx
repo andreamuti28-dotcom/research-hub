@@ -164,7 +164,10 @@ function AdminSettingsPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form) return;
-    saveMutation.mutate(form);
+    saveMutation.mutate({
+      ...form,
+      featuredPaperIds: form.featuredPaperIds.filter((id) => id && id.length > 0),
+    });
   };
 
   return (
