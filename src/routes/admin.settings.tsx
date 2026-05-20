@@ -299,12 +299,13 @@ function AdminSettingsPage() {
                 <select
                   value={value}
                   onChange={(e) => {
-                    const next = [...form.featuredPaperIds];
+                    const next: string[] = [
+                      form.featuredPaperIds[0] ?? "",
+                      form.featuredPaperIds[1] ?? "",
+                      form.featuredPaperIds[2] ?? "",
+                    ];
                     next[slot] = e.target.value;
-                    setForm({
-                      ...form,
-                      featuredPaperIds: next.filter((id) => id && id.length > 0),
-                    });
+                    setForm({ ...form, featuredPaperIds: next });
                   }}
                   className={inputCls}
                 >
