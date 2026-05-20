@@ -67,6 +67,7 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          featured_paper_ids: string[]
           hero_intro: string
           hero_title: string
           id: string
@@ -77,6 +78,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
           id?: string
@@ -87,6 +89,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
           id?: string
