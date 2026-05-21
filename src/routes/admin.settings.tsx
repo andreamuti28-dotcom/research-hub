@@ -42,6 +42,12 @@ type FormState = {
   featuredPaperIds: string[];
   aboutRole: string;
   aboutBio: string;
+  aboutKicker: string;
+  aboutLanguagesLabel: string;
+  aboutSoftwareLabel: string;
+  aboutHobbiesLabel: string;
+  aboutPanelBg: string;
+  aboutPanelFg: string;
   aboutLanguages: SkillItem[];
   aboutSoftware: SkillItem[];
   aboutHobbies: HobbyItem[];
