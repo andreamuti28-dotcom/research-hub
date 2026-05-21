@@ -3,6 +3,11 @@ import { useLanguage } from "@/hooks/use-language";
 const dict = {
   it: {
     "nav.archive": "Archivio",
+    "nav.about": "About",
+    "about.kicker": "Chi sono",
+    "about.languages": "Lingue",
+    "about.software": "Software",
+    "about.hobbies": "Hobby",
     "nav.userArea": "Area Riservata",
     "nav.userShort": "Utente",
     "footer.research": "Ricerca Autonoma",
@@ -48,6 +53,11 @@ const dict = {
   },
   en: {
     "nav.archive": "Archive",
+    "nav.about": "About",
+    "about.kicker": "About me",
+    "about.languages": "Languages",
+    "about.software": "Software",
+    "about.hobbies": "Hobbies",
     "nav.userArea": "Members Area",
     "nav.userShort": "User",
     "footer.research": "Independent Research",

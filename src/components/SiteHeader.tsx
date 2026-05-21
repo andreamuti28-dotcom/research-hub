@@ -24,6 +24,13 @@ export function SiteHeader() {
           >
             {t("nav.archive")}
           </Link>
+          <Link
+            to="/about"
+            className="hover:text-primary transition-colors"
+            activeProps={{ className: "text-primary" }}
+          >
+            {t("nav.about")}
+          </Link>
           <LanguageToggle />
           <ThemeToggle />
           <Link
