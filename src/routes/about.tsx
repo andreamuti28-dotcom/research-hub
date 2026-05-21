@@ -4,7 +4,6 @@ import portrait from "@/assets/portrait.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
-import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { getHobbyIcon } from "@/lib/hobby-icons";
 
@@ -31,8 +30,14 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
-  const t = useT();
-  const [bio, role] = useTranslated([settings.aboutBio, settings.aboutRole]);
+  const [bio, role, kicker, langLabel, softLabel, hobbyLabel] = useTranslated([
+    settings.aboutBio,
+    settings.aboutRole,
+    settings.aboutKicker,
+    settings.aboutLanguagesLabel,
+    settings.aboutSoftwareLabel,
+    settings.aboutHobbiesLabel,
+  ]);
   const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
@@ -51,7 +56,7 @@ function AboutPage() {
           </div>
           <div className="animate-fade-up">
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-              {t("about.kicker")}
+              {kicker}
             </div>
             <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter italic mb-3">
               {settings.name}
@@ -68,25 +73,28 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Yellow band: skills */}
-      <section className="bg-primary text-primary-foreground py-16 md:py-24">
+      {/* Skills band (color editable from admin) */}
+      <section
+        className="py-16 md:py-24"
+        style={{ backgroundColor: settings.aboutPanelBg, color: settings.aboutPanelFg }}
+      >
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-12 md:gap-10">
           {/* Languages */}
           <div>
             <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {t("about.languages")}
+              {langLabel}
             </h2>
-            <div className="w-12 h-px bg-primary-foreground/60 mb-8" />
+            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
             <ul className="space-y-4">
               {settings.aboutLanguages.map((l, i) => (
                 <li key={i} className="flex items-center gap-4">
                   <span className="font-display text-xs font-bold uppercase tracking-widest w-24 shrink-0">
                     {l.name}
                   </span>
-                  <div className="flex-1 h-2 bg-primary-foreground/25 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: settings.aboutPanelFg, opacity: 0.25 }}>
                     <div
-                      className="h-full bg-primary-foreground rounded-full transition-all"
-                      style={{ width: `${l.level}%` }}
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${l.level}%`, backgroundColor: settings.aboutPanelFg, opacity: 1 }}
                     />
                   </div>
                 </li>
@@ -100,9 +108,9 @@ function AboutPage() {
           {/* Software */}
           <div>
             <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {t("about.software")}
+              {softLabel}
             </h2>
-            <div className="w-12 h-px bg-primary-foreground/60 mb-8" />
+            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
             <div className="grid grid-cols-3 gap-x-2 gap-y-6">
               {settings.aboutSoftware.map((s, i) => (
                 <div key={i} className="flex flex-col items-center text-center">
@@ -121,15 +129,18 @@ function AboutPage() {
           {/* Hobbies */}
           <div>
             <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {t("about.hobbies")}
+              {hobbyLabel}
             </h2>
-            <div className="w-12 h-px bg-primary-foreground/60 mb-8" />
+            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
             <ul className="flex flex-col items-start gap-5">
               {settings.aboutHobbies.map((h, i) => {
                 const Icon = getHobbyIcon(h.icon);
                 return (
                   <li key={i} className="flex items-center gap-4">
-                    <span className="w-14 h-14 rounded-full border-2 border-primary-foreground flex items-center justify-center">
+                    <span
+                      className="w-14 h-14 rounded-full border-2 flex items-center justify-center"
+                      style={{ borderColor: settings.aboutPanelFg }}
+                    >
                       <Icon className="w-6 h-6" />
                     </span>
                     <span className="font-display text-xs font-bold uppercase tracking-widest">

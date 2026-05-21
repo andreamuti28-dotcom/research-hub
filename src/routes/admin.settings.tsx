@@ -42,6 +42,12 @@ type FormState = {
   featuredPaperIds: string[];
   aboutRole: string;
   aboutBio: string;
+  aboutKicker: string;
+  aboutLanguagesLabel: string;
+  aboutSoftwareLabel: string;
+  aboutHobbiesLabel: string;
+  aboutPanelBg: string;
+  aboutPanelFg: string;
   aboutLanguages: SkillItem[];
   aboutSoftware: SkillItem[];
   aboutHobbies: HobbyItem[];
@@ -106,6 +112,12 @@ function AdminSettingsPage() {
         featuredPaperIds: settingsQuery.data.featuredPaperIds,
         aboutRole: settingsQuery.data.aboutRole,
         aboutBio: settingsQuery.data.aboutBio,
+        aboutKicker: settingsQuery.data.aboutKicker,
+        aboutLanguagesLabel: settingsQuery.data.aboutLanguagesLabel,
+        aboutSoftwareLabel: settingsQuery.data.aboutSoftwareLabel,
+        aboutHobbiesLabel: settingsQuery.data.aboutHobbiesLabel,
+        aboutPanelBg: settingsQuery.data.aboutPanelBg,
+        aboutPanelFg: settingsQuery.data.aboutPanelFg,
         aboutLanguages: settingsQuery.data.aboutLanguages,
         aboutSoftware: settingsQuery.data.aboutSoftware,
         aboutHobbies: settingsQuery.data.aboutHobbies,
@@ -188,10 +200,10 @@ function AdminSettingsPage() {
   return (
     <AdminShell title="Profilo & Sito">
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-10">
-        {/* Foto homepage */}
+        {/* Foto profilo (About) */}
         <section className="border border-surface-dark-muted p-6 space-y-4">
           <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
-            Foto homepage (sotto "LinkedIn Profile")
+            Foto profilo (pagina About)
           </h2>
           <div className="flex items-start gap-6">
             <div className="w-32 aspect-[4/5] bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
@@ -370,15 +382,73 @@ function AdminSettingsPage() {
             />
           </Field>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label='Etichetta sopra il nome (es. "Chi sono")'>
+              <input
+                type="text"
+                value={form.aboutKicker}
+                onChange={(e) => setForm({ ...form, aboutKicker: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+            <Field label="Titolo sezione Lingue">
+              <input
+                type="text"
+                value={form.aboutLanguagesLabel}
+                onChange={(e) => setForm({ ...form, aboutLanguagesLabel: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+            <Field label="Titolo sezione Software">
+              <input
+                type="text"
+                value={form.aboutSoftwareLabel}
+                onChange={(e) => setForm({ ...form, aboutSoftwareLabel: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+            <Field label="Titolo sezione Hobby">
+              <input
+                type="text"
+                value={form.aboutHobbiesLabel}
+                onChange={(e) => setForm({ ...form, aboutHobbiesLabel: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Colore sfondo pannello (lingue/software/hobby)">
+              <ColorField
+                value={form.aboutPanelBg}
+                onChange={(v) => setForm({ ...form, aboutPanelBg: v })}
+              />
+            </Field>
+            <Field label="Colore testo pannello">
+              <ColorField
+                value={form.aboutPanelFg}
+                onChange={(v) => setForm({ ...form, aboutPanelFg: v })}
+              />
+            </Field>
+          </div>
+
           <SkillListEditor
-            label="Lingue"
+            label="Lingue (voci)"
             items={form.aboutLanguages}
             onChange={(items) => setForm({ ...form, aboutLanguages: items })}
             placeholder="es. Italiano"
           />
 
           <SkillListEditor
-            label="Software"
+            label="Software (voci)"
             items={form.aboutSoftware}
             onChange={(items) => setForm({ ...form, aboutSoftware: items })}
             placeholder="es. Illustrator"
@@ -418,7 +488,7 @@ function AdminSettingsPage() {
 }
 
 const inputCls =
-  "w-full bg-surface-dark border border-surface-dark-muted px-3 py-2 text-background font-serif text-sm focus:outline-none focus:border-background";
+  "w-full bg-white border border-surface-dark-muted px-3 py-2 text-neutral-900 font-serif text-sm focus:outline-none focus:border-primary placeholder:text-neutral-400";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -428,6 +498,33 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       </span>
       {children}
     </label>
+  );
+}
+
+function ColorField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const normalize = (v: string) => {
+    const s = v.trim();
+    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s)) return s;
+    return value;
+  };
+  return (
+    <div className="flex items-center gap-3">
+      <input
+        type="color"
+        value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : "#000000"}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-9 w-12 cursor-pointer rounded border border-surface-dark-muted bg-white"
+      />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={(e) => onChange(normalize(e.target.value))}
+        placeholder="#000000"
+        className={`${inputCls} flex-1`}
+        maxLength={7}
+      />
+    </div>
   );
 }
 

@@ -26,6 +26,12 @@ export type SiteSettings = {
   featuredPaperIds: string[];
   aboutRole: string;
   aboutBio: string;
+  aboutKicker: string;
+  aboutLanguagesLabel: string;
+  aboutSoftwareLabel: string;
+  aboutHobbiesLabel: string;
+  aboutPanelBg: string;
+  aboutPanelFg: string;
   aboutLanguages: SkillItem[];
   aboutSoftware: SkillItem[];
   aboutHobbies: HobbyItem[];
@@ -43,6 +49,12 @@ const DEFAULTS: SiteSettings = {
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software: come gli strumenti che usiamo modellano il nostro comportamento collettivo.",
+  aboutKicker: "Chi sono",
+  aboutLanguagesLabel: "Lingue",
+  aboutSoftwareLabel: "Software",
+  aboutHobbiesLabel: "Hobby",
+  aboutPanelBg: "#f5c518",
+  aboutPanelFg: "#000000",
   aboutLanguages: [
     { name: "Italiano", level: 100 },
     { name: "Inglese", level: 85 },
@@ -88,13 +100,15 @@ function coerceHobbies(v: unknown): HobbyItem[] {
     .filter((x): x is HobbyItem => x !== null);
 }
 
+function str(v: unknown, fallback: string): string {
+  return typeof v === "string" && v.trim() ? v : fallback;
+}
+
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(
   async (): Promise<SiteSettings> => {
     const { data, error } = await supabaseAdmin
       .from("site_settings")
-      .select(
-        "name, hero_title, hero_intro, linkedin_url, portrait_url, featured_paper_ids, about_role, about_bio, about_languages, about_software, about_hobbies",
-      )
+      .select("*")
       .eq("singleton", true)
       .maybeSingle();
     if (error) throw new Error(error.message);
@@ -102,14 +116,20 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
     const raw = (data as { featured_paper_ids?: string[] | null }).featured_paper_ids;
     const d = data as Record<string, unknown>;
     return {
-      name: data.name ?? DEFAULTS.name,
-      heroTitle: data.hero_title ?? DEFAULTS.heroTitle,
-      heroIntro: data.hero_intro ?? DEFAULTS.heroIntro,
-      linkedinUrl: data.linkedin_url ?? DEFAULTS.linkedinUrl,
-      portraitUrl: data.portrait_url ?? null,
+      name: str(d.name, DEFAULTS.name),
+      heroTitle: str(d.hero_title, DEFAULTS.heroTitle),
+      heroIntro: str(d.hero_intro, DEFAULTS.heroIntro),
+      linkedinUrl: str(d.linkedin_url, DEFAULTS.linkedinUrl),
+      portraitUrl: (d.portrait_url as string | null) ?? null,
       featuredPaperIds: Array.isArray(raw) ? raw.slice(0, 3) : [],
-      aboutRole: (typeof d.about_role === "string" && d.about_role) || DEFAULTS.aboutRole,
-      aboutBio: (typeof d.about_bio === "string" && d.about_bio) || DEFAULTS.aboutBio,
+      aboutRole: str(d.about_role, DEFAULTS.aboutRole),
+      aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
+      aboutKicker: str(d.about_kicker, DEFAULTS.aboutKicker),
+      aboutLanguagesLabel: str(d.about_languages_label, DEFAULTS.aboutLanguagesLabel),
+      aboutSoftwareLabel: str(d.about_software_label, DEFAULTS.aboutSoftwareLabel),
+      aboutHobbiesLabel: str(d.about_hobbies_label, DEFAULTS.aboutHobbiesLabel),
+      aboutPanelBg: str(d.about_panel_bg, DEFAULTS.aboutPanelBg),
+      aboutPanelFg: str(d.about_panel_fg, DEFAULTS.aboutPanelFg),
       aboutLanguages: coerceSkills(d.about_languages),
       aboutSoftware: coerceSkills(d.about_software),
       aboutHobbies: coerceHobbies(d.about_hobbies),
@@ -125,6 +145,10 @@ const hobbySchema = z.object({
   name: z.string().trim().min(1).max(60),
   icon: z.string().trim().min(1).max(40),
 });
+const hexColor = z
+  .string()
+  .trim()
+  .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Colore non valido");
 
 const updateSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -135,6 +159,12 @@ const updateSchema = z.object({
   featuredPaperIds: z.array(z.string().uuid()).max(3).default([]),
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
+  aboutKicker: z.string().trim().min(1).max(60),
+  aboutLanguagesLabel: z.string().trim().min(1).max(60),
+  aboutSoftwareLabel: z.string().trim().min(1).max(60),
+  aboutHobbiesLabel: z.string().trim().min(1).max(60),
+  aboutPanelBg: hexColor,
+  aboutPanelFg: hexColor,
   aboutLanguages: z.array(skillSchema).max(20).default([]),
   aboutSoftware: z.array(skillSchema).max(30).default([]),
   aboutHobbies: z.array(hobbySchema).max(20).default([]),
@@ -160,6 +190,12 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       featured_paper_ids: data.featuredPaperIds,
       about_role: data.aboutRole,
       about_bio: data.aboutBio,
+      about_kicker: data.aboutKicker,
+      about_languages_label: data.aboutLanguagesLabel,
+      about_software_label: data.aboutSoftwareLabel,
+      about_hobbies_label: data.aboutHobbiesLabel,
+      about_panel_bg: data.aboutPanelBg,
+      about_panel_fg: data.aboutPanelFg,
       about_languages: data.aboutLanguages,
       about_software: data.aboutSoftware,
       about_hobbies: data.aboutHobbies,
