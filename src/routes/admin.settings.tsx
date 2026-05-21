@@ -501,6 +501,33 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function ColorField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const normalize = (v: string) => {
+    const s = v.trim();
+    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s)) return s;
+    return value;
+  };
+  return (
+    <div className="flex items-center gap-3">
+      <input
+        type="color"
+        value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : "#000000"}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-9 w-12 cursor-pointer rounded border border-surface-dark-muted bg-white"
+      />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={(e) => onChange(normalize(e.target.value))}
+        placeholder="#000000"
+        className={`${inputCls} flex-1`}
+        maxLength={7}
+      />
+    </div>
+  );
+}
+
 function SkillListEditor({
   label,
   items,
