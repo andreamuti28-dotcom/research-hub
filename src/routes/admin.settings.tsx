@@ -431,3 +431,138 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function SkillListEditor({
+  label,
+  items,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  items: SkillItem[];
+  onChange: (next: SkillItem[]) => void;
+  placeholder?: string;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+        {label}
+      </div>
+      <div className="space-y-2">
+        {items.map((it, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <input
+              type="text"
+              value={it.name}
+              placeholder={placeholder}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...it, name: e.target.value };
+                onChange(next);
+              }}
+              className={`${inputCls} flex-1`}
+              maxLength={60}
+            />
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={it.level}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...it, level: Math.max(0, Math.min(100, Number(e.target.value) || 0)) };
+                onChange(next);
+              }}
+              className={`${inputCls} w-20`}
+            />
+            <span className="font-mono text-[10px] text-surface-dark-foreground/50">%</span>
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+              className="px-2 py-1 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange([...items, { name: "", level: 80 }])}
+        className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
+      >
+        + Aggiungi
+      </button>
+    </div>
+  );
+}
+
+function HobbyListEditor({
+  items,
+  onChange,
+}: {
+  items: HobbyItem[];
+  onChange: (next: HobbyItem[]) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+        Hobby
+      </div>
+      <div className="space-y-2">
+        {items.map((it, i) => {
+          const Icon = getHobbyIcon(it.icon);
+          return (
+            <div key={i} className="flex items-center gap-2">
+              <span className="w-9 h-9 border border-surface-dark-muted flex items-center justify-center text-background shrink-0">
+                <Icon className="w-4 h-4" />
+              </span>
+              <input
+                type="text"
+                value={it.name}
+                placeholder="es. Yoga"
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...it, name: e.target.value };
+                  onChange(next);
+                }}
+                className={`${inputCls} flex-1`}
+                maxLength={60}
+              />
+              <select
+                value={it.icon}
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...it, icon: e.target.value };
+                  onChange(next);
+                }}
+                className={`${inputCls} w-40`}
+              >
+                {HOBBY_ICON_NAMES.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                className="px-2 py-1 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+              >
+                ×
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange([...items, { name: "", icon: "Sparkles" }])}
+        className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
+      >
+        + Aggiungi
+      </button>
+    </div>
+  );
+}
+
+
