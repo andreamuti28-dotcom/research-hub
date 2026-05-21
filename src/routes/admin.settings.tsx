@@ -200,10 +200,11 @@ function AdminSettingsPage() {
   return (
     <AdminShell title="Profilo & Sito">
       <form onSubmit={handleSubmit} className="max-w-3xl space-y-10">
-        {/* Foto homepage */}
+        {/* Foto profilo (About) */}
         <section className="border border-surface-dark-muted p-6 space-y-4">
           <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
-            Foto homepage (sotto "LinkedIn Profile")
+            Foto profilo (pagina About)
+          </h2>
           </h2>
           <div className="flex items-start gap-6">
             <div className="w-32 aspect-[4/5] bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
