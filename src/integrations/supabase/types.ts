@@ -68,10 +68,15 @@ export type Database = {
       site_settings: {
         Row: {
           about_bio: string | null
+          about_certifications: Json
+          about_certifications_label: string | null
+          about_education: Json
+          about_education_label: string | null
           about_hobbies: Json
           about_hobbies_label: string | null
           about_kicker: string | null
           about_languages: Json
+          about_languages_bar_color: string | null
           about_languages_label: string | null
           about_panel_bg: string | null
           about_panel_fg: string | null
@@ -90,10 +95,15 @@ export type Database = {
         }
         Insert: {
           about_bio?: string | null
+          about_certifications?: Json
+          about_certifications_label?: string | null
+          about_education?: Json
+          about_education_label?: string | null
           about_hobbies?: Json
           about_hobbies_label?: string | null
           about_kicker?: string | null
           about_languages?: Json
+          about_languages_bar_color?: string | null
           about_languages_label?: string | null
           about_panel_bg?: string | null
           about_panel_fg?: string | null
@@ -112,10 +122,15 @@ export type Database = {
         }
         Update: {
           about_bio?: string | null
+          about_certifications?: Json
+          about_certifications_label?: string | null
+          about_education?: Json
+          about_education_label?: string | null
           about_hobbies?: Json
           about_hobbies_label?: string | null
           about_kicker?: string | null
           about_languages?: Json
+          about_languages_bar_color?: string | null
           about_languages_label?: string | null
           about_panel_bg?: string | null
           about_panel_fg?: string | null
