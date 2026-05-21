@@ -92,10 +92,10 @@ function AboutPage() {
                   <span className="font-display text-xs font-bold uppercase tracking-widest w-24 shrink-0">
                     {l.name}
                   </span>
-                  <div className="flex-1 h-2 bg-primary-foreground/25 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: settings.aboutPanelFg, opacity: 0.25 }}>
                     <div
-                      className="h-full bg-primary-foreground rounded-full transition-all"
-                      style={{ width: `${l.level}%` }}
+                      className="h-full rounded-full transition-all"
+                      style={{ width: `${l.level}%`, backgroundColor: settings.aboutPanelFg, opacity: 1 }}
                     />
                   </div>
                 </li>
@@ -109,9 +109,9 @@ function AboutPage() {
           {/* Software */}
           <div>
             <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {t("about.software")}
+              {softLabel}
             </h2>
-            <div className="w-12 h-px bg-primary-foreground/60 mb-8" />
+            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
             <div className="grid grid-cols-3 gap-x-2 gap-y-6">
               {settings.aboutSoftware.map((s, i) => (
                 <div key={i} className="flex flex-col items-center text-center">
@@ -130,15 +130,18 @@ function AboutPage() {
           {/* Hobbies */}
           <div>
             <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {t("about.hobbies")}
+              {hobbyLabel}
             </h2>
-            <div className="w-12 h-px bg-primary-foreground/60 mb-8" />
+            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
             <ul className="flex flex-col items-start gap-5">
               {settings.aboutHobbies.map((h, i) => {
                 const Icon = getHobbyIcon(h.icon);
                 return (
                   <li key={i} className="flex items-center gap-4">
-                    <span className="w-14 h-14 rounded-full border-2 border-primary-foreground flex items-center justify-center">
+                    <span
+                      className="w-14 h-14 rounded-full border-2 flex items-center justify-center"
+                      style={{ borderColor: settings.aboutPanelFg }}
+                    >
                       <Icon className="w-6 h-6" />
                     </span>
                     <span className="font-display text-xs font-bold uppercase tracking-widest">
