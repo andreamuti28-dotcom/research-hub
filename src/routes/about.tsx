@@ -199,8 +199,7 @@ function LogoTile({
   return (
     <div className="flex flex-col items-center text-center">
       <div
-        className="w-16 h-16 rounded-md bg-white/95 flex items-center justify-center overflow-hidden border"
-        style={{ borderColor: fg, borderOpacity: 0.2 } as React.CSSProperties}
+        className="w-16 h-16 rounded-md bg-white/95 flex items-center justify-center overflow-hidden border border-black/10"
       >
         {item.logoUrl ? (
           <img
