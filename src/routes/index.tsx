@@ -53,15 +53,14 @@ function Index() {
     .filter((p): p is (typeof papers)[number] => Boolean(p));
   const featuredIds = new Set(featured.map((p) => p.id));
   const latest = papers.filter((p) => !featuredIds.has(p.id)).slice(0, 3);
-  const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <section className="max-w-6xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-[1fr_400px] gap-16 items-start w-full">
+      <section className="max-w-6xl mx-auto px-6 py-20 md:py-28 w-full">
         <div className="animate-fade-up">
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-8 italic">
+          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-8 italic max-w-[20ch]">
             {heroTitle}
           </h1>
           <div className="max-w-[55ch] text-lg md:text-xl leading-relaxed text-pretty space-y-6">
@@ -76,16 +75,8 @@ function Index() {
             </a>
           </div>
         </div>
-        <div className="animate-fade-up [animation-delay:200ms]">
-          <img
-            src={portraitSrc}
-            alt={`Ritratto editoriale di ${settings.name}`}
-            width={800}
-            height={1000}
-            className="w-full aspect-[4/5] object-cover bg-surface outline-1 -outline-offset-1 outline-black/5 rounded-xs"
-          />
-        </div>
       </section>
+
 
       {featured.length > 0 && (
         <section className="border-t border-border bg-background py-20 md:py-24">
