@@ -28,6 +28,9 @@ export const Route = createFileRoute("/admin/settings")({
   component: AdminSettingsPage,
 });
 
+type SkillItem = { name: string; level: number };
+type HobbyItem = { name: string; icon: string };
+
 type FormState = {
   name: string;
   heroTitle: string;
@@ -35,6 +38,11 @@ type FormState = {
   linkedinUrl: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  aboutRole: string;
+  aboutBio: string;
+  aboutLanguages: SkillItem[];
+  aboutSoftware: SkillItem[];
+  aboutHobbies: HobbyItem[];
 };
 
 function AdminSettingsPage() {
