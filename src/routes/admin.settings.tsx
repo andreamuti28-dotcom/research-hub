@@ -10,10 +10,12 @@ import {
   getSiteSettings,
   updateSiteSettings,
   uploadSitePortrait,
+  uploadSiteLogo,
+  type LanguageItem,
+  type LogoItem,
+  type EducationItem,
 } from "@/lib/site-settings.functions";
 import { cropTo4x5Jpeg } from "@/lib/image-crop";
-import { HOBBY_ICON_NAMES, getHobbyIcon } from "@/lib/hobby-icons";
-
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
@@ -30,9 +32,6 @@ export const Route = createFileRoute("/admin/settings")({
   component: AdminSettingsPage,
 });
 
-type SkillItem = { name: string; level: number };
-type HobbyItem = { name: string; icon: string };
-
 type FormState = {
   name: string;
   heroTitle: string;
@@ -43,14 +42,17 @@ type FormState = {
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
+  aboutEducationLabel: string;
   aboutLanguagesLabel: string;
   aboutSoftwareLabel: string;
-  aboutHobbiesLabel: string;
+  aboutCertificationsLabel: string;
   aboutPanelBg: string;
   aboutPanelFg: string;
-  aboutLanguages: SkillItem[];
-  aboutSoftware: SkillItem[];
-  aboutHobbies: HobbyItem[];
+  aboutLanguagesBarColor: string;
+  aboutEducation: EducationItem[];
+  aboutLanguages: LanguageItem[];
+  aboutSoftware: LogoItem[];
+  aboutCertifications: LogoItem[];
 };
 
 function AdminSettingsPage() {
@@ -59,6 +61,7 @@ function AdminSettingsPage() {
   const getSettings = useServerFn(getSiteSettings);
   const updateFn = useServerFn(updateSiteSettings);
   const uploadPortrait = useServerFn(uploadSitePortrait);
+  const uploadLogo = useServerFn(uploadSiteLogo);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [sessionReady, setSessionReady] = useState(false);
@@ -103,24 +106,28 @@ function AdminSettingsPage() {
 
   useEffect(() => {
     if (settingsQuery.data && !form) {
+      const s = settingsQuery.data;
       setForm({
-        name: settingsQuery.data.name,
-        heroTitle: settingsQuery.data.heroTitle,
-        heroIntro: settingsQuery.data.heroIntro,
-        linkedinUrl: settingsQuery.data.linkedinUrl,
-        portraitUrl: settingsQuery.data.portraitUrl,
-        featuredPaperIds: settingsQuery.data.featuredPaperIds,
-        aboutRole: settingsQuery.data.aboutRole,
-        aboutBio: settingsQuery.data.aboutBio,
-        aboutKicker: settingsQuery.data.aboutKicker,
-        aboutLanguagesLabel: settingsQuery.data.aboutLanguagesLabel,
-        aboutSoftwareLabel: settingsQuery.data.aboutSoftwareLabel,
-        aboutHobbiesLabel: settingsQuery.data.aboutHobbiesLabel,
-        aboutPanelBg: settingsQuery.data.aboutPanelBg,
-        aboutPanelFg: settingsQuery.data.aboutPanelFg,
-        aboutLanguages: settingsQuery.data.aboutLanguages,
-        aboutSoftware: settingsQuery.data.aboutSoftware,
-        aboutHobbies: settingsQuery.data.aboutHobbies,
+        name: s.name,
+        heroTitle: s.heroTitle,
+        heroIntro: s.heroIntro,
+        linkedinUrl: s.linkedinUrl,
+        portraitUrl: s.portraitUrl,
+        featuredPaperIds: s.featuredPaperIds,
+        aboutRole: s.aboutRole,
+        aboutBio: s.aboutBio,
+        aboutKicker: s.aboutKicker,
+        aboutEducationLabel: s.aboutEducationLabel,
+        aboutLanguagesLabel: s.aboutLanguagesLabel,
+        aboutSoftwareLabel: s.aboutSoftwareLabel,
+        aboutCertificationsLabel: s.aboutCertificationsLabel,
+        aboutPanelBg: s.aboutPanelBg,
+        aboutPanelFg: s.aboutPanelFg,
+        aboutLanguagesBarColor: s.aboutLanguagesBarColor,
+        aboutEducation: s.aboutEducation,
+        aboutLanguages: s.aboutLanguages,
+        aboutSoftware: s.aboutSoftware,
+        aboutCertifications: s.aboutCertifications,
       });
     }
   }, [settingsQuery.data, form]);
@@ -199,7 +206,7 @@ function AdminSettingsPage() {
 
   return (
     <AdminShell title="Profilo & Sito">
-      <form onSubmit={handleSubmit} className="max-w-3xl space-y-10">
+      <form onSubmit={handleSubmit} className="max-w-5xl space-y-10">
         {/* Foto profilo (About) */}
         <section className="border border-surface-dark-muted p-6 space-y-4">
           <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
@@ -208,7 +215,6 @@ function AdminSettingsPage() {
           <div className="flex items-start gap-6">
             <div className="w-32 aspect-[4/5] bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
               {form.portraitUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={form.portraitUrl}
                   alt="Anteprima foto profilo"
@@ -252,13 +258,13 @@ function AdminSettingsPage() {
                 <div className="font-mono text-[11px] text-destructive">{uploadError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                L'immagine viene ritagliata automaticamente in formato 4:5. Nessun limite di peso.
+                L'immagine viene ritagliata automaticamente in formato 4:5.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Testi */}
+        {/* Identità */}
         <section className="border border-surface-dark-muted p-6 space-y-5">
           <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
             Identità & bio
@@ -279,7 +285,7 @@ function AdminSettingsPage() {
             <textarea
               value={form.heroTitle}
               onChange={(e) => setForm({ ...form, heroTitle: e.target.value })}
-              className={`${inputCls} min-h-[80px]`}
+              className={`${inputCls} min-h-[90px]`}
               required
               maxLength={500}
             />
@@ -289,7 +295,7 @@ function AdminSettingsPage() {
             <textarea
               value={form.heroIntro}
               onChange={(e) => setForm({ ...form, heroIntro: e.target.value })}
-              className={`${inputCls} min-h-[140px]`}
+              className={`${inputCls} min-h-[160px]`}
               required
               maxLength={2000}
             />
@@ -307,15 +313,14 @@ function AdminSettingsPage() {
           </Field>
         </section>
 
-        {/* Paper in evidenza */}
+        {/* Featured papers */}
         <section className="border border-surface-dark-muted p-6 space-y-5">
           <div>
             <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
               Paper in evidenza (homepage)
             </h2>
             <p className="font-mono text-[10px] text-surface-dark-foreground/50 mt-2 leading-relaxed">
-              Seleziona fino a 3 paper da mettere in evidenza sopra la sezione "Ultimi Paper".
-              Lascia vuoto per nascondere uno slot.
+              Seleziona fino a 3 paper da mettere in evidenza.
             </p>
           </div>
           {[0, 1, 2].map((slot) => {
@@ -351,13 +356,13 @@ function AdminSettingsPage() {
         </section>
 
         {/* About Me */}
-        <section className="border border-surface-dark-muted p-6 space-y-5">
+        <section className="border border-surface-dark-muted p-6 space-y-6">
           <div>
             <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
               About Me (pagina /about)
             </h2>
             <p className="font-mono text-[10px] text-surface-dark-foreground/50 mt-2 leading-relaxed">
-              Modifica ruolo, biografia, lingue, software e hobby mostrati nella pagina pubblica About.
+              4 colonne: Formazione, Lingue, Software & AI, Certificazioni.
             </p>
           </div>
 
@@ -376,7 +381,7 @@ function AdminSettingsPage() {
             <textarea
               value={form.aboutBio}
               onChange={(e) => setForm({ ...form, aboutBio: e.target.value })}
-              className={`${inputCls} min-h-[180px]`}
+              className={`${inputCls} min-h-[200px]`}
               required
               maxLength={5000}
             />
@@ -393,6 +398,16 @@ function AdminSettingsPage() {
                 maxLength={60}
               />
             </Field>
+            <Field label="Titolo sezione Formazione">
+              <input
+                type="text"
+                value={form.aboutEducationLabel}
+                onChange={(e) => setForm({ ...form, aboutEducationLabel: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
             <Field label="Titolo sezione Lingue">
               <input
                 type="text"
@@ -403,7 +418,7 @@ function AdminSettingsPage() {
                 maxLength={60}
               />
             </Field>
-            <Field label="Titolo sezione Software">
+            <Field label="Titolo sezione Software & AI">
               <input
                 type="text"
                 value={form.aboutSoftwareLabel}
@@ -413,11 +428,11 @@ function AdminSettingsPage() {
                 maxLength={60}
               />
             </Field>
-            <Field label="Titolo sezione Hobby">
+            <Field label="Titolo sezione Certificazioni">
               <input
                 type="text"
-                value={form.aboutHobbiesLabel}
-                onChange={(e) => setForm({ ...form, aboutHobbiesLabel: e.target.value })}
+                value={form.aboutCertificationsLabel}
+                onChange={(e) => setForm({ ...form, aboutCertificationsLabel: e.target.value })}
                 className={inputCls}
                 required
                 maxLength={60}
@@ -425,8 +440,8 @@ function AdminSettingsPage() {
             </Field>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Colore sfondo pannello (lingue/software/hobby)">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Field label="Colore sfondo pannello">
               <ColorField
                 value={form.aboutPanelBg}
                 onChange={(v) => setForm({ ...form, aboutPanelBg: v })}
@@ -438,30 +453,42 @@ function AdminSettingsPage() {
                 onChange={(v) => setForm({ ...form, aboutPanelFg: v })}
               />
             </Field>
+            <Field label="Colore barre lingue">
+              <ColorField
+                value={form.aboutLanguagesBarColor}
+                onChange={(v) => setForm({ ...form, aboutLanguagesBarColor: v })}
+              />
+            </Field>
           </div>
 
-          <SkillListEditor
-            label="Lingue (voci)"
+          <EducationEditor
+            items={form.aboutEducation}
+            onChange={(items) => setForm({ ...form, aboutEducation: items })}
+          />
+
+          <LanguageEditor
             items={form.aboutLanguages}
             onChange={(items) => setForm({ ...form, aboutLanguages: items })}
-            placeholder="es. Italiano"
           />
 
-          <SkillListEditor
-            label="Software (voci)"
+          <LogoListEditor
+            label="Software & AI (voci)"
+            folder="software"
             items={form.aboutSoftware}
             onChange={(items) => setForm({ ...form, aboutSoftware: items })}
-            placeholder="es. Illustrator"
+            placeholder="es. Illustrator, ChatGPT"
+            uploadLogo={uploadLogo}
           />
 
-          <HobbyListEditor
-            items={form.aboutHobbies}
-            onChange={(items) => setForm({ ...form, aboutHobbies: items })}
+          <LogoListEditor
+            label="Certificazioni (voci)"
+            folder="certifications"
+            items={form.aboutCertifications}
+            onChange={(items) => setForm({ ...form, aboutCertifications: items })}
+            placeholder="es. AWS Cloud Practitioner"
+            uploadLogo={uploadLogo}
           />
         </section>
-
-
-
 
         <div className="flex items-center gap-4">
           <button
@@ -488,7 +515,7 @@ function AdminSettingsPage() {
 }
 
 const inputCls =
-  "w-full bg-white border border-surface-dark-muted px-3 py-2 text-neutral-900 font-serif text-sm focus:outline-none focus:border-primary placeholder:text-neutral-400";
+  "w-full bg-white border border-neutral-300 rounded-sm px-4 py-3 text-neutral-900 font-sans text-base leading-normal focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary placeholder:text-neutral-400 shadow-sm";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -513,7 +540,7 @@ function ColorField({ value, onChange }: { value: string; onChange: (v: string) 
         type="color"
         value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : "#000000"}
         onChange={(e) => onChange(e.target.value)}
-        className="h-9 w-12 cursor-pointer rounded border border-surface-dark-muted bg-white"
+        className="h-11 w-14 cursor-pointer rounded border border-neutral-300 bg-white"
       />
       <input
         type="text"
@@ -528,25 +555,228 @@ function ColorField({ value, onChange }: { value: string; onChange: (v: string) 
   );
 }
 
-function SkillListEditor({
+function EducationEditor({
+  items,
+  onChange,
+}: {
+  items: EducationItem[];
+  onChange: (next: EducationItem[]) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+        Formazione (voci)
+      </div>
+      <div className="space-y-3">
+        {items.map((it, i) => (
+          <div key={i} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-start">
+            <input
+              type="text"
+              value={it.name}
+              placeholder="Titolo (es. Master in Design)"
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...it, name: e.target.value };
+                onChange(next);
+              }}
+              className={inputCls}
+              maxLength={120}
+            />
+            <input
+              type="text"
+              value={it.detail}
+              placeholder="Istituto / anno (es. Politecnico, 2022)"
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...it, detail: e.target.value };
+                onChange(next);
+              }}
+              className={inputCls}
+              maxLength={300}
+            />
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+              className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange([...items, { name: "", detail: "" }])}
+        className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
+      >
+        + Aggiungi formazione
+      </button>
+    </div>
+  );
+}
+
+function LanguageEditor({
+  items,
+  onChange,
+}: {
+  items: LanguageItem[];
+  onChange: (next: LanguageItem[]) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+        Lingue (voci) — incolla l'emoji bandiera (🇮🇹 🇬🇧 🇫🇷 …)
+      </div>
+      <div className="space-y-3">
+        {items.map((it, i) => (
+          <div
+            key={i}
+            className="grid grid-cols-[64px_1fr_120px_auto] gap-2 items-start"
+          >
+            <input
+              type="text"
+              value={it.flag}
+              placeholder="🇮🇹"
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...it, flag: e.target.value };
+                onChange(next);
+              }}
+              className={`${inputCls} text-center text-2xl`}
+              maxLength={8}
+            />
+            <input
+              type="text"
+              value={it.name}
+              placeholder="Italiano"
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...it, name: e.target.value };
+                onChange(next);
+              }}
+              className={inputCls}
+              maxLength={60}
+            />
+            <div className="flex items-center gap-2">
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={it.level}
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = {
+                    ...it,
+                    level: Math.max(0, Math.min(100, Number(e.target.value) || 0)),
+                  };
+                  onChange(next);
+                }}
+                className={inputCls}
+              />
+              <span className="font-mono text-[10px] text-surface-dark-foreground/50">%</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+              className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={() => onChange([...items, { name: "", level: 80, flag: "" }])}
+        className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
+      >
+        + Aggiungi lingua
+      </button>
+    </div>
+  );
+}
+
+function LogoListEditor({
   label,
+  folder,
   items,
   onChange,
   placeholder,
+  uploadLogo,
 }: {
   label: string;
-  items: SkillItem[];
-  onChange: (next: SkillItem[]) => void;
+  folder: "software" | "certifications";
+  items: LogoItem[];
+  onChange: (next: LogoItem[]) => void;
   placeholder?: string;
+  uploadLogo: (args: {
+    data: {
+      fileName: string;
+      mimeType: "image/png" | "image/jpeg" | "image/webp" | "image/svg+xml";
+      folder: "software" | "certifications";
+      base64: string;
+    };
+  }) => Promise<{ publicUrl: string }>;
 }) {
+  const [busy, setBusy] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const handleFile = async (idx: number, file: File) => {
+    setErr(null);
+    setBusy(idx);
+    try {
+      const mime = file.type;
+      if (
+        mime !== "image/png" &&
+        mime !== "image/jpeg" &&
+        mime !== "image/webp" &&
+        mime !== "image/svg+xml"
+      ) {
+        throw new Error("Formato non supportato (usa PNG, JPG, WEBP o SVG).");
+      }
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Impossibile leggere il file."));
+        reader.readAsDataURL(file);
+      });
+      const { publicUrl } = await uploadLogo({
+        data: { fileName: file.name, mimeType: mime, folder, base64 },
+      });
+      const next = [...items];
+      next[idx] = { ...next[idx], logoUrl: publicUrl };
+      onChange(next);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Upload fallito");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
         {label}
       </div>
-      <div className="space-y-2">
+      <div className="space-y-3">
         {items.map((it, i) => (
-          <div key={i} className="flex items-center gap-2">
+          <div
+            key={i}
+            className="grid grid-cols-[64px_1fr_auto_auto] gap-2 items-center"
+          >
+            <div className="w-16 h-16 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
+              {it.logoUrl ? (
+                <img
+                  src={it.logoUrl}
+                  alt={it.name}
+                  className="w-full h-full object-contain p-1.5"
+                />
+              ) : (
+                <span className="font-mono text-[9px] uppercase tracking-widest text-neutral-400">
+                  no logo
+                </span>
+              )}
+            </div>
             <input
               type="text"
               value={it.name}
@@ -556,35 +786,36 @@ function SkillListEditor({
                 next[i] = { ...it, name: e.target.value };
                 onChange(next);
               }}
-              className={`${inputCls} flex-1`}
+              className={inputCls}
               maxLength={60}
             />
-            <input
-              type="number"
-              min={0}
-              max={100}
-              value={it.level}
-              onChange={(e) => {
-                const next = [...items];
-                next[i] = { ...it, level: Math.max(0, Math.min(100, Number(e.target.value) || 0)) };
-                onChange(next);
-              }}
-              className={`${inputCls} w-20`}
-            />
-            <span className="font-mono text-[10px] text-surface-dark-foreground/50">%</span>
+            <label className="px-3 py-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold cursor-pointer hover:border-background hover:text-background">
+              {busy === i ? "Carico…" : it.logoUrl ? "Sostituisci" : "Logo"}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleFile(i, f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
             <button
               type="button"
               onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              className="px-2 py-1 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+              className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
             >
               ×
             </button>
           </div>
         ))}
       </div>
+      {err && <div className="font-mono text-[11px] text-destructive">{err}</div>}
       <button
         type="button"
-        onClick={() => onChange([...items, { name: "", level: 80 }])}
+        onClick={() => onChange([...items, { name: "", logoUrl: null }])}
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
         + Aggiungi
@@ -592,74 +823,3 @@ function SkillListEditor({
     </div>
   );
 }
-
-function HobbyListEditor({
-  items,
-  onChange,
-}: {
-  items: HobbyItem[];
-  onChange: (next: HobbyItem[]) => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
-        Hobby
-      </div>
-      <div className="space-y-2">
-        {items.map((it, i) => {
-          const Icon = getHobbyIcon(it.icon);
-          return (
-            <div key={i} className="flex items-center gap-2">
-              <span className="w-9 h-9 border border-surface-dark-muted flex items-center justify-center text-background shrink-0">
-                <Icon className="w-4 h-4" />
-              </span>
-              <input
-                type="text"
-                value={it.name}
-                placeholder="es. Yoga"
-                onChange={(e) => {
-                  const next = [...items];
-                  next[i] = { ...it, name: e.target.value };
-                  onChange(next);
-                }}
-                className={`${inputCls} flex-1`}
-                maxLength={60}
-              />
-              <select
-                value={it.icon}
-                onChange={(e) => {
-                  const next = [...items];
-                  next[i] = { ...it, icon: e.target.value };
-                  onChange(next);
-                }}
-                className={`${inputCls} w-40`}
-              >
-                {HOBBY_ICON_NAMES.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-                className="px-2 py-1 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
-              >
-                ×
-              </button>
-            </div>
-          );
-        })}
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange([...items, { name: "", icon: "Sparkles" }])}
-        className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
-      >
-        + Aggiungi
-      </button>
-    </div>
-  );
-}
-
-
