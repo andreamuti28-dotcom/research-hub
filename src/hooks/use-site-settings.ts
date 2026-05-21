@@ -18,14 +18,17 @@ const DEFAULTS: SiteSettings = {
   aboutRole: "Ricercatore indipendente",
   aboutBio: "",
   aboutKicker: "Chi sono",
+  aboutEducationLabel: "Formazione",
   aboutLanguagesLabel: "Lingue",
-  aboutSoftwareLabel: "Software",
-  aboutHobbiesLabel: "Hobby",
-  aboutPanelBg: "#f5c518",
-  aboutPanelFg: "#000000",
+  aboutSoftwareLabel: "Software & AI",
+  aboutCertificationsLabel: "Certificazioni",
+  aboutPanelBg: "#1e3a8a",
+  aboutPanelFg: "#ffffff",
+  aboutLanguagesBarColor: "#ffffff",
+  aboutEducation: [],
   aboutLanguages: [],
   aboutSoftware: [],
-  aboutHobbies: [],
+  aboutCertifications: [],
 };
 
 export function useSiteSettings(): SiteSettings {

@@ -14,8 +14,10 @@ async function assertAdmin(userId: string) {
   if (!data) throw new Error("Forbidden: admin role required");
 }
 
-export type SkillItem = { name: string; level: number };
-export type HobbyItem = { name: string; icon: string };
+export type LanguageItem = { name: string; level: number; flag: string };
+export type LogoItem = { name: string; logoUrl: string | null };
+export type EducationItem = { name: string; detail: string };
+export type HobbyItem = { name: string; icon: string }; // legacy, kept for compatibility
 
 export type SiteSettings = {
   name: string;
@@ -27,14 +29,17 @@ export type SiteSettings = {
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
+  aboutEducationLabel: string;
   aboutLanguagesLabel: string;
   aboutSoftwareLabel: string;
-  aboutHobbiesLabel: string;
+  aboutCertificationsLabel: string;
   aboutPanelBg: string;
   aboutPanelFg: string;
-  aboutLanguages: SkillItem[];
-  aboutSoftware: SkillItem[];
-  aboutHobbies: HobbyItem[];
+  aboutLanguagesBarColor: string;
+  aboutEducation: EducationItem[];
+  aboutLanguages: LanguageItem[];
+  aboutSoftware: LogoItem[];
+  aboutCertifications: LogoItem[];
 };
 
 const DEFAULTS: SiteSettings = {
@@ -50,28 +55,20 @@ const DEFAULTS: SiteSettings = {
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software: come gli strumenti che usiamo modellano il nostro comportamento collettivo.",
   aboutKicker: "Chi sono",
+  aboutEducationLabel: "Formazione",
   aboutLanguagesLabel: "Lingue",
-  aboutSoftwareLabel: "Software",
-  aboutHobbiesLabel: "Hobby",
-  aboutPanelBg: "#f5c518",
-  aboutPanelFg: "#000000",
-  aboutLanguages: [
-    { name: "Italiano", level: 100 },
-    { name: "Inglese", level: 85 },
-  ],
-  aboutSoftware: [
-    { name: "Illustrator", level: 95 },
-    { name: "Photoshop", level: 95 },
-    { name: "InDesign", level: 95 },
-  ],
-  aboutHobbies: [
-    { name: "Yoga", icon: "Flower2" },
-    { name: "Lettura", icon: "BookOpen" },
-    { name: "Trekking", icon: "Mountain" },
-  ],
+  aboutSoftwareLabel: "Software & AI",
+  aboutCertificationsLabel: "Certificazioni",
+  aboutPanelBg: "#1e3a8a",
+  aboutPanelFg: "#ffffff",
+  aboutLanguagesBarColor: "#ffffff",
+  aboutEducation: [],
+  aboutLanguages: [],
+  aboutSoftware: [],
+  aboutCertifications: [],
 };
 
-function coerceSkills(v: unknown): SkillItem[] {
+function coerceLanguages(v: unknown): LanguageItem[] {
   if (!Array.isArray(v)) return [];
   return v
     .map((it) => {
@@ -80,24 +77,39 @@ function coerceSkills(v: unknown): SkillItem[] {
       const name = typeof o.name === "string" ? o.name : "";
       const lvl = typeof o.level === "number" ? o.level : Number(o.level);
       const level = Number.isFinite(lvl) ? Math.max(0, Math.min(100, Math.round(lvl))) : 0;
+      const flag = typeof o.flag === "string" ? o.flag : "";
       if (!name) return null;
-      return { name, level };
+      return { name, level, flag };
     })
-    .filter((x): x is SkillItem => x !== null);
+    .filter((x): x is LanguageItem => x !== null);
 }
 
-function coerceHobbies(v: unknown): HobbyItem[] {
+function coerceLogos(v: unknown): LogoItem[] {
   if (!Array.isArray(v)) return [];
   return v
     .map((it) => {
       if (!it || typeof it !== "object") return null;
       const o = it as Record<string, unknown>;
       const name = typeof o.name === "string" ? o.name : "";
-      const icon = typeof o.icon === "string" && o.icon ? o.icon : "Sparkles";
+      const logoUrl = typeof o.logoUrl === "string" && o.logoUrl ? o.logoUrl : null;
       if (!name) return null;
-      return { name, icon };
+      return { name, logoUrl };
     })
-    .filter((x): x is HobbyItem => x !== null);
+    .filter((x): x is LogoItem => x !== null);
+}
+
+function coerceEducation(v: unknown): EducationItem[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((it) => {
+      if (!it || typeof it !== "object") return null;
+      const o = it as Record<string, unknown>;
+      const name = typeof o.name === "string" ? o.name : "";
+      const detail = typeof o.detail === "string" ? o.detail : "";
+      if (!name) return null;
+      return { name, detail };
+    })
+    .filter((x): x is EducationItem => x !== null);
 }
 
 function str(v: unknown, fallback: string): string {
@@ -125,25 +137,33 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
       aboutKicker: str(d.about_kicker, DEFAULTS.aboutKicker),
+      aboutEducationLabel: str(d.about_education_label, DEFAULTS.aboutEducationLabel),
       aboutLanguagesLabel: str(d.about_languages_label, DEFAULTS.aboutLanguagesLabel),
       aboutSoftwareLabel: str(d.about_software_label, DEFAULTS.aboutSoftwareLabel),
-      aboutHobbiesLabel: str(d.about_hobbies_label, DEFAULTS.aboutHobbiesLabel),
+      aboutCertificationsLabel: str(d.about_certifications_label, DEFAULTS.aboutCertificationsLabel),
       aboutPanelBg: str(d.about_panel_bg, DEFAULTS.aboutPanelBg),
       aboutPanelFg: str(d.about_panel_fg, DEFAULTS.aboutPanelFg),
-      aboutLanguages: coerceSkills(d.about_languages),
-      aboutSoftware: coerceSkills(d.about_software),
-      aboutHobbies: coerceHobbies(d.about_hobbies),
+      aboutLanguagesBarColor: str(d.about_languages_bar_color, DEFAULTS.aboutLanguagesBarColor),
+      aboutEducation: coerceEducation(d.about_education),
+      aboutLanguages: coerceLanguages(d.about_languages),
+      aboutSoftware: coerceLogos(d.about_software),
+      aboutCertifications: coerceLogos(d.about_certifications),
     };
   },
 );
 
-const skillSchema = z.object({
+const languageSchema = z.object({
   name: z.string().trim().min(1).max(60),
   level: z.number().int().min(0).max(100),
+  flag: z.string().trim().max(8).default(""),
 });
-const hobbySchema = z.object({
+const logoSchema = z.object({
   name: z.string().trim().min(1).max(60),
-  icon: z.string().trim().min(1).max(40),
+  logoUrl: z.string().trim().url().max(1000).nullable(),
+});
+const educationSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  detail: z.string().trim().max(300).default(""),
 });
 const hexColor = z
   .string()
@@ -160,14 +180,17 @@ const updateSchema = z.object({
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
   aboutKicker: z.string().trim().min(1).max(60),
+  aboutEducationLabel: z.string().trim().min(1).max(60),
   aboutLanguagesLabel: z.string().trim().min(1).max(60),
   aboutSoftwareLabel: z.string().trim().min(1).max(60),
-  aboutHobbiesLabel: z.string().trim().min(1).max(60),
+  aboutCertificationsLabel: z.string().trim().min(1).max(60),
   aboutPanelBg: hexColor,
   aboutPanelFg: hexColor,
-  aboutLanguages: z.array(skillSchema).max(20).default([]),
-  aboutSoftware: z.array(skillSchema).max(30).default([]),
-  aboutHobbies: z.array(hobbySchema).max(20).default([]),
+  aboutLanguagesBarColor: hexColor,
+  aboutEducation: z.array(educationSchema).max(20).default([]),
+  aboutLanguages: z.array(languageSchema).max(20).default([]),
+  aboutSoftware: z.array(logoSchema).max(40).default([]),
+  aboutCertifications: z.array(logoSchema).max(40).default([]),
 });
 
 export const updateSiteSettings = createServerFn({ method: "POST" })
@@ -191,14 +214,17 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       about_role: data.aboutRole,
       about_bio: data.aboutBio,
       about_kicker: data.aboutKicker,
+      about_education_label: data.aboutEducationLabel,
       about_languages_label: data.aboutLanguagesLabel,
       about_software_label: data.aboutSoftwareLabel,
-      about_hobbies_label: data.aboutHobbiesLabel,
+      about_certifications_label: data.aboutCertificationsLabel,
       about_panel_bg: data.aboutPanelBg,
       about_panel_fg: data.aboutPanelFg,
+      about_languages_bar_color: data.aboutLanguagesBarColor,
+      about_education: data.aboutEducation,
       about_languages: data.aboutLanguages,
       about_software: data.aboutSoftware,
-      about_hobbies: data.aboutHobbies,
+      about_certifications: data.aboutCertifications,
     };
 
     if (existing) {
@@ -242,6 +268,63 @@ export const uploadSitePortrait = createServerFn({ method: "POST" })
         .replace(/[^a-z0-9_-]+/g, "-")
         .replace(/^-+|-+$/g, "") || "homepage-photo";
     const path = `homepage/${Date.now()}-${safeName}.jpg`;
+
+    const { error } = await supabaseAdmin.storage
+      .from("site-assets")
+      .upload(path, bytes.buffer, {
+        contentType: data.mimeType,
+        upsert: false,
+      });
+    if (error) throw new Error(error.message);
+
+    const { data: publicData } = supabaseAdmin.storage
+      .from("site-assets")
+      .getPublicUrl(path);
+
+    return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
+  });
+
+const ALLOWED_LOGO_MIME = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/svg+xml",
+] as const;
+const MIME_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/svg+xml": "svg",
+};
+
+const uploadLogoSchema = z.object({
+  fileName: z.string().trim().min(1).max(255),
+  mimeType: z.enum(ALLOWED_LOGO_MIME),
+  folder: z.enum(["software", "certifications"]),
+  base64: z.string().min(1),
+});
+
+export const uploadSiteLogo = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => uploadLogoSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const encoded = data.base64.includes(",")
+      ? data.base64.split(",").pop()
+      : data.base64;
+    if (!encoded) throw new Error("Immagine non valida.");
+
+    const binary = atob(encoded);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    const ext = MIME_EXT[data.mimeType] ?? "png";
+    const safeName =
+      data.fileName
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "logo";
+    const path = `${data.folder}/${Date.now()}-${safeName}.${ext}`;
 
     const { error } = await supabaseAdmin.storage
       .from("site-assets")

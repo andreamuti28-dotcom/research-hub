@@ -5,7 +5,6 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
 import { useTranslated } from "@/hooks/use-translated";
-import { getHobbyIcon } from "@/lib/hobby-icons";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -14,12 +13,12 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Chi sono: ricercatore indipendente. Lingue parlate, software che uso e i miei hobby.",
+          "Chi sono: formazione, lingue, software & AI e certificazioni.",
       },
       { property: "og:title", content: "About Me — Andrea Muti" },
       {
         property: "og:description",
-        content: "Lingue, software e hobby di Andrea Muti.",
+        content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
       },
     ],
   }),
@@ -30,13 +29,14 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
-  const [bio, role, kicker, langLabel, softLabel, hobbyLabel] = useTranslated([
+  const [bio, role, kicker, eduLabel, langLabel, softLabel, certLabel] = useTranslated([
     settings.aboutBio,
     settings.aboutRole,
     settings.aboutKicker,
+    settings.aboutEducationLabel,
     settings.aboutLanguagesLabel,
     settings.aboutSoftwareLabel,
-    settings.aboutHobbiesLabel,
+    settings.aboutCertificationsLabel,
   ]);
   const portraitSrc = settings.portraitUrl ?? portrait;
 
@@ -73,28 +73,63 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Skills band (color editable from admin) */}
+      {/* Skills band (color editable from admin) — 4 columns */}
       <section
         className="py-16 md:py-24"
         style={{ backgroundColor: settings.aboutPanelBg, color: settings.aboutPanelFg }}
       >
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-12 md:gap-10">
-          {/* Languages */}
-          <div>
-            <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {langLabel}
-            </h2>
-            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
-            <ul className="space-y-4">
+        <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
+          {/* Formazione */}
+          <PanelColumn title={eduLabel} fg={settings.aboutPanelFg}>
+            <ul className="space-y-5">
+              {settings.aboutEducation.map((e, i) => (
+                <li key={i}>
+                  <div className="font-display text-sm font-bold leading-snug">
+                    {e.name}
+                  </div>
+                  {e.detail && (
+                    <div className="font-mono text-[11px] opacity-80 mt-1 leading-relaxed">
+                      {e.detail}
+                    </div>
+                  )}
+                </li>
+              ))}
+              {settings.aboutEducation.length === 0 && (
+                <li className="font-mono text-xs opacity-70">—</li>
+              )}
+            </ul>
+          </PanelColumn>
+
+          {/* Lingue */}
+          <PanelColumn title={langLabel} fg={settings.aboutPanelFg}>
+            <ul className="space-y-5">
               {settings.aboutLanguages.map((l, i) => (
-                <li key={i} className="flex items-center gap-4">
-                  <span className="font-display text-xs font-bold uppercase tracking-widest w-24 shrink-0">
-                    {l.name}
-                  </span>
-                  <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: settings.aboutPanelFg, opacity: 0.25 }}>
+                <li key={i} className="space-y-2">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      {l.flag && (
+                        <span className="text-lg leading-none shrink-0" aria-hidden>
+                          {l.flag}
+                        </span>
+                      )}
+                      <span className="font-display text-xs font-bold uppercase tracking-widest truncate">
+                        {l.name}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[11px] font-bold tabular-nums shrink-0">
+                      {l.level}%
+                    </span>
+                  </div>
+                  <div
+                    className="h-2 rounded-full overflow-hidden"
+                    style={{ backgroundColor: settings.aboutPanelFg, opacity: 0.2 }}
+                  >
                     <div
                       className="h-full rounded-full transition-all"
-                      style={{ width: `${l.level}%`, backgroundColor: settings.aboutPanelFg, opacity: 1 }}
+                      style={{
+                        width: `${l.level}%`,
+                        backgroundColor: settings.aboutLanguagesBarColor,
+                      }}
                     />
                   </div>
                 </li>
@@ -103,57 +138,31 @@ function AboutPage() {
                 <li className="font-mono text-xs opacity-70">—</li>
               )}
             </ul>
-          </div>
+          </PanelColumn>
 
-          {/* Software */}
-          <div>
-            <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {softLabel}
-            </h2>
-            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
-            <div className="grid grid-cols-3 gap-x-2 gap-y-6">
+          {/* Software & AI */}
+          <PanelColumn title={softLabel} fg={settings.aboutPanelFg}>
+            <div className="grid grid-cols-3 gap-x-3 gap-y-5">
               {settings.aboutSoftware.map((s, i) => (
-                <div key={i} className="flex flex-col items-center text-center">
-                  <SkillRing value={s.level} />
-                  <div className="mt-2 font-display text-[10px] font-bold uppercase tracking-widest leading-tight">
-                    {s.name}
-                  </div>
-                </div>
+                <LogoTile key={i} item={s} fg={settings.aboutPanelFg} />
               ))}
               {settings.aboutSoftware.length === 0 && (
                 <div className="font-mono text-xs opacity-70 col-span-3">—</div>
               )}
             </div>
-          </div>
+          </PanelColumn>
 
-          {/* Hobbies */}
-          <div>
-            <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {hobbyLabel}
-            </h2>
-            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
-            <ul className="flex flex-col items-start gap-5">
-              {settings.aboutHobbies.map((h, i) => {
-                const Icon = getHobbyIcon(h.icon);
-                return (
-                  <li key={i} className="flex items-center gap-4">
-                    <span
-                      className="w-14 h-14 rounded-full border-2 flex items-center justify-center"
-                      style={{ borderColor: settings.aboutPanelFg }}
-                    >
-                      <Icon className="w-6 h-6" />
-                    </span>
-                    <span className="font-display text-xs font-bold uppercase tracking-widest">
-                      {h.name}
-                    </span>
-                  </li>
-                );
-              })}
-              {settings.aboutHobbies.length === 0 && (
-                <li className="font-mono text-xs opacity-70">—</li>
+          {/* Certificazioni */}
+          <PanelColumn title={certLabel} fg={settings.aboutPanelFg}>
+            <div className="grid grid-cols-3 gap-x-3 gap-y-5">
+              {settings.aboutCertifications.map((c, i) => (
+                <LogoTile key={i} item={c} fg={settings.aboutPanelFg} />
+              ))}
+              {settings.aboutCertifications.length === 0 && (
+                <div className="font-mono text-xs opacity-70 col-span-3">—</div>
               )}
-            </ul>
-          </div>
+            </div>
+          </PanelColumn>
         </div>
       </section>
 
@@ -162,39 +171,53 @@ function AboutPage() {
   );
 }
 
-function SkillRing({ value }: { value: number }) {
-  const size = 64;
-  const stroke = 3;
-  const r = (size - stroke) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (Math.max(0, Math.min(100, value)) / 100) * c;
+function PanelColumn({
+  title,
+  fg,
+  children,
+}: {
+  title: string;
+  fg: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="currentColor"
-          strokeOpacity={0.25}
-          strokeWidth={stroke}
-        />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={c}
-          strokeDashoffset={offset}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center font-display text-[11px] font-bold">
-        {value}%
-      </span>
+    <div>
+      <h2 className="font-display text-2xl font-bold tracking-tight mb-2">{title}</h2>
+      <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: fg }} />
+      {children}
+    </div>
+  );
+}
+
+function LogoTile({
+  item,
+  fg,
+}: {
+  item: { name: string; logoUrl: string | null };
+  fg: string;
+}) {
+  return (
+    <div className="flex flex-col items-center text-center">
+      <div
+        className="w-16 h-16 rounded-md bg-white/95 flex items-center justify-center overflow-hidden border"
+        style={{ borderColor: fg, borderOpacity: 0.2 } as React.CSSProperties}
+      >
+        {item.logoUrl ? (
+          <img
+            src={item.logoUrl}
+            alt={item.name}
+            className="w-full h-full object-contain p-2"
+            loading="lazy"
+          />
+        ) : (
+          <span className="font-display text-base font-bold text-neutral-700">
+            {item.name.charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <div className="mt-2 font-display text-[10px] font-bold uppercase tracking-widest leading-tight">
+        {item.name}
+      </div>
     </div>
   );
 }
