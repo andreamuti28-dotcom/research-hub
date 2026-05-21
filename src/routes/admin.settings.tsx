@@ -336,6 +336,60 @@ function AdminSettingsPage() {
           })}
         </section>
 
+        {/* About Me */}
+        <section className="border border-surface-dark-muted p-6 space-y-5">
+          <div>
+            <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+              About Me (pagina /about)
+            </h2>
+            <p className="font-mono text-[10px] text-surface-dark-foreground/50 mt-2 leading-relaxed">
+              Modifica ruolo, biografia, lingue, software e hobby mostrati nella pagina pubblica About.
+            </p>
+          </div>
+
+          <Field label="Ruolo / sottotitolo">
+            <input
+              type="text"
+              value={form.aboutRole}
+              onChange={(e) => setForm({ ...form, aboutRole: e.target.value })}
+              className={inputCls}
+              required
+              maxLength={120}
+            />
+          </Field>
+
+          <Field label="Biografia (usa righe vuote per nuovi paragrafi)">
+            <textarea
+              value={form.aboutBio}
+              onChange={(e) => setForm({ ...form, aboutBio: e.target.value })}
+              className={`${inputCls} min-h-[180px]`}
+              required
+              maxLength={5000}
+            />
+          </Field>
+
+          <SkillListEditor
+            label="Lingue"
+            items={form.aboutLanguages}
+            onChange={(items) => setForm({ ...form, aboutLanguages: items })}
+            placeholder="es. Italiano"
+          />
+
+          <SkillListEditor
+            label="Software"
+            items={form.aboutSoftware}
+            onChange={(items) => setForm({ ...form, aboutSoftware: items })}
+            placeholder="es. Illustrator"
+          />
+
+          <HobbyListEditor
+            items={form.aboutHobbies}
+            onChange={(items) => setForm({ ...form, aboutHobbies: items })}
+          />
+        </section>
+
+
+
 
         <div className="flex items-center gap-4">
           <button
