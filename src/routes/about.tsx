@@ -74,15 +74,18 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Yellow band: skills */}
-      <section className="bg-primary text-primary-foreground py-16 md:py-24">
+      {/* Skills band (color editable from admin) */}
+      <section
+        className="py-16 md:py-24"
+        style={{ backgroundColor: settings.aboutPanelBg, color: settings.aboutPanelFg }}
+      >
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-12 md:gap-10">
           {/* Languages */}
           <div>
             <h2 className="font-display text-2xl font-bold tracking-tight mb-2">
-              {t("about.languages")}
+              {langLabel}
             </h2>
-            <div className="w-12 h-px bg-primary-foreground/60 mb-8" />
+            <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: settings.aboutPanelFg }} />
             <ul className="space-y-4">
               {settings.aboutLanguages.map((l, i) => (
                 <li key={i} className="flex items-center gap-4">
