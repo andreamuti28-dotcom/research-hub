@@ -418,7 +418,7 @@ function AdminSettingsPage() {
 }
 
 const inputCls =
-  "w-full bg-surface-dark border border-surface-dark-muted px-3 py-2 text-background font-serif text-sm focus:outline-none focus:border-background";
+  "w-full bg-white border border-surface-dark-muted px-3 py-2 text-neutral-900 font-serif text-sm focus:outline-none focus:border-primary placeholder:text-neutral-400";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
