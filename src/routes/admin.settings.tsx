@@ -102,6 +102,11 @@ function AdminSettingsPage() {
         linkedinUrl: settingsQuery.data.linkedinUrl,
         portraitUrl: settingsQuery.data.portraitUrl,
         featuredPaperIds: settingsQuery.data.featuredPaperIds,
+        aboutRole: settingsQuery.data.aboutRole,
+        aboutBio: settingsQuery.data.aboutBio,
+        aboutLanguages: settingsQuery.data.aboutLanguages,
+        aboutSoftware: settingsQuery.data.aboutSoftware,
+        aboutHobbies: settingsQuery.data.aboutHobbies,
       });
     }
   }, [settingsQuery.data, form]);
