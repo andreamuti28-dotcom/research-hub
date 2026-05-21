@@ -382,15 +382,73 @@ function AdminSettingsPage() {
             />
           </Field>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label='Etichetta sopra il nome (es. "Chi sono")'>
+              <input
+                type="text"
+                value={form.aboutKicker}
+                onChange={(e) => setForm({ ...form, aboutKicker: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+            <Field label="Titolo sezione Lingue">
+              <input
+                type="text"
+                value={form.aboutLanguagesLabel}
+                onChange={(e) => setForm({ ...form, aboutLanguagesLabel: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+            <Field label="Titolo sezione Software">
+              <input
+                type="text"
+                value={form.aboutSoftwareLabel}
+                onChange={(e) => setForm({ ...form, aboutSoftwareLabel: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+            <Field label="Titolo sezione Hobby">
+              <input
+                type="text"
+                value={form.aboutHobbiesLabel}
+                onChange={(e) => setForm({ ...form, aboutHobbiesLabel: e.target.value })}
+                className={inputCls}
+                required
+                maxLength={60}
+              />
+            </Field>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Field label="Colore sfondo pannello (lingue/software/hobby)">
+              <ColorField
+                value={form.aboutPanelBg}
+                onChange={(v) => setForm({ ...form, aboutPanelBg: v })}
+              />
+            </Field>
+            <Field label="Colore testo pannello">
+              <ColorField
+                value={form.aboutPanelFg}
+                onChange={(v) => setForm({ ...form, aboutPanelFg: v })}
+              />
+            </Field>
+          </div>
+
           <SkillListEditor
-            label="Lingue"
+            label="Lingue (voci)"
             items={form.aboutLanguages}
             onChange={(items) => setForm({ ...form, aboutLanguages: items })}
             placeholder="es. Italiano"
           />
 
           <SkillListEditor
-            label="Software"
+            label="Software (voci)"
             items={form.aboutSoftware}
             onChange={(items) => setForm({ ...form, aboutSoftware: items })}
             placeholder="es. Illustrator"
