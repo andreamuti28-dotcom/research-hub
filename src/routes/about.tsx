@@ -57,7 +57,7 @@ function AboutPage() {
           </div>
           <div className="animate-fade-up">
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-              {t("about.kicker")}
+              {kicker}
             </div>
             <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter italic mb-3">
               {settings.name}
