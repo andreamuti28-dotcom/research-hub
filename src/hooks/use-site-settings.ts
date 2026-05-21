@@ -15,6 +15,11 @@ const DEFAULTS: SiteSettings = {
   linkedinUrl: "https://www.linkedin.com",
   portraitUrl: null,
   featuredPaperIds: [],
+  aboutRole: "Ricercatore indipendente",
+  aboutBio: "",
+  aboutLanguages: [],
+  aboutSoftware: [],
+  aboutHobbies: [],
 };
 
 export function useSiteSettings(): SiteSettings {

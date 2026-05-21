@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ArchivioRouteImport } from './routes/archivio'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
@@ -22,6 +23,11 @@ import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 const ArchivioRoute = ArchivioRouteImport.update({
   id: '/archivio',
   path: '/archivio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -67,6 +73,7 @@ const AdminEditIdRoute = AdminEditIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
@@ -90,6 +98,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/archivio'
     | '/admin/login'
     | '/admin/new'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/archivio'
     | '/admin/login'
     | '/admin/new'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/archivio'
     | '/admin/login'
     | '/admin/new'
@@ -137,6 +149,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   ArchivioRoute: typeof ArchivioRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewRoute: typeof AdminNewRoute
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/archivio'
       fullPath: '/archivio'
       preLoaderRoute: typeof ArchivioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -217,6 +237,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   ArchivioRoute: ArchivioRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNewRoute: AdminNewRoute,

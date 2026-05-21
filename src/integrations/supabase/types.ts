@@ -67,6 +67,11 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          about_bio: string | null
+          about_hobbies: Json
+          about_languages: Json
+          about_role: string | null
+          about_software: Json
           featured_paper_ids: string[]
           hero_intro: string
           hero_title: string
@@ -78,6 +83,11 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          about_bio?: string | null
+          about_hobbies?: Json
+          about_languages?: Json
+          about_role?: string | null
+          about_software?: Json
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
@@ -89,6 +99,11 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          about_bio?: string | null
+          about_hobbies?: Json
+          about_languages?: Json
+          about_role?: string | null
+          about_software?: Json
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string

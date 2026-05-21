@@ -14,6 +14,9 @@ async function assertAdmin(userId: string) {
   if (!data) throw new Error("Forbidden: admin role required");
 }
 
+export type SkillItem = { name: string; level: number };
+export type HobbyItem = { name: string; icon: string };
+
 export type SiteSettings = {
   name: string;
   heroTitle: string;
@@ -21,6 +24,11 @@ export type SiteSettings = {
   linkedinUrl: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  aboutRole: string;
+  aboutBio: string;
+  aboutLanguages: SkillItem[];
+  aboutSoftware: SkillItem[];
+  aboutHobbies: HobbyItem[];
 };
 
 const DEFAULTS: SiteSettings = {
@@ -32,18 +40,67 @@ const DEFAULTS: SiteSettings = {
   linkedinUrl: "https://www.linkedin.com",
   portraitUrl: null,
   featuredPaperIds: [],
+  aboutRole: "Ricercatore indipendente",
+  aboutBio:
+    "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software: come gli strumenti che usiamo modellano il nostro comportamento collettivo.",
+  aboutLanguages: [
+    { name: "Italiano", level: 100 },
+    { name: "Inglese", level: 85 },
+  ],
+  aboutSoftware: [
+    { name: "Illustrator", level: 95 },
+    { name: "Photoshop", level: 95 },
+    { name: "InDesign", level: 95 },
+  ],
+  aboutHobbies: [
+    { name: "Yoga", icon: "Flower2" },
+    { name: "Lettura", icon: "BookOpen" },
+    { name: "Trekking", icon: "Mountain" },
+  ],
 };
+
+function coerceSkills(v: unknown): SkillItem[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((it) => {
+      if (!it || typeof it !== "object") return null;
+      const o = it as Record<string, unknown>;
+      const name = typeof o.name === "string" ? o.name : "";
+      const lvl = typeof o.level === "number" ? o.level : Number(o.level);
+      const level = Number.isFinite(lvl) ? Math.max(0, Math.min(100, Math.round(lvl))) : 0;
+      if (!name) return null;
+      return { name, level };
+    })
+    .filter((x): x is SkillItem => x !== null);
+}
+
+function coerceHobbies(v: unknown): HobbyItem[] {
+  if (!Array.isArray(v)) return [];
+  return v
+    .map((it) => {
+      if (!it || typeof it !== "object") return null;
+      const o = it as Record<string, unknown>;
+      const name = typeof o.name === "string" ? o.name : "";
+      const icon = typeof o.icon === "string" && o.icon ? o.icon : "Sparkles";
+      if (!name) return null;
+      return { name, icon };
+    })
+    .filter((x): x is HobbyItem => x !== null);
+}
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(
   async (): Promise<SiteSettings> => {
     const { data, error } = await supabaseAdmin
       .from("site_settings")
-      .select("name, hero_title, hero_intro, linkedin_url, portrait_url, featured_paper_ids")
+      .select(
+        "name, hero_title, hero_intro, linkedin_url, portrait_url, featured_paper_ids, about_role, about_bio, about_languages, about_software, about_hobbies",
+      )
       .eq("singleton", true)
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!data) return DEFAULTS;
     const raw = (data as { featured_paper_ids?: string[] | null }).featured_paper_ids;
+    const d = data as Record<string, unknown>;
     return {
       name: data.name ?? DEFAULTS.name,
       heroTitle: data.hero_title ?? DEFAULTS.heroTitle,
@@ -51,9 +108,23 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       linkedinUrl: data.linkedin_url ?? DEFAULTS.linkedinUrl,
       portraitUrl: data.portrait_url ?? null,
       featuredPaperIds: Array.isArray(raw) ? raw.slice(0, 3) : [],
+      aboutRole: (typeof d.about_role === "string" && d.about_role) || DEFAULTS.aboutRole,
+      aboutBio: (typeof d.about_bio === "string" && d.about_bio) || DEFAULTS.aboutBio,
+      aboutLanguages: coerceSkills(d.about_languages),
+      aboutSoftware: coerceSkills(d.about_software),
+      aboutHobbies: coerceHobbies(d.about_hobbies),
     };
   },
 );
+
+const skillSchema = z.object({
+  name: z.string().trim().min(1).max(60),
+  level: z.number().int().min(0).max(100),
+});
+const hobbySchema = z.object({
+  name: z.string().trim().min(1).max(60),
+  icon: z.string().trim().min(1).max(40),
+});
 
 const updateSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -62,6 +133,11 @@ const updateSchema = z.object({
   linkedinUrl: z.string().trim().url().max(500),
   portraitUrl: z.string().trim().url().max(1000).nullable().optional(),
   featuredPaperIds: z.array(z.string().uuid()).max(3).default([]),
+  aboutRole: z.string().trim().min(1).max(120),
+  aboutBio: z.string().trim().min(1).max(5000),
+  aboutLanguages: z.array(skillSchema).max(20).default([]),
+  aboutSoftware: z.array(skillSchema).max(30).default([]),
+  aboutHobbies: z.array(hobbySchema).max(20).default([]),
 });
 
 export const updateSiteSettings = createServerFn({ method: "POST" })
@@ -82,6 +158,11 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       linkedin_url: data.linkedinUrl,
       portrait_url: data.portraitUrl ?? null,
       featured_paper_ids: data.featuredPaperIds,
+      about_role: data.aboutRole,
+      about_bio: data.aboutBio,
+      about_languages: data.aboutLanguages,
+      about_software: data.aboutSoftware,
+      about_hobbies: data.aboutHobbies,
     };
 
     if (existing) {
