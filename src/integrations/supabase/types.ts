@@ -69,9 +69,15 @@ export type Database = {
         Row: {
           about_bio: string | null
           about_hobbies: Json
+          about_hobbies_label: string | null
+          about_kicker: string | null
           about_languages: Json
+          about_languages_label: string | null
+          about_panel_bg: string | null
+          about_panel_fg: string | null
           about_role: string | null
           about_software: Json
+          about_software_label: string | null
           featured_paper_ids: string[]
           hero_intro: string
           hero_title: string
@@ -85,9 +91,15 @@ export type Database = {
         Insert: {
           about_bio?: string | null
           about_hobbies?: Json
+          about_hobbies_label?: string | null
+          about_kicker?: string | null
           about_languages?: Json
+          about_languages_label?: string | null
+          about_panel_bg?: string | null
+          about_panel_fg?: string | null
           about_role?: string | null
           about_software?: Json
+          about_software_label?: string | null
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
@@ -101,9 +113,15 @@ export type Database = {
         Update: {
           about_bio?: string | null
           about_hobbies?: Json
+          about_hobbies_label?: string | null
+          about_kicker?: string | null
           about_languages?: Json
+          about_languages_label?: string | null
+          about_panel_bg?: string | null
+          about_panel_fg?: string | null
           about_role?: string | null
           about_software?: Json
+          about_software_label?: string | null
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
