@@ -31,8 +31,14 @@ export const Route = createFileRoute("/about")({
 
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
-  const t = useT();
-  const [bio, role] = useTranslated([settings.aboutBio, settings.aboutRole]);
+  const [bio, role, kicker, langLabel, softLabel, hobbyLabel] = useTranslated([
+    settings.aboutBio,
+    settings.aboutRole,
+    settings.aboutKicker,
+    settings.aboutLanguagesLabel,
+    settings.aboutSoftwareLabel,
+    settings.aboutHobbiesLabel,
+  ]);
   const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
