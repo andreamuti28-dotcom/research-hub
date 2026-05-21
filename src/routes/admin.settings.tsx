@@ -12,6 +12,8 @@ import {
   uploadSitePortrait,
 } from "@/lib/site-settings.functions";
 import { cropTo4x5Jpeg } from "@/lib/image-crop";
+import { HOBBY_ICON_NAMES, getHobbyIcon } from "@/lib/hobby-icons";
+
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
