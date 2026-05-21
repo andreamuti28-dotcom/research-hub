@@ -205,7 +205,6 @@ function AdminSettingsPage() {
           <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
             Foto profilo (pagina About)
           </h2>
-          </h2>
           <div className="flex items-start gap-6">
             <div className="w-32 aspect-[4/5] bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
               {form.portraitUrl ? (
