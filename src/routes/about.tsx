@@ -4,7 +4,7 @@ import portrait from "@/assets/portrait.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
-import { useT } from "@/lib/i18n";
+import { useTranslated } from "@/hooks/use-translated";
 import { useTranslated } from "@/hooks/use-translated";
 import { getHobbyIcon } from "@/lib/hobby-icons";
 
