@@ -1,0 +1,1 @@
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS about_logo_max_width integer NOT NULL DEFAULT 48;

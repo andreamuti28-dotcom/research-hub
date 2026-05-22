@@ -4,6 +4,7 @@ const dict = {
   it: {
     "nav.archive": "Archivio",
     "nav.about": "About",
+    "nav.home": "Home",
     "about.kicker": "Chi sono",
     "about.languages": "Lingue",
     "about.software": "Software",
@@ -54,6 +55,7 @@ const dict = {
   en: {
     "nav.archive": "Archive",
     "nav.about": "About",
+    "nav.home": "Home",
     "about.kicker": "About me",
     "about.languages": "Languages",
     "about.software": "Software",

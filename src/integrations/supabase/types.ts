@@ -78,6 +78,7 @@ export type Database = {
           about_languages: Json
           about_languages_bar_color: string | null
           about_languages_label: string | null
+          about_logo_max_width: number
           about_panel_bg: string | null
           about_panel_fg: string | null
           about_role: string | null
@@ -105,6 +106,7 @@ export type Database = {
           about_languages?: Json
           about_languages_bar_color?: string | null
           about_languages_label?: string | null
+          about_logo_max_width?: number
           about_panel_bg?: string | null
           about_panel_fg?: string | null
           about_role?: string | null
@@ -132,6 +134,7 @@ export type Database = {
           about_languages?: Json
           about_languages_bar_color?: string | null
           about_languages_label?: string | null
+          about_logo_max_width?: number
           about_panel_bg?: string | null
           about_panel_fg?: string | null
           about_role?: string | null

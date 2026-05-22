@@ -36,6 +36,7 @@ export type SiteSettings = {
   aboutPanelBg: string;
   aboutPanelFg: string;
   aboutLanguagesBarColor: string;
+  aboutLogoMaxWidth: number;
   aboutEducation: EducationItem[];
   aboutLanguages: LanguageItem[];
   aboutSoftware: LogoItem[];
@@ -62,6 +63,7 @@ const DEFAULTS: SiteSettings = {
   aboutPanelBg: "#1e3a8a",
   aboutPanelFg: "#ffffff",
   aboutLanguagesBarColor: "#ffffff",
+  aboutLogoMaxWidth: 48,
   aboutEducation: [],
   aboutLanguages: [],
   aboutSoftware: [],
@@ -144,6 +146,11 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       aboutPanelBg: str(d.about_panel_bg, DEFAULTS.aboutPanelBg),
       aboutPanelFg: str(d.about_panel_fg, DEFAULTS.aboutPanelFg),
       aboutLanguagesBarColor: str(d.about_languages_bar_color, DEFAULTS.aboutLanguagesBarColor),
+      aboutLogoMaxWidth: (() => {
+        const v = d.about_logo_max_width;
+        const n = typeof v === "number" ? v : Number(v);
+        return Number.isFinite(n) && n > 0 ? Math.min(200, Math.max(16, Math.round(n))) : DEFAULTS.aboutLogoMaxWidth;
+      })(),
       aboutEducation: coerceEducation(d.about_education),
       aboutLanguages: coerceLanguages(d.about_languages),
       aboutSoftware: coerceLogos(d.about_software),
@@ -187,6 +194,7 @@ const updateSchema = z.object({
   aboutPanelBg: hexColor,
   aboutPanelFg: hexColor,
   aboutLanguagesBarColor: hexColor,
+  aboutLogoMaxWidth: z.number().int().min(16).max(200).default(48),
   aboutEducation: z.array(educationSchema).max(20).default([]),
   aboutLanguages: z.array(languageSchema).max(20).default([]),
   aboutSoftware: z.array(logoSchema).max(40).default([]),
@@ -221,6 +229,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       about_panel_bg: data.aboutPanelBg,
       about_panel_fg: data.aboutPanelFg,
       about_languages_bar_color: data.aboutLanguagesBarColor,
+      about_logo_max_width: data.aboutLogoMaxWidth,
       about_education: data.aboutEducation,
       about_languages: data.aboutLanguages,
       about_software: data.aboutSoftware,

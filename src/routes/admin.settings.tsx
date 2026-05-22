@@ -49,6 +49,7 @@ type FormState = {
   aboutPanelBg: string;
   aboutPanelFg: string;
   aboutLanguagesBarColor: string;
+  aboutLogoMaxWidth: number;
   aboutEducation: EducationItem[];
   aboutLanguages: LanguageItem[];
   aboutSoftware: LogoItem[];
@@ -124,6 +125,7 @@ function AdminSettingsPage() {
         aboutPanelBg: s.aboutPanelBg,
         aboutPanelFg: s.aboutPanelFg,
         aboutLanguagesBarColor: s.aboutLanguagesBarColor,
+        aboutLogoMaxWidth: s.aboutLogoMaxWidth,
         aboutEducation: s.aboutEducation,
         aboutLanguages: s.aboutLanguages,
         aboutSoftware: s.aboutSoftware,
@@ -460,6 +462,22 @@ function AdminSettingsPage() {
               />
             </Field>
           </div>
+
+          <Field label="Dimensione loghi Software & Certificazioni (px, 16–200)">
+            <input
+              type="number"
+              min={16}
+              max={200}
+              value={form.aboutLogoMaxWidth}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  aboutLogoMaxWidth: Math.max(16, Math.min(200, Number(e.target.value) || 48)),
+                })
+              }
+              className={inputCls}
+            />
+          </Field>
 
           <EducationEditor
             items={form.aboutEducation}

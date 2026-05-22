@@ -25,6 +25,7 @@ const DEFAULTS: SiteSettings = {
   aboutPanelBg: "#1e3a8a",
   aboutPanelFg: "#ffffff",
   aboutLanguagesBarColor: "#ffffff",
+  aboutLogoMaxWidth: 48,
   aboutEducation: [],
   aboutLanguages: [],
   aboutSoftware: [],
