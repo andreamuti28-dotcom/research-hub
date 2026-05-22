@@ -11,25 +11,26 @@ export function SiteHeader() {
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
         <Link
-          to="/"
-          className="font-display font-bold tracking-tighter text-sm sm:text-lg uppercase truncate min-w-0"
+          to="/about"
+          className="font-display font-bold tracking-tighter text-sm sm:text-lg uppercase truncate min-w-0 hover:text-primary transition-colors"
         >
           {name}
         </Link>
         <div className="flex gap-2 sm:gap-4 items-center text-xs sm:text-sm font-display uppercase tracking-wider shrink-0">
+          <Link
+            to="/"
+            className="hover:text-primary transition-colors"
+            activeProps={{ className: "text-primary" }}
+            activeOptions={{ exact: true }}
+          >
+            {t("nav.home")}
+          </Link>
           <Link
             to="/archivio"
             className="hover:text-primary transition-colors"
             activeProps={{ className: "text-primary" }}
           >
             {t("nav.archive")}
-          </Link>
-          <Link
-            to="/about"
-            className="hover:text-primary transition-colors"
-            activeProps={{ className: "text-primary" }}
-          >
-            {t("nav.about")}
           </Link>
           <LanguageToggle />
           <ThemeToggle />

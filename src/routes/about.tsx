@@ -142,26 +142,26 @@ function AboutPage() {
 
           {/* Software & AI */}
           <PanelColumn title={softLabel} fg={settings.aboutPanelFg}>
-            <div className="grid grid-cols-3 gap-x-3 gap-y-5">
+            <ul className="space-y-4">
               {settings.aboutSoftware.map((s, i) => (
-                <LogoTile key={i} item={s} fg={settings.aboutPanelFg} />
+                <LogoRow key={i} item={s} maxWidth={settings.aboutLogoMaxWidth} />
               ))}
               {settings.aboutSoftware.length === 0 && (
-                <div className="font-mono text-xs opacity-70 col-span-3">—</div>
+                <li className="font-mono text-xs opacity-70">—</li>
               )}
-            </div>
+            </ul>
           </PanelColumn>
 
           {/* Certificazioni */}
           <PanelColumn title={certLabel} fg={settings.aboutPanelFg}>
-            <div className="grid grid-cols-3 gap-x-3 gap-y-5">
+            <ul className="space-y-4">
               {settings.aboutCertifications.map((c, i) => (
-                <LogoTile key={i} item={c} fg={settings.aboutPanelFg} />
+                <LogoRow key={i} item={c} maxWidth={settings.aboutLogoMaxWidth} />
               ))}
               {settings.aboutCertifications.length === 0 && (
-                <div className="font-mono text-xs opacity-70 col-span-3">—</div>
+                <li className="font-mono text-xs opacity-70">—</li>
               )}
-            </div>
+            </ul>
           </PanelColumn>
         </div>
       </section>
@@ -189,34 +189,35 @@ function PanelColumn({
   );
 }
 
-function LogoTile({
+function LogoRow({
   item,
-  fg,
+  maxWidth,
 }: {
   item: { name: string; logoUrl: string | null };
-  fg: string;
+  maxWidth: number;
 }) {
   return (
-    <div className="flex flex-col items-center text-center">
+    <li className="flex items-center gap-3">
       <div
-        className="w-16 h-16 rounded-md bg-white/95 flex items-center justify-center overflow-hidden border border-black/10"
+        className="about-logo shrink-0 aspect-square rounded-md bg-white/95 flex items-center justify-center overflow-hidden border border-black/10"
+        style={{ maxWidth: `${maxWidth}px`, width: `${maxWidth}px` }}
       >
         {item.logoUrl ? (
           <img
             src={item.logoUrl}
             alt={item.name}
-            className="w-full h-full object-contain p-2"
+            className="w-full h-full object-contain p-1.5"
             loading="lazy"
           />
         ) : (
-          <span className="font-display text-base font-bold text-neutral-700">
+          <span className="font-display text-xs font-bold text-neutral-700">
             {item.name.charAt(0).toUpperCase()}
           </span>
         )}
       </div>
-      <div className="mt-2 font-display text-[10px] font-bold uppercase tracking-widest leading-tight">
+      <div className="font-display text-sm font-bold leading-snug">
         {item.name}
       </div>
-    </div>
+    </li>
   );
 }
