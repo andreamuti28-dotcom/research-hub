@@ -61,6 +61,7 @@ function Index() {
     settings.heroIntro,
   ]);
   const [marketOpen, setMarketOpen] = useState(false);
+  const [featuredOpen, setFeaturedOpen] = useState(false);
 
   useEffect(() => {
     const channel = supabase
@@ -105,6 +106,44 @@ function Index() {
           </div>
         </div>
       </section>
+
+      {featured.length > 0 && (
+        <section className="border-t border-border bg-background">
+          <div className="max-w-6xl mx-auto px-6">
+            <button
+              type="button"
+              onClick={() => setFeaturedOpen((v) => !v)}
+              aria-expanded={featuredOpen}
+              className="group w-full flex items-center justify-between gap-6 py-7 md:py-9 text-left transition-colors"
+            >
+              <div className="flex items-center gap-4 min-w-0">
+                <span className="inline-flex items-center font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-foreground/10 text-foreground shrink-0">
+                  {t("home.featuredKicker")}
+                </span>
+                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic truncate group-hover:text-primary transition-colors">
+                  {settings.homeFeaturedLabel || t("home.featuredTitle")}
+                </h2>
+              </div>
+              <span
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-base font-bold transition-all group-hover:border-primary group-hover:text-primary shrink-0"
+                style={{ transform: featuredOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                aria-hidden
+              >
+                +
+              </span>
+            </button>
+            {featuredOpen && (
+              <div className="pb-10 md:pb-14 animate-fade-up">
+                <div className="space-y-px bg-border border border-border">
+                  {featured.map((p) => (
+                    <PaperRow key={p.id} paper={p} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {settings.homeMarketEnabled && (
         <section className="border-t border-border bg-background">
@@ -176,25 +215,6 @@ function Index() {
         </section>
       )}
 
-      {featured.length > 0 && (
-        <section className="border-t border-border bg-background py-20 md:py-24">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="mb-12 md:mb-16">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                {t("home.featuredKicker")}
-              </div>
-              <h2 className="text-3xl font-display font-bold tracking-tighter italic">
-                {settings.homeFeaturedLabel || t("home.featuredTitle")}
-              </h2>
-            </div>
-            <div className="space-y-px bg-border border border-border">
-              {featured.map((p) => (
-                <PaperRow key={p.id} paper={p} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
