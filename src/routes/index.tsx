@@ -88,13 +88,20 @@ function Index() {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <section className="max-w-6xl mx-auto px-6 py-20 md:py-28 w-full">
-        <div className="animate-fade-up">
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-8 italic max-w-[20ch]">
-            {heroTitle}
-          </h1>
-          <div className="max-w-[55ch] text-lg md:text-xl leading-relaxed text-pretty space-y-6">
-            <p className="whitespace-pre-line">{heroIntro}</p>
+      <section className="max-w-6xl mx-auto px-6 pt-16 md:pt-24 pb-12 md:pb-16 w-full">
+        <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-start">
+          <div className="md:col-span-7">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
+              Ricerca · {new Date().getFullYear()}
+            </div>
+            <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-6 italic">
+              {heroTitle}
+            </h1>
+          </div>
+          <div className="md:col-span-5 md:pt-2">
+            <div className="text-base md:text-lg leading-relaxed text-pretty text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
+              <p className="whitespace-pre-line">{heroIntro}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -106,18 +113,19 @@ function Index() {
               type="button"
               onClick={() => setMarketOpen((v) => !v)}
               aria-expanded={marketOpen}
-              className="w-full flex items-center justify-between gap-4 py-6 md:py-8 text-left hover:text-primary transition-colors"
+              className="group w-full flex items-center justify-between gap-6 py-7 md:py-9 text-left transition-colors"
             >
-              <div>
-                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+              <div className="flex items-center gap-4 min-w-0">
+                <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-primary/10 text-primary shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   Live
-                </div>
-                <h2 className="text-2xl md:text-3xl font-display font-bold tracking-tighter italic">
+                </span>
+                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic truncate group-hover:text-primary transition-colors">
                   {settings.homeMarketLabel}
                 </h2>
               </div>
               <span
-                className="font-display text-2xl font-bold transition-transform shrink-0"
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-base font-bold transition-all group-hover:border-primary group-hover:text-primary shrink-0"
                 style={{ transform: marketOpen ? "rotate(45deg)" : "rotate(0deg)" }}
                 aria-hidden
               >
