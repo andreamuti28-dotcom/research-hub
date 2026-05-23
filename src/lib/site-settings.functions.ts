@@ -76,7 +76,7 @@ const DEFAULTS: SiteSettings = {
   homeMarketEnabled: true,
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
   archiveDisclaimer: "Intelligenza Artificiale integrata",
-  headerBg: "#ffffff",
+  headerBg: "",
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
