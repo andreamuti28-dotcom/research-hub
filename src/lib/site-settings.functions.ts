@@ -173,6 +173,11 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       linkedinUrl: str(d.linkedin_url, DEFAULTS.linkedinUrl),
       portraitUrl: (d.portrait_url as string | null) ?? null,
       featuredPaperIds: Array.isArray(raw) ? raw.slice(0, 3) : [],
+      homeFeaturedLabel: str(d.home_featured_label, DEFAULTS.homeFeaturedLabel),
+      homeMarketLabel: str(d.home_market_label, DEFAULTS.homeMarketLabel),
+      homeMarketEnabled:
+        typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
+
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
       aboutKicker: str(d.about_kicker, DEFAULTS.aboutKicker),
