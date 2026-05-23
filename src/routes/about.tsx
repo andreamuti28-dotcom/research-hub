@@ -49,10 +49,10 @@ function AboutPage() {
     settings.aboutCertificationsLabel,
   ];
   const panelGroups = [
-    settings.aboutEducation.map((e) => [e.name, e.detail ?? "", e.description ?? ""]),
-    settings.aboutLanguages.map((l) => [l.name, "", l.description ?? ""]),
-    settings.aboutSoftware.map((s) => [s.name, "", s.description ?? ""]),
-    settings.aboutCertifications.map((c) => [c.name, "", c.description ?? ""]),
+    trEducation.map((e) => [e.name, e.detail ?? "", e.description ?? ""]),
+    trLanguages.map((l) => [l.name, "", l.description ?? ""]),
+    trSoftware.map((s) => [s.name, "", s.description ?? ""]),
+    trCertifications.map((c) => [c.name, "", c.description ?? ""]),
   ];
   const panelFlat = panelGroups.flat(2);
   const all = useTranslated([...baseLabels, ...panelFlat]);
@@ -63,19 +63,19 @@ function AboutPage() {
     cursor += n;
     return slice;
   };
-  const trEducation = settings.aboutEducation.map((e) => {
+  const trEducation = trEducation.map((e) => {
     const [name, detail, description] = take(3);
     return { ...e, name, detail: e.detail ? detail : e.detail, description };
   });
-  const trLanguages = settings.aboutLanguages.map((l) => {
+  const trLanguages = trLanguages.map((l) => {
     const [name, , description] = take(3);
     return { ...l, name, description };
   });
-  const trSoftware = settings.aboutSoftware.map((s) => {
+  const trSoftware = trSoftware.map((s) => {
     const [name, , description] = take(3);
     return { ...s, name, description };
   });
-  const trCertifications = settings.aboutCertifications.map((c) => {
+  const trCertifications = trCertifications.map((c) => {
     const [name, , description] = take(3);
     return { ...c, name, description };
   });
@@ -146,7 +146,7 @@ function AboutPage() {
           <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
             <PanelColumn title={eduLabel} fg={settings.aboutPanelFg}>
               <ul className="space-y-5">
-                {settings.aboutEducation.map((e, i) => (
+                {trEducation.map((e, i) => (
                   <TooltipItem key={i} description={e.description} settings={settings}>
                     <div>
                       <div className="font-display text-sm font-bold leading-snug">
@@ -168,7 +168,7 @@ function AboutPage() {
 
             <PanelColumn title={langLabel} fg={settings.aboutPanelFg}>
               <ul className="space-y-5">
-                {settings.aboutLanguages.map((l, i) => (
+                {trLanguages.map((l, i) => (
                   <TooltipItem key={i} description={l.description} settings={settings}>
                     <LanguageRow item={l} settings={settings} />
                   </TooltipItem>
@@ -181,7 +181,7 @@ function AboutPage() {
 
             <PanelColumn title={softLabel} fg={settings.aboutPanelFg}>
               <ul className="space-y-4">
-                {settings.aboutSoftware.map((s, i) => (
+                {trSoftware.map((s, i) => (
                   <TooltipItem key={i} description={s.description} settings={settings}>
                     <LogoRow item={s} maxWidth={settings.aboutLogoMaxWidth} />
                   </TooltipItem>
@@ -194,7 +194,7 @@ function AboutPage() {
 
             <PanelColumn title={certLabel} fg={settings.aboutPanelFg}>
               <ul className="space-y-4">
-                {settings.aboutCertifications.map((c, i) => (
+                {trCertifications.map((c, i) => (
                   <TooltipItem key={i} description={c.description} settings={settings}>
                     <LogoRow item={c} maxWidth={settings.aboutLogoMaxWidth} />
                   </TooltipItem>
