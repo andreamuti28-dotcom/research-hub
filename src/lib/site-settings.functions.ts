@@ -68,6 +68,9 @@ const DEFAULTS: SiteSettings = {
   linkedinUrl: "https://www.linkedin.com",
   portraitUrl: null,
   featuredPaperIds: [],
+  homeFeaturedLabel: "Paper in Evidenza",
+  homeMarketLabel: "Analisi Mercati Finanziari",
+  homeMarketEnabled: true,
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
@@ -91,6 +94,7 @@ const DEFAULTS: SiteSettings = {
   aboutSoftware: [],
   aboutCertifications: [],
 };
+
 
 function coerceLanguages(v: unknown): LanguageItem[] {
   if (!Array.isArray(v)) return [];
