@@ -1,5 +1,66 @@
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+async function assertAdmin(userId: string) {
+  const { data, error } = await supabaseAdmin
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data) throw new Error("Forbidden: admin role required");
+}
+
+const upsertSchema = z.object({
+  title: z.string().trim().min(1).max(300),
+  content: z.string().trim().min(1).max(200_000),
+  reportDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .optional(),
+  source: z.string().trim().max(200).nullable().optional(),
+});
+
+export const upsertCurrentMarketReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => upsertSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const reportDate = data.reportDate ?? new Date().toISOString().slice(0, 10);
+
+    const { data: existing } = await supabaseAdmin
+      .from("market_reports")
+      .select("id")
+      .eq("is_current", true)
+      .maybeSingle();
+
+    if (existing) {
+      const { error } = await supabaseAdmin
+        .from("market_reports")
+        .update({
+          title: data.title,
+          content: data.content,
+          report_date: reportDate,
+          source: data.source ?? null,
+        })
+        .eq("id", existing.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin.from("market_reports").insert({
+        title: data.title,
+        content: data.content,
+        report_date: reportDate,
+        source: data.source ?? null,
+        is_current: true,
+      });
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
 
 export type MarketReport = {
   id: string;
