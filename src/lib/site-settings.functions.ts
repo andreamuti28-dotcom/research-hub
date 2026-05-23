@@ -181,6 +181,8 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       homeMarketLabel: str(d.home_market_label, DEFAULTS.homeMarketLabel),
       homeMarketEnabled:
         typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
+      homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
+      archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
 
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
