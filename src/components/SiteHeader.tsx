@@ -9,8 +9,8 @@ export function SiteHeader() {
   const t = useT();
   return (
     <nav
-      className="sticky top-0 z-50 backdrop-blur-md border-b border-border"
-      style={{ backgroundColor: headerBg }}
+      className="sticky top-0 z-50 backdrop-blur-md border-b border-border bg-background"
+      style={headerBg ? { backgroundColor: headerBg } : undefined}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
         <Link
