@@ -444,15 +444,8 @@ function AdminSettingsPage() {
               Mostra sezione mercati nella home
             </span>
           </label>
-          <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-            Endpoint per ricevere i report dal Google Apps Script:
-            <br />
-            <code className="text-[11px]">POST /api/public/market-reports</code>
-            <br />
-            Header: <code>Authorization: Bearer &lt;MARKET_REPORTS_WEBHOOK_SECRET&gt;</code>
-            <br />
-            Body JSON: <code>{`{ "title": "...", "content": "...", "reportDate": "YYYY-MM-DD", "source": "..." }`}</code>
-          </p>
+          <MarketReportsIntegrationPanel />
+
         </section>
 
 
