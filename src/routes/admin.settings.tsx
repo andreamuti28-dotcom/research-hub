@@ -816,12 +816,13 @@ function LanguageEditor({
       <button
         type="button"
         onClick={() =>
-          onChange([...items, { name: "", level: 80, flag: "", description: "" }])
+          onChange([...items, { name: "", level: 80, flag: "", flagUrl: null, description: "" }])
         }
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
         + Aggiungi lingua
       </button>
+
     </div>
   );
 }
