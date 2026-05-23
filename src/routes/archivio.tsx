@@ -115,9 +115,6 @@ function Archivio() {
           (a, b) => +new Date(a.publishedDate) - +new Date(b.publishedDate),
         );
         break;
-      case "views":
-        sorted.sort((a, b) => b.views - a.views);
-        break;
       case "title":
         sorted.sort((a, b) => a.title.localeCompare(b.title, "it"));
         break;
