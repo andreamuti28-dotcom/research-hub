@@ -235,7 +235,7 @@ function AdminSettingsPage() {
             Foto profilo (pagina About)
           </h2>
           <div className="flex items-start gap-6 flex-wrap">
-            <div className="w-32 aspect-[4/5] bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
+            <div className="w-40 h-40 rounded-full bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
               {form.portraitUrl ? (
                 <img
                   src={form.portraitUrl}
@@ -285,37 +285,21 @@ function AdminSettingsPage() {
                 <div className="font-mono text-[11px] text-destructive">{uploadError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                L'immagine viene ritagliata in 4:5. Usa i cursori per spostare il punto focale.
+                L'immagine viene ritagliata in un cerchio. Trascina il punto focale sulla griglia per scegliere cosa mostrare.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
-            <Field label={`Posizione orizzontale: ${form.aboutPortraitPosX}%`}>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={form.aboutPortraitPosX}
-                onChange={(e) =>
-                  setForm({ ...form, aboutPortraitPosX: Number(e.target.value) })
-                }
-                className="w-full"
-              />
-            </Field>
-            <Field label={`Posizione verticale: ${form.aboutPortraitPosY}%`}>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={form.aboutPortraitPosY}
-                onChange={(e) =>
-                  setForm({ ...form, aboutPortraitPosY: Number(e.target.value) })
-                }
-                className="w-full"
-              />
-            </Field>
-          </div>
+          {form.portraitUrl && (
+            <PortraitFocusPicker
+              src={form.portraitUrl}
+              posX={form.aboutPortraitPosX}
+              posY={form.aboutPortraitPosY}
+              onChange={(x, y) =>
+                setForm((f) => (f ? { ...f, aboutPortraitPosX: x, aboutPortraitPosY: y } : f))
+              }
+            />
+          )}
         </section>
 
         {/* Identità */}
@@ -1261,6 +1245,75 @@ function sendDailyMarketReport() {
         Risposte: <code>201</code> = creato · <code>401</code> = secret errato ·
         <code>400</code> = JSON o payload non valido · <code>503</code> = secret
         mancante lato server.
+      </div>
+    </div>
+  );
+}
+
+function PortraitFocusPicker({
+  src,
+  posX,
+  posY,
+  onChange,
+}: {
+  src: string;
+  posX: number;
+  posY: number;
+  onChange: (x: number, y: number) => void;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
+
+  const update = (clientX: number, clientY: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) return;
+    const x = Math.max(0, Math.min(100, ((clientX - r.left) / r.width) * 100));
+    const y = Math.max(0, Math.min(100, ((clientY - r.top) / r.height) * 100));
+    onChange(Math.round(x), Math.round(y));
+  };
+
+  return (
+    <div className="space-y-2 pt-2">
+      <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/70">
+        Punto focale — trascina sulla griglia
+      </div>
+      <div
+        ref={ref}
+        className="relative inline-block select-none touch-none cursor-crosshair border border-surface-dark-muted bg-black/40"
+        onPointerDown={(e) => {
+          draggingRef.current = true;
+          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+          update(e.clientX, e.clientY);
+        }}
+        onPointerMove={(e) => {
+          if (draggingRef.current) update(e.clientX, e.clientY);
+        }}
+        onPointerUp={(e) => {
+          draggingRef.current = false;
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        }}
+      >
+        <img
+          src={src}
+          alt=""
+          className="block max-h-[360px] max-w-full pointer-events-none"
+          draggable={false}
+        />
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-y-0 left-1/3 w-px bg-white/40" />
+          <div className="absolute inset-y-0 left-2/3 w-px bg-white/40" />
+          <div className="absolute inset-x-0 top-1/3 h-px bg-white/40" />
+          <div className="absolute inset-x-0 top-2/3 h-px bg-white/40" />
+        </div>
+        <div
+          className="absolute w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow-[0_0_0_2px_rgba(0,0,0,0.7)] pointer-events-none"
+          style={{ left: `${posX}%`, top: `${posY}%` }}
+        />
+      </div>
+      <div className="font-mono text-[10px] text-surface-dark-foreground/50">
+        X: {posX}% · Y: {posY}%
       </div>
     </div>
   );

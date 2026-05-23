@@ -43,7 +43,7 @@ export const Route = createFileRoute("/archivio")({
   component: Archivio,
 });
 
-type SortKey = "recent" | "oldest" | "views" | "title";
+type SortKey = "recent" | "oldest" | "title";
 type Tab = "papers" | "market";
 
 function Archivio() {
@@ -114,9 +114,6 @@ function Archivio() {
         sorted.sort(
           (a, b) => +new Date(a.publishedDate) - +new Date(b.publishedDate),
         );
-        break;
-      case "views":
-        sorted.sort((a, b) => b.views - a.views);
         break;
       case "title":
         sorted.sort((a, b) => a.title.localeCompare(b.title, "it"));
@@ -216,7 +213,6 @@ function Archivio() {
                 >
                   <option value="recent">{t("archive.sort.recent")}</option>
                   <option value="oldest">{t("archive.sort.oldest")}</option>
-                  <option value="views">{t("archive.sort.views")}</option>
                   <option value="title">{t("archive.sort.title")}</option>
                 </select>
                 {hasFilters && (

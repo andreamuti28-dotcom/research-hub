@@ -107,8 +107,6 @@ function PaperDetail() {
             <span className="text-border">/</span>
             <span>{t("paper.readingMin", readingMinutes)}</span>
             <span className="text-border">/</span>
-            <span>{t("paper.views", paper.views)}</span>
-            <span className="text-border">/</span>
             <span className="text-primary uppercase tracking-tighter">
               {paper.tags.map((tg: string) => `#${tg}`).join(" ")}
             </span>
