@@ -77,13 +77,19 @@ export type Database = {
           about_kicker: string | null
           about_languages: Json
           about_languages_bar_color: string | null
+          about_languages_bar_track_color: string
           about_languages_label: string | null
           about_logo_max_width: number
           about_panel_bg: string | null
           about_panel_fg: string | null
+          about_portrait_pos_x: number
+          about_portrait_pos_y: number
           about_role: string | null
           about_software: Json
           about_software_label: string | null
+          about_tooltip_bg: string
+          about_tooltip_border: string
+          about_tooltip_fg: string
           featured_paper_ids: string[]
           hero_intro: string
           hero_title: string
@@ -105,13 +111,19 @@ export type Database = {
           about_kicker?: string | null
           about_languages?: Json
           about_languages_bar_color?: string | null
+          about_languages_bar_track_color?: string
           about_languages_label?: string | null
           about_logo_max_width?: number
           about_panel_bg?: string | null
           about_panel_fg?: string | null
+          about_portrait_pos_x?: number
+          about_portrait_pos_y?: number
           about_role?: string | null
           about_software?: Json
           about_software_label?: string | null
+          about_tooltip_bg?: string
+          about_tooltip_border?: string
+          about_tooltip_fg?: string
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
@@ -133,13 +145,19 @@ export type Database = {
           about_kicker?: string | null
           about_languages?: Json
           about_languages_bar_color?: string | null
+          about_languages_bar_track_color?: string
           about_languages_label?: string | null
           about_logo_max_width?: number
           about_panel_bg?: string | null
           about_panel_fg?: string | null
+          about_portrait_pos_x?: number
+          about_portrait_pos_y?: number
           about_role?: string | null
           about_software?: Json
           about_software_label?: string | null
+          about_tooltip_bg?: string
+          about_tooltip_border?: string
+          about_tooltip_fg?: string
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string

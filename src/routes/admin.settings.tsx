@@ -49,7 +49,13 @@ type FormState = {
   aboutPanelBg: string;
   aboutPanelFg: string;
   aboutLanguagesBarColor: string;
+  aboutLanguagesBarTrackColor: string;
   aboutLogoMaxWidth: number;
+  aboutPortraitPosX: number;
+  aboutPortraitPosY: number;
+  aboutTooltipBg: string;
+  aboutTooltipFg: string;
+  aboutTooltipBorder: string;
   aboutEducation: EducationItem[];
   aboutLanguages: LanguageItem[];
   aboutSoftware: LogoItem[];
@@ -125,7 +131,13 @@ function AdminSettingsPage() {
         aboutPanelBg: s.aboutPanelBg,
         aboutPanelFg: s.aboutPanelFg,
         aboutLanguagesBarColor: s.aboutLanguagesBarColor,
+        aboutLanguagesBarTrackColor: s.aboutLanguagesBarTrackColor,
         aboutLogoMaxWidth: s.aboutLogoMaxWidth,
+        aboutPortraitPosX: s.aboutPortraitPosX,
+        aboutPortraitPosY: s.aboutPortraitPosY,
+        aboutTooltipBg: s.aboutTooltipBg,
+        aboutTooltipFg: s.aboutTooltipFg,
+        aboutTooltipBorder: s.aboutTooltipBorder,
         aboutEducation: s.aboutEducation,
         aboutLanguages: s.aboutLanguages,
         aboutSoftware: s.aboutSoftware,
@@ -214,13 +226,16 @@ function AdminSettingsPage() {
           <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
             Foto profilo (pagina About)
           </h2>
-          <div className="flex items-start gap-6">
+          <div className="flex items-start gap-6 flex-wrap">
             <div className="w-32 aspect-[4/5] bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
               {form.portraitUrl ? (
                 <img
                   src={form.portraitUrl}
                   alt="Anteprima foto profilo"
                   className="w-full h-full object-cover"
+                  style={{
+                    objectPosition: `${form.aboutPortraitPosX}% ${form.aboutPortraitPosY}%`,
+                  }}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/40 text-center px-2">
@@ -228,7 +243,7 @@ function AdminSettingsPage() {
                 </div>
               )}
             </div>
-            <div className="flex-1 space-y-3">
+            <div className="flex-1 min-w-[260px] space-y-3">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -239,30 +254,59 @@ function AdminSettingsPage() {
                   if (f) handleUpload(f);
                 }}
               />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="px-4 py-2 bg-background text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
-              >
-                {uploading ? "Caricamento…" : form.portraitUrl ? "Sostituisci foto" : "Carica foto"}
-              </button>
-              {form.portraitUrl && (
+              <div>
                 <button
                   type="button"
-                  onClick={() => setForm((f) => (f ? { ...f, portraitUrl: null } : f))}
-                  className="ml-3 px-4 py-2 border border-surface-dark-muted font-display text-[11px] font-bold uppercase tracking-wider hover:border-destructive hover:text-destructive transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="px-4 py-2 bg-background text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
                 >
-                  Rimuovi
+                  {uploading ? "Caricamento…" : form.portraitUrl ? "Sostituisci foto" : "Carica foto"}
                 </button>
-              )}
+                {form.portraitUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => (f ? { ...f, portraitUrl: null } : f))}
+                    className="ml-3 px-4 py-2 border border-surface-dark-muted font-display text-[11px] font-bold uppercase tracking-wider hover:border-destructive hover:text-destructive transition-colors"
+                  >
+                    Rimuovi
+                  </button>
+                )}
+              </div>
               {uploadError && (
                 <div className="font-mono text-[11px] text-destructive">{uploadError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                L'immagine viene ritagliata automaticamente in formato 4:5.
+                L'immagine viene ritagliata in 4:5. Usa i cursori per spostare il punto focale.
               </p>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
+            <Field label={`Posizione orizzontale: ${form.aboutPortraitPosX}%`}>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={form.aboutPortraitPosX}
+                onChange={(e) =>
+                  setForm({ ...form, aboutPortraitPosX: Number(e.target.value) })
+                }
+                className="w-full"
+              />
+            </Field>
+            <Field label={`Posizione verticale: ${form.aboutPortraitPosY}%`}>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={form.aboutPortraitPosY}
+                onChange={(e) =>
+                  setForm({ ...form, aboutPortraitPosY: Number(e.target.value) })
+                }
+                className="w-full"
+              />
+            </Field>
           </div>
         </section>
 
@@ -442,7 +486,7 @@ function AdminSettingsPage() {
             </Field>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Colore sfondo pannello">
               <ColorField
                 value={form.aboutPanelBg}
@@ -455,10 +499,16 @@ function AdminSettingsPage() {
                 onChange={(v) => setForm({ ...form, aboutPanelFg: v })}
               />
             </Field>
-            <Field label="Colore barre lingue">
+            <Field label="Colore barra lingue (riempimento)">
               <ColorField
                 value={form.aboutLanguagesBarColor}
                 onChange={(v) => setForm({ ...form, aboutLanguagesBarColor: v })}
+              />
+            </Field>
+            <Field label="Colore sfondo barra lingue (vuoto)">
+              <ColorField
+                value={form.aboutLanguagesBarTrackColor}
+                onChange={(v) => setForm({ ...form, aboutLanguagesBarTrackColor: v })}
               />
             </Field>
           </div>
@@ -478,6 +528,36 @@ function AdminSettingsPage() {
               className={inputCls}
             />
           </Field>
+
+          {/* Tooltip controls */}
+          <div className="border-t border-surface-dark-muted pt-6 space-y-4">
+            <h3 className="font-display text-xs uppercase tracking-widest text-surface-dark-foreground/70">
+              Tooltip (al passaggio del mouse)
+            </h3>
+            <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+              Compaiono quando l'utente passa il mouse sopra le voci della formazione, lingue, software e certificazioni. Lascia vuoto il campo "tooltip" di un elemento per nasconderlo.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Field label="Sfondo tooltip">
+                <ColorField
+                  value={form.aboutTooltipBg}
+                  onChange={(v) => setForm({ ...form, aboutTooltipBg: v })}
+                />
+              </Field>
+              <Field label="Testo tooltip">
+                <ColorField
+                  value={form.aboutTooltipFg}
+                  onChange={(v) => setForm({ ...form, aboutTooltipFg: v })}
+                />
+              </Field>
+              <Field label="Bordo tooltip">
+                <ColorField
+                  value={form.aboutTooltipBorder}
+                  onChange={(v) => setForm({ ...form, aboutTooltipBorder: v })}
+                />
+              </Field>
+            </div>
+          </div>
 
           <EducationEditor
             items={form.aboutEducation}
@@ -549,14 +629,19 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function ColorField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const normalize = (v: string) => {
     const s = v.trim();
-    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(s)) return s;
+    if (/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(s)) return s;
     return value;
   };
+  const colorPickerValue = /^#[0-9a-fA-F]{6}$/.test(value)
+    ? value
+    : /^#[0-9a-fA-F]{8}$/.test(value)
+      ? value.slice(0, 7)
+      : "#000000";
   return (
     <div className="flex items-center gap-3">
       <input
         type="color"
-        value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : "#000000"}
+        value={colorPickerValue}
         onChange={(e) => onChange(e.target.value)}
         className="h-11 w-14 cursor-pointer rounded border border-neutral-300 bg-white"
       />
@@ -567,7 +652,7 @@ function ColorField({ value, onChange }: { value: string; onChange: (v: string) 
         onBlur={(e) => onChange(normalize(e.target.value))}
         placeholder="#000000"
         className={`${inputCls} flex-1`}
-        maxLength={7}
+        maxLength={9}
       />
     </div>
   );
@@ -585,46 +670,61 @@ function EducationEditor({
       <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
         Formazione (voci)
       </div>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {items.map((it, i) => (
-          <div key={i} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-start">
-            <input
-              type="text"
-              value={it.name}
-              placeholder="Titolo (es. Master in Design)"
+          <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-start">
+              <input
+                type="text"
+                value={it.name}
+                placeholder="Titolo (es. Master in Design)"
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...it, name: e.target.value };
+                  onChange(next);
+                }}
+                className={inputCls}
+                maxLength={120}
+              />
+              <input
+                type="text"
+                value={it.detail}
+                placeholder="Istituto / anno (es. Politecnico, 2022)"
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...it, detail: e.target.value };
+                  onChange(next);
+                }}
+                className={inputCls}
+                maxLength={300}
+              />
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+              >
+                ×
+              </button>
+            </div>
+            <textarea
+              value={it.description}
+              placeholder="Testo tooltip (lascia vuoto per nascondere)"
               onChange={(e) => {
                 const next = [...items];
-                next[i] = { ...it, name: e.target.value };
+                next[i] = { ...it, description: e.target.value };
                 onChange(next);
               }}
-              className={inputCls}
-              maxLength={120}
-            />
-            <input
-              type="text"
-              value={it.detail}
-              placeholder="Istituto / anno (es. Politecnico, 2022)"
-              onChange={(e) => {
-                const next = [...items];
-                next[i] = { ...it, detail: e.target.value };
-                onChange(next);
-              }}
-              className={inputCls}
+              className={`${inputCls} min-h-[60px]`}
               maxLength={300}
             />
-            <button
-              type="button"
-              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
-            >
-              ×
-            </button>
           </div>
         ))}
       </div>
       <button
         type="button"
-        onClick={() => onChange([...items, { name: "", detail: "" }])}
+        onClick={() =>
+          onChange([...items, { name: "", detail: "", description: "" }])
+        }
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
         + Aggiungi formazione
@@ -645,67 +745,79 @@ function LanguageEditor({
       <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
         Lingue (voci) — incolla l'emoji bandiera (🇮🇹 🇬🇧 🇫🇷 …)
       </div>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {items.map((it, i) => (
-          <div
-            key={i}
-            className="grid grid-cols-[64px_1fr_120px_auto] gap-2 items-start"
-          >
-            <input
-              type="text"
-              value={it.flag}
-              placeholder="🇮🇹"
-              onChange={(e) => {
-                const next = [...items];
-                next[i] = { ...it, flag: e.target.value };
-                onChange(next);
-              }}
-              className={`${inputCls} text-center text-2xl`}
-              maxLength={8}
-            />
-            <input
-              type="text"
-              value={it.name}
-              placeholder="Italiano"
-              onChange={(e) => {
-                const next = [...items];
-                next[i] = { ...it, name: e.target.value };
-                onChange(next);
-              }}
-              className={inputCls}
-              maxLength={60}
-            />
-            <div className="flex items-center gap-2">
+          <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <div className="grid grid-cols-[64px_1fr_120px_auto] gap-2 items-start">
               <input
-                type="number"
-                min={0}
-                max={100}
-                value={it.level}
+                type="text"
+                value={it.flag}
+                placeholder="🇮🇹"
                 onChange={(e) => {
                   const next = [...items];
-                  next[i] = {
-                    ...it,
-                    level: Math.max(0, Math.min(100, Number(e.target.value) || 0)),
-                  };
+                  next[i] = { ...it, flag: e.target.value };
+                  onChange(next);
+                }}
+                className={`${inputCls} text-center text-2xl`}
+                maxLength={8}
+              />
+              <input
+                type="text"
+                value={it.name}
+                placeholder="Italiano"
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...it, name: e.target.value };
                   onChange(next);
                 }}
                 className={inputCls}
+                maxLength={60}
               />
-              <span className="font-mono text-[10px] text-surface-dark-foreground/50">%</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={it.level}
+                  onChange={(e) => {
+                    const next = [...items];
+                    next[i] = {
+                      ...it,
+                      level: Math.max(0, Math.min(100, Number(e.target.value) || 0)),
+                    };
+                    onChange(next);
+                  }}
+                  className={inputCls}
+                />
+                <span className="font-mono text-[10px] text-surface-dark-foreground/50">%</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+              >
+                ×
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
-            >
-              ×
-            </button>
+            <textarea
+              value={it.description}
+              placeholder="Testo tooltip (lascia vuoto per nascondere)"
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...it, description: e.target.value };
+                onChange(next);
+              }}
+              className={`${inputCls} min-h-[60px]`}
+              maxLength={300}
+            />
           </div>
         ))}
       </div>
       <button
         type="button"
-        onClick={() => onChange([...items, { name: "", level: 80, flag: "" }])}
+        onClick={() =>
+          onChange([...items, { name: "", level: 80, flag: "", description: "" }])
+        }
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
         + Aggiungi lingua
@@ -776,64 +888,76 @@ function LogoListEditor({
       <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
         {label}
       </div>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {items.map((it, i) => (
-          <div
-            key={i}
-            className="grid grid-cols-[64px_1fr_auto_auto] gap-2 items-center"
-          >
-            <div className="w-16 h-16 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
-              {it.logoUrl ? (
-                <img
-                  src={it.logoUrl}
-                  alt={it.name}
-                  className="w-full h-full object-contain p-1.5"
+          <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <div className="grid grid-cols-[64px_1fr_auto_auto] gap-2 items-center">
+              <div className="w-16 h-16 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
+                {it.logoUrl ? (
+                  <img
+                    src={it.logoUrl}
+                    alt={it.name}
+                    className="w-full h-full object-contain p-1.5"
+                  />
+                ) : (
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-neutral-400">
+                    no logo
+                  </span>
+                )}
+              </div>
+              <input
+                type="text"
+                value={it.name}
+                placeholder={placeholder}
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...it, name: e.target.value };
+                  onChange(next);
+                }}
+                className={inputCls}
+                maxLength={60}
+              />
+              <label className="px-3 py-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold cursor-pointer hover:border-background hover:text-background">
+                {busy === i ? "Carico…" : it.logoUrl ? "Sostituisci" : "Logo"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleFile(i, f);
+                    e.target.value = "";
+                  }}
                 />
-              ) : (
-                <span className="font-mono text-[9px] uppercase tracking-widest text-neutral-400">
-                  no logo
-                </span>
-              )}
+              </label>
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+                className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+              >
+                ×
+              </button>
             </div>
-            <input
-              type="text"
-              value={it.name}
-              placeholder={placeholder}
+            <textarea
+              value={it.description}
+              placeholder="Testo tooltip (lascia vuoto per nascondere)"
               onChange={(e) => {
                 const next = [...items];
-                next[i] = { ...it, name: e.target.value };
+                next[i] = { ...it, description: e.target.value };
                 onChange(next);
               }}
-              className={inputCls}
-              maxLength={60}
+              className={`${inputCls} min-h-[60px]`}
+              maxLength={300}
             />
-            <label className="px-3 py-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold cursor-pointer hover:border-background hover:text-background">
-              {busy === i ? "Carico…" : it.logoUrl ? "Sostituisci" : "Logo"}
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                className="hidden"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) handleFile(i, f);
-                  e.target.value = "";
-                }}
-              />
-            </label>
-            <button
-              type="button"
-              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
-              className="h-12 px-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
-            >
-              ×
-            </button>
           </div>
         ))}
       </div>
       {err && <div className="font-mono text-[11px] text-destructive">{err}</div>}
       <button
         type="button"
-        onClick={() => onChange([...items, { name: "", logoUrl: null }])}
+        onClick={() =>
+          onChange([...items, { name: "", logoUrl: null, description: "" }])
+        }
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
         + Aggiungi

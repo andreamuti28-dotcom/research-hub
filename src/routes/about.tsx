@@ -5,6 +5,13 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
 import { useTranslated } from "@/hooks/use-translated";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import type { SiteSettings } from "@/lib/site-settings.functions";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -27,6 +34,10 @@ export const Route = createFileRoute("/about")({
   component: AboutPage,
 });
 
+// CSS font stack that forces emoji rendering on all OS (Windows fallback).
+const EMOJI_FONT =
+  '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla","EmojiOne Color","Android Emoji",sans-serif';
+
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
   const [bio, role, kicker, eduLabel, langLabel, softLabel, certLabel] = useTranslated([
@@ -41,133 +52,150 @@ function AboutPage() {
   const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <SiteHeader />
+    <TooltipProvider delayDuration={150}>
+      <div className="min-h-screen flex flex-col">
+        <SiteHeader />
 
-      {/* Top: portrait + bio */}
-      <section className="bg-background py-16 md:py-24">
-        <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-[320px_1fr] gap-10 md:gap-16 items-start">
-          <div className="flex justify-center md:justify-start">
-            <img
-              src={portraitSrc}
-              alt={`Ritratto di ${settings.name}`}
-              className="w-64 h-64 md:w-72 md:h-72 rounded-full object-cover bg-surface"
-            />
-          </div>
-          <div className="animate-fade-up">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-              {kicker}
+        {/* Top: portrait + bio */}
+        <section className="bg-background py-16 md:py-24">
+          <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-[320px_1fr] gap-10 md:gap-16 items-start">
+            <div className="flex justify-center md:justify-start">
+              <img
+                src={portraitSrc}
+                alt={`Ritratto di ${settings.name}`}
+                className="w-64 h-64 md:w-72 md:h-72 rounded-full object-cover bg-surface"
+                style={{
+                  objectPosition: `${settings.aboutPortraitPosX}% ${settings.aboutPortraitPosY}%`,
+                }}
+              />
             </div>
-            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter italic mb-3">
-              {settings.name}
-            </h1>
-            <p className="text-muted-foreground text-lg mb-6">{role}</p>
-            <div className="max-w-[60ch] text-base md:text-lg leading-relaxed text-pretty space-y-4">
-              {bio.split(/\n\n+/).map((para, i) => (
-                <p key={i} className="whitespace-pre-line">
-                  {para}
-                </p>
-              ))}
+            <div className="animate-fade-up">
+              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+                {kicker}
+              </div>
+              <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter italic mb-3">
+                {settings.name}
+              </h1>
+              <p className="text-muted-foreground text-lg mb-6">{role}</p>
+              <div className="max-w-[60ch] text-base md:text-lg leading-relaxed text-pretty space-y-4">
+                {bio.split(/\n\n+/).map((para, i) => (
+                  <p key={i} className="whitespace-pre-line">
+                    {para}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Skills band (color editable from admin) — 4 columns */}
-      <section
-        className="py-16 md:py-24"
-        style={{ backgroundColor: settings.aboutPanelBg, color: settings.aboutPanelFg }}
-      >
-        <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
-          {/* Formazione */}
-          <PanelColumn title={eduLabel} fg={settings.aboutPanelFg}>
-            <ul className="space-y-5">
-              {settings.aboutEducation.map((e, i) => (
-                <li key={i}>
-                  <div className="font-display text-sm font-bold leading-snug">
-                    {e.name}
-                  </div>
-                  {e.detail && (
-                    <div className="font-mono text-[11px] opacity-80 mt-1 leading-relaxed">
-                      {e.detail}
-                    </div>
-                  )}
-                </li>
-              ))}
-              {settings.aboutEducation.length === 0 && (
-                <li className="font-mono text-xs opacity-70">—</li>
-              )}
-            </ul>
-          </PanelColumn>
-
-          {/* Lingue */}
-          <PanelColumn title={langLabel} fg={settings.aboutPanelFg}>
-            <ul className="space-y-5">
-              {settings.aboutLanguages.map((l, i) => (
-                <li key={i} className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 min-w-0">
-                      {l.flag && (
-                        <span className="text-lg leading-none shrink-0" aria-hidden>
-                          {l.flag}
-                        </span>
+        {/* Skills band — 4 columns */}
+        <section
+          className="py-16 md:py-24"
+          style={{ backgroundColor: settings.aboutPanelBg, color: settings.aboutPanelFg }}
+        >
+          <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
+            {/* Formazione */}
+            <PanelColumn title={eduLabel} fg={settings.aboutPanelFg}>
+              <ul className="space-y-5">
+                {settings.aboutEducation.map((e, i) => (
+                  <TooltipItem key={i} description={e.description} settings={settings}>
+                    <div>
+                      <div className="font-display text-sm font-bold leading-snug">
+                        {e.name}
+                      </div>
+                      {e.detail && (
+                        <div className="font-mono text-[11px] opacity-80 mt-1 leading-relaxed">
+                          {e.detail}
+                        </div>
                       )}
-                      <span className="font-display text-xs font-bold uppercase tracking-widest truncate">
-                        {l.name}
-                      </span>
                     </div>
-                    <span className="font-mono text-[11px] font-bold tabular-nums shrink-0">
-                      {l.level}%
-                    </span>
-                  </div>
-                  <div
-                    className="h-2 rounded-full overflow-hidden"
-                    style={{ backgroundColor: settings.aboutPanelFg, opacity: 0.2 }}
-                  >
-                    <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${l.level}%`,
-                        backgroundColor: settings.aboutLanguagesBarColor,
-                      }}
-                    />
-                  </div>
-                </li>
-              ))}
-              {settings.aboutLanguages.length === 0 && (
-                <li className="font-mono text-xs opacity-70">—</li>
-              )}
-            </ul>
-          </PanelColumn>
+                  </TooltipItem>
+                ))}
+                {settings.aboutEducation.length === 0 && (
+                  <li className="font-mono text-xs opacity-70">—</li>
+                )}
+              </ul>
+            </PanelColumn>
 
-          {/* Software & AI */}
-          <PanelColumn title={softLabel} fg={settings.aboutPanelFg}>
-            <ul className="space-y-4">
-              {settings.aboutSoftware.map((s, i) => (
-                <LogoRow key={i} item={s} maxWidth={settings.aboutLogoMaxWidth} />
-              ))}
-              {settings.aboutSoftware.length === 0 && (
-                <li className="font-mono text-xs opacity-70">—</li>
-              )}
-            </ul>
-          </PanelColumn>
+            {/* Lingue */}
+            <PanelColumn title={langLabel} fg={settings.aboutPanelFg}>
+              <ul className="space-y-5">
+                {settings.aboutLanguages.map((l, i) => (
+                  <TooltipItem key={i} description={l.description} settings={settings}>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {l.flag && (
+                            <span
+                              className="text-xl leading-none shrink-0"
+                              style={{ fontFamily: EMOJI_FONT }}
+                              aria-hidden
+                            >
+                              {l.flag}
+                            </span>
+                          )}
+                          <span className="font-display text-xs font-bold uppercase tracking-widest truncate">
+                            {l.name}
+                          </span>
+                        </div>
+                        <span className="font-mono text-[11px] font-bold tabular-nums shrink-0">
+                          {l.level}%
+                        </span>
+                      </div>
+                      <div
+                        className="h-2 rounded-full overflow-hidden"
+                        style={{ backgroundColor: settings.aboutLanguagesBarTrackColor }}
+                      >
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${l.level}%`,
+                            backgroundColor: settings.aboutLanguagesBarColor,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </TooltipItem>
+                ))}
+                {settings.aboutLanguages.length === 0 && (
+                  <li className="font-mono text-xs opacity-70">—</li>
+                )}
+              </ul>
+            </PanelColumn>
 
-          {/* Certificazioni */}
-          <PanelColumn title={certLabel} fg={settings.aboutPanelFg}>
-            <ul className="space-y-4">
-              {settings.aboutCertifications.map((c, i) => (
-                <LogoRow key={i} item={c} maxWidth={settings.aboutLogoMaxWidth} />
-              ))}
-              {settings.aboutCertifications.length === 0 && (
-                <li className="font-mono text-xs opacity-70">—</li>
-              )}
-            </ul>
-          </PanelColumn>
-        </div>
-      </section>
+            {/* Software & AI */}
+            <PanelColumn title={softLabel} fg={settings.aboutPanelFg}>
+              <ul className="space-y-4">
+                {settings.aboutSoftware.map((s, i) => (
+                  <TooltipItem key={i} description={s.description} settings={settings}>
+                    <LogoRow item={s} maxWidth={settings.aboutLogoMaxWidth} />
+                  </TooltipItem>
+                ))}
+                {settings.aboutSoftware.length === 0 && (
+                  <li className="font-mono text-xs opacity-70">—</li>
+                )}
+              </ul>
+            </PanelColumn>
 
-      <SiteFooter />
-    </div>
+            {/* Certificazioni */}
+            <PanelColumn title={certLabel} fg={settings.aboutPanelFg}>
+              <ul className="space-y-4">
+                {settings.aboutCertifications.map((c, i) => (
+                  <TooltipItem key={i} description={c.description} settings={settings}>
+                    <LogoRow item={c} maxWidth={settings.aboutLogoMaxWidth} />
+                  </TooltipItem>
+                ))}
+                {settings.aboutCertifications.length === 0 && (
+                  <li className="font-mono text-xs opacity-70">—</li>
+                )}
+              </ul>
+            </PanelColumn>
+          </div>
+        </section>
+
+        <SiteFooter />
+      </div>
+    </TooltipProvider>
   );
 }
 
@@ -189,6 +217,40 @@ function PanelColumn({
   );
 }
 
+function TooltipItem({
+  description,
+  settings,
+  children,
+}: {
+  description: string;
+  settings: SiteSettings;
+  children: React.ReactNode;
+}) {
+  if (!description || !description.trim()) {
+    return <li>{children}</li>;
+  }
+  return (
+    <li>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="cursor-help">{children}</div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="top"
+          className="max-w-xs text-xs px-3 py-2 rounded-md border shadow-md"
+          style={{
+            backgroundColor: settings.aboutTooltipBg,
+            color: settings.aboutTooltipFg,
+            borderColor: settings.aboutTooltipBorder,
+          }}
+        >
+          {description}
+        </TooltipContent>
+      </Tooltip>
+    </li>
+  );
+}
+
 function LogoRow({
   item,
   maxWidth,
@@ -197,7 +259,7 @@ function LogoRow({
   maxWidth: number;
 }) {
   return (
-    <li className="flex items-center gap-3">
+    <div className="flex items-center gap-3">
       <div
         className="about-logo shrink-0 aspect-square rounded-md bg-white/95 flex items-center justify-center overflow-hidden border border-black/10"
         style={{ maxWidth: `${maxWidth}px`, width: `${maxWidth}px` }}
@@ -218,6 +280,6 @@ function LogoRow({
       <div className="font-display text-sm font-bold leading-snug">
         {item.name}
       </div>
-    </li>
+    </div>
   );
 }
