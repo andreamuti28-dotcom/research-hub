@@ -61,6 +61,7 @@ function Index() {
     settings.heroIntro,
   ]);
   const [marketOpen, setMarketOpen] = useState(false);
+  const [featuredOpen, setFeaturedOpen] = useState(false);
 
   useEffect(() => {
     const channel = supabase
