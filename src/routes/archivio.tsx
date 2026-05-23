@@ -158,9 +158,14 @@ function Archivio() {
           <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
             {t("archive.kicker")}
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter italic mb-6">
+          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter italic mb-3">
             {t("archive.title")}
           </h1>
+          {archiveDisclaimer && archiveDisclaimer.trim() && (
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              {archiveDisclaimer}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-2 mb-8 border-b border-border">
