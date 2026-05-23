@@ -207,6 +207,7 @@ const languageSchema = z.object({
   name: z.string().trim().min(1).max(60),
   level: z.number().int().min(0).max(100),
   flag: z.string().trim().max(8).default(""),
+  flagUrl: z.string().trim().url().max(1000).nullable().default(null),
   description: z.string().trim().max(300).default(""),
 });
 const logoSchema = z.object({
@@ -219,6 +220,7 @@ const educationSchema = z.object({
   detail: z.string().trim().max(300).default(""),
   description: z.string().trim().max(300).default(""),
 });
+
 // Accept hex with optional alpha: #RGB, #RRGGBB, #RRGGBBAA
 const hexColor = z
   .string()
