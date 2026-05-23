@@ -279,6 +279,10 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       linkedin_url: data.linkedinUrl,
       portrait_url: data.portraitUrl ?? null,
       featured_paper_ids: data.featuredPaperIds,
+      home_featured_label: data.homeFeaturedLabel,
+      home_market_label: data.homeMarketLabel,
+      home_market_enabled: data.homeMarketEnabled,
+
       about_role: data.aboutRole,
       about_bio: data.aboutBio,
       about_kicker: data.aboutKicker,
