@@ -234,6 +234,10 @@ const updateSchema = z.object({
   linkedinUrl: z.string().trim().url().max(500),
   portraitUrl: z.string().trim().url().max(1000).nullable().optional(),
   featuredPaperIds: z.array(z.string().uuid()).max(3).default([]),
+  homeFeaturedLabel: z.string().trim().min(1).max(120),
+  homeMarketLabel: z.string().trim().min(1).max(120),
+  homeMarketEnabled: z.boolean(),
+
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
   aboutKicker: z.string().trim().min(1).max(60),
