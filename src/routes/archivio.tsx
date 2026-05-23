@@ -8,6 +8,8 @@ import { listPublishedPapers } from "@/lib/papers.functions";
 import { listArchivedMarketReports } from "@/lib/market-reports.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useTranslated } from "@/hooks/use-translated";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
