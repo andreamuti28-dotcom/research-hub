@@ -106,12 +106,14 @@ function coerceLanguages(v: unknown): LanguageItem[] {
       const lvl = typeof o.level === "number" ? o.level : Number(o.level);
       const level = Number.isFinite(lvl) ? Math.max(0, Math.min(100, Math.round(lvl))) : 0;
       const flag = typeof o.flag === "string" ? o.flag : "";
+      const flagUrl = typeof o.flagUrl === "string" && o.flagUrl ? o.flagUrl : null;
       const description = typeof o.description === "string" ? o.description : "";
       if (!name) return null;
-      return { name, level, flag, description };
+      return { name, level, flag, flagUrl, description };
     })
     .filter((x): x is LanguageItem => x !== null);
 }
+
 
 function coerceLogos(v: unknown): LogoItem[] {
   if (!Array.isArray(v)) return [];
