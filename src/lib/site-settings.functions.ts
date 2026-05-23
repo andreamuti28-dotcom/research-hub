@@ -14,10 +14,10 @@ async function assertAdmin(userId: string) {
   if (!data) throw new Error("Forbidden: admin role required");
 }
 
-export type LanguageItem = { name: string; level: number; flag: string };
-export type LogoItem = { name: string; logoUrl: string | null };
-export type EducationItem = { name: string; detail: string };
-export type HobbyItem = { name: string; icon: string }; // legacy, kept for compatibility
+export type LanguageItem = { name: string; level: number; flag: string; description: string };
+export type LogoItem = { name: string; logoUrl: string | null; description: string };
+export type EducationItem = { name: string; detail: string; description: string };
+export type HobbyItem = { name: string; icon: string };
 
 export type SiteSettings = {
   name: string;
@@ -36,7 +36,13 @@ export type SiteSettings = {
   aboutPanelBg: string;
   aboutPanelFg: string;
   aboutLanguagesBarColor: string;
+  aboutLanguagesBarTrackColor: string;
   aboutLogoMaxWidth: number;
+  aboutPortraitPosX: number;
+  aboutPortraitPosY: number;
+  aboutTooltipBg: string;
+  aboutTooltipFg: string;
+  aboutTooltipBorder: string;
   aboutEducation: EducationItem[];
   aboutLanguages: LanguageItem[];
   aboutSoftware: LogoItem[];
@@ -54,7 +60,7 @@ const DEFAULTS: SiteSettings = {
   featuredPaperIds: [],
   aboutRole: "Ricercatore indipendente",
   aboutBio:
-    "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software: come gli strumenti che usiamo modellano il nostro comportamento collettivo.",
+    "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
   aboutKicker: "Chi sono",
   aboutEducationLabel: "Formazione",
   aboutLanguagesLabel: "Lingue",
@@ -63,7 +69,13 @@ const DEFAULTS: SiteSettings = {
   aboutPanelBg: "#1e3a8a",
   aboutPanelFg: "#ffffff",
   aboutLanguagesBarColor: "#ffffff",
+  aboutLanguagesBarTrackColor: "#ffffff33",
   aboutLogoMaxWidth: 48,
+  aboutPortraitPosX: 50,
+  aboutPortraitPosY: 50,
+  aboutTooltipBg: "#ffffff",
+  aboutTooltipFg: "#000000",
+  aboutTooltipBorder: "#e5e7eb",
   aboutEducation: [],
   aboutLanguages: [],
   aboutSoftware: [],
@@ -80,8 +92,9 @@ function coerceLanguages(v: unknown): LanguageItem[] {
       const lvl = typeof o.level === "number" ? o.level : Number(o.level);
       const level = Number.isFinite(lvl) ? Math.max(0, Math.min(100, Math.round(lvl))) : 0;
       const flag = typeof o.flag === "string" ? o.flag : "";
+      const description = typeof o.description === "string" ? o.description : "";
       if (!name) return null;
-      return { name, level, flag };
+      return { name, level, flag, description };
     })
     .filter((x): x is LanguageItem => x !== null);
 }
@@ -94,8 +107,9 @@ function coerceLogos(v: unknown): LogoItem[] {
       const o = it as Record<string, unknown>;
       const name = typeof o.name === "string" ? o.name : "";
       const logoUrl = typeof o.logoUrl === "string" && o.logoUrl ? o.logoUrl : null;
+      const description = typeof o.description === "string" ? o.description : "";
       if (!name) return null;
-      return { name, logoUrl };
+      return { name, logoUrl, description };
     })
     .filter((x): x is LogoItem => x !== null);
 }
@@ -108,14 +122,21 @@ function coerceEducation(v: unknown): EducationItem[] {
       const o = it as Record<string, unknown>;
       const name = typeof o.name === "string" ? o.name : "";
       const detail = typeof o.detail === "string" ? o.detail : "";
+      const description = typeof o.description === "string" ? o.description : "";
       if (!name) return null;
-      return { name, detail };
+      return { name, detail, description };
     })
     .filter((x): x is EducationItem => x !== null);
 }
 
 function str(v: unknown, fallback: string): string {
   return typeof v === "string" && v.trim() ? v : fallback;
+}
+
+function clampInt(v: unknown, min: number, max: number, fallback: number): number {
+  const n = typeof v === "number" ? v : Number(v);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, Math.round(n)));
 }
 
 export const getSiteSettings = createServerFn({ method: "GET" }).handler(
@@ -146,11 +167,13 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       aboutPanelBg: str(d.about_panel_bg, DEFAULTS.aboutPanelBg),
       aboutPanelFg: str(d.about_panel_fg, DEFAULTS.aboutPanelFg),
       aboutLanguagesBarColor: str(d.about_languages_bar_color, DEFAULTS.aboutLanguagesBarColor),
-      aboutLogoMaxWidth: (() => {
-        const v = d.about_logo_max_width;
-        const n = typeof v === "number" ? v : Number(v);
-        return Number.isFinite(n) && n > 0 ? Math.min(200, Math.max(16, Math.round(n))) : DEFAULTS.aboutLogoMaxWidth;
-      })(),
+      aboutLanguagesBarTrackColor: str(d.about_languages_bar_track_color, DEFAULTS.aboutLanguagesBarTrackColor),
+      aboutLogoMaxWidth: clampInt(d.about_logo_max_width, 16, 200, DEFAULTS.aboutLogoMaxWidth),
+      aboutPortraitPosX: clampInt(d.about_portrait_pos_x, 0, 100, DEFAULTS.aboutPortraitPosX),
+      aboutPortraitPosY: clampInt(d.about_portrait_pos_y, 0, 100, DEFAULTS.aboutPortraitPosY),
+      aboutTooltipBg: str(d.about_tooltip_bg, DEFAULTS.aboutTooltipBg),
+      aboutTooltipFg: str(d.about_tooltip_fg, DEFAULTS.aboutTooltipFg),
+      aboutTooltipBorder: str(d.about_tooltip_border, DEFAULTS.aboutTooltipBorder),
       aboutEducation: coerceEducation(d.about_education),
       aboutLanguages: coerceLanguages(d.about_languages),
       aboutSoftware: coerceLogos(d.about_software),
@@ -163,19 +186,23 @@ const languageSchema = z.object({
   name: z.string().trim().min(1).max(60),
   level: z.number().int().min(0).max(100),
   flag: z.string().trim().max(8).default(""),
+  description: z.string().trim().max(300).default(""),
 });
 const logoSchema = z.object({
   name: z.string().trim().min(1).max(60),
   logoUrl: z.string().trim().url().max(1000).nullable(),
+  description: z.string().trim().max(300).default(""),
 });
 const educationSchema = z.object({
   name: z.string().trim().min(1).max(120),
   detail: z.string().trim().max(300).default(""),
+  description: z.string().trim().max(300).default(""),
 });
+// Accept hex with optional alpha: #RGB, #RRGGBB, #RRGGBBAA
 const hexColor = z
   .string()
   .trim()
-  .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Colore non valido");
+  .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/, "Colore non valido");
 
 const updateSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -194,7 +221,13 @@ const updateSchema = z.object({
   aboutPanelBg: hexColor,
   aboutPanelFg: hexColor,
   aboutLanguagesBarColor: hexColor,
+  aboutLanguagesBarTrackColor: hexColor,
   aboutLogoMaxWidth: z.number().int().min(16).max(200).default(48),
+  aboutPortraitPosX: z.number().int().min(0).max(100).default(50),
+  aboutPortraitPosY: z.number().int().min(0).max(100).default(50),
+  aboutTooltipBg: hexColor,
+  aboutTooltipFg: hexColor,
+  aboutTooltipBorder: hexColor,
   aboutEducation: z.array(educationSchema).max(20).default([]),
   aboutLanguages: z.array(languageSchema).max(20).default([]),
   aboutSoftware: z.array(logoSchema).max(40).default([]),
@@ -229,7 +262,13 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       about_panel_bg: data.aboutPanelBg,
       about_panel_fg: data.aboutPanelFg,
       about_languages_bar_color: data.aboutLanguagesBarColor,
+      about_languages_bar_track_color: data.aboutLanguagesBarTrackColor,
       about_logo_max_width: data.aboutLogoMaxWidth,
+      about_portrait_pos_x: data.aboutPortraitPosX,
+      about_portrait_pos_y: data.aboutPortraitPosY,
+      about_tooltip_bg: data.aboutTooltipBg,
+      about_tooltip_fg: data.aboutTooltipFg,
+      about_tooltip_border: data.aboutTooltipBorder,
       about_education: data.aboutEducation,
       about_languages: data.aboutLanguages,
       about_software: data.aboutSoftware,
