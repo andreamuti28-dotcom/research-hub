@@ -76,7 +76,7 @@ const DEFAULTS: SiteSettings = {
   homeMarketEnabled: true,
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
   archiveDisclaimer: "Intelligenza Artificiale integrata",
-  headerBg: "#ffffff",
+  headerBg: "",
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
@@ -185,7 +185,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
         typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
       homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
       archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
-      headerBg: str(d.header_bg, DEFAULTS.headerBg),
+      headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
 
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
@@ -248,7 +248,7 @@ const updateSchema = z.object({
   homeMarketEnabled: z.boolean(),
   homeMarketDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
   archiveDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
-  headerBg: hexColor,
+  headerBg: z.union([hexColor, z.literal("")]),
 
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),

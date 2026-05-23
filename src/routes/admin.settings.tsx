@@ -16,6 +16,10 @@ import {
   type EducationItem,
 } from "@/lib/site-settings.functions";
 import { cropTo4x5Jpeg } from "@/lib/image-crop";
+import {
+  getLatestMarketReport,
+  upsertCurrentMarketReport,
+} from "@/lib/market-reports.functions";
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
@@ -453,11 +457,28 @@ function AdminSettingsPage() {
             />
           </Field>
           <Field label="Colore sfondo header (navigazione)">
-            <ColorField
-              value={form.headerBg}
-              onChange={(v) => setForm({ ...form, headerBg: v })}
-            />
+            <div className="space-y-2">
+              <ColorField
+                value={form.headerBg}
+                onChange={(v) => setForm({ ...form, headerBg: v })}
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, headerBg: "" })}
+                  className="px-3 py-1.5 border border-surface-dark-muted font-display text-[10px] font-bold uppercase tracking-wider hover:border-background hover:text-background transition-colors"
+                >
+                  Nessun colore
+                </button>
+                <span className="font-mono text-[10px] text-surface-dark-foreground/50">
+                  {form.headerBg
+                    ? "Colore personalizzato attivo"
+                    : "Automatico: bianco in chiaro, nero in scuro"}
+                </span>
+              </div>
+            </div>
           </Field>
+          <MarketReportEditorPanel />
           <MarketReportsIntegrationPanel />
 
         </section>
@@ -1110,6 +1131,146 @@ function LogoListEditor({
       >
         + Aggiungi
       </button>
+    </div>
+  );
+}
+
+function MarketReportEditorPanel() {
+  const queryClient = useQueryClient();
+  const loadFn = useServerFn(getLatestMarketReport);
+  const saveFn = useServerFn(upsertCurrentMarketReport);
+
+  const reportQuery = useQuery({
+    queryKey: ["admin", "market-report", "current"],
+    queryFn: () => loadFn(),
+  });
+
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [reportDate, setReportDate] = useState("");
+  const [source, setSource] = useState("");
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const initRef = useRef(false);
+
+  useEffect(() => {
+    if (initRef.current) return;
+    if (reportQuery.data === undefined) return;
+    initRef.current = true;
+    const r = reportQuery.data;
+    setTitle(r?.title ?? "Report mercati");
+    setContent(r?.content ?? "");
+    setReportDate(r?.reportDate ?? new Date().toISOString().slice(0, 10));
+    setSource(r?.source ?? "");
+  }, [reportQuery.data]);
+
+  const saveMutation = useMutation({
+    mutationFn: () =>
+      saveFn({
+        data: {
+          title: title.trim() || "Report mercati",
+          content,
+          reportDate: reportDate || undefined,
+          source: source.trim() ? source.trim() : null,
+        },
+      }),
+    onSuccess: () => {
+      setSavedAt(Date.now());
+      setError(null);
+      queryClient.invalidateQueries({ queryKey: ["admin", "market-report", "current"] });
+      queryClient.invalidateQueries({ queryKey: ["market-report", "latest"] });
+    },
+    onError: (e: unknown) => {
+      setError(e instanceof Error ? e.message : "Errore durante il salvataggio");
+    },
+  });
+
+  const handleReload = () => {
+    initRef.current = false;
+    reportQuery.refetch();
+  };
+
+  return (
+    <div className="space-y-3 border-t border-surface-dark-muted pt-5">
+      <div>
+        <h3 className="font-display text-xs uppercase tracking-widest text-surface-dark-foreground/80 mb-2">
+          Report mercati — modifica manuale
+        </h3>
+        <p className="font-mono text-[11px] text-surface-dark-foreground/60 leading-relaxed">
+          Modifica direttamente il report attuale (quello mostrato in home).
+          Sovrascrive il contenuto ricevuto da Google Apps Script.
+        </p>
+      </div>
+
+      {reportQuery.isLoading ? (
+        <div className="font-mono text-[11px] text-surface-dark-foreground/50">
+          Caricamento report…
+        </div>
+      ) : (
+        <>
+          <Field label="Titolo">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={inputCls}
+              maxLength={300}
+            />
+          </Field>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Data (YYYY-MM-DD)">
+              <input
+                type="date"
+                value={reportDate}
+                onChange={(e) => setReportDate(e.target.value)}
+                className={inputCls}
+              />
+            </Field>
+            <Field label="Fonte (opzionale)">
+              <input
+                type="text"
+                value={source}
+                onChange={(e) => setSource(e.target.value)}
+                className={inputCls}
+                maxLength={200}
+              />
+            </Field>
+          </div>
+          <Field label="Contenuto (testo, max 200.000 caratteri)">
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className={`${inputCls} min-h-[260px] font-mono text-[12px] leading-relaxed`}
+              maxLength={200_000}
+            />
+          </Field>
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              type="button"
+              onClick={() => saveMutation.mutate()}
+              disabled={saveMutation.isPending || !content.trim()}
+              className="px-4 py-2 bg-background text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
+            >
+              {saveMutation.isPending ? "Salvataggio…" : "Salva report"}
+            </button>
+            <button
+              type="button"
+              onClick={handleReload}
+              className="px-3 py-2 border border-surface-dark-muted font-display text-[10px] font-bold uppercase tracking-wider hover:border-background hover:text-background transition-colors"
+            >
+              Ricarica
+            </button>
+            {savedAt && !saveMutation.isPending && (
+              <span className="font-mono text-[10px] text-emerald-400 uppercase tracking-widest">
+                Salvato
+              </span>
+            )}
+            {error && (
+              <span className="font-mono text-[10px] text-destructive">{error}</span>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
