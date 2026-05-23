@@ -1098,3 +1098,170 @@ function LogoListEditor({
     </div>
   );
 }
+
+function MarketReportsIntegrationPanel() {
+  const webhookUrl =
+    "https://project--34b2a20e-95a6-4f33-89b6-7087554072b8.lovable.app/api/public/market-reports";
+
+  const appsScript = `// === Lovable — Invio Report Mercati ===
+// 1) In Apps Script: File > Project properties > Script properties
+//    Aggiungi una property con chiave WEBHOOK_SECRET e valore = MARKET_REPORTS_WEBHOOK_SECRET.
+// 2) Esegui sendDailyMarketReport() una volta a mano per autorizzare lo script.
+// 3) Triggers > Add Trigger: sendDailyMarketReport, Time-driven, Day timer, 07:00.
+
+const WEBHOOK_URL = '${webhookUrl}';
+
+function sendDailyMarketReport() {
+  const secret = PropertiesService.getScriptProperties().getProperty('WEBHOOK_SECRET');
+  if (!secret) throw new Error('Manca la Script Property WEBHOOK_SECRET');
+
+  const today = Utilities.formatDate(new Date(), 'Europe/Rome', 'yyyy-MM-dd');
+
+  // === Personalizza qui il contenuto del report ===
+  const payload = {
+    title: 'Report mercati ' + today,
+    // Testo semplice. I ritorni a capo vengono mantenuti.
+    content: [
+      'Sintesi della giornata:',
+      '- S&P 500: ...',
+      '- Nasdaq: ...',
+      '- FTSE MIB: ...',
+      '',
+      'Note: ...'
+    ].join('\\n'),
+    reportDate: today,
+    source: 'Google Apps Script'
+  };
+
+  const res = UrlFetchApp.fetch(WEBHOOK_URL, {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + secret },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  });
+
+  Logger.log(res.getResponseCode() + ' ' + res.getContentText());
+}
+`;
+
+  const curlExample = `curl -X POST '${webhookUrl}' \\
+  -H 'Authorization: Bearer <MARKET_REPORTS_WEBHOOK_SECRET>' \\
+  -H 'Content-Type: application/json' \\
+  -d '{"title":"Report mercati","content":"Riga 1\\nRiga 2","reportDate":"2026-05-23","source":"Apps Script"}'`;
+
+  const copy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // ignore
+    }
+  };
+
+  const boxCls =
+    "w-full font-mono text-[11px] leading-relaxed bg-surface-dark text-surface-dark-foreground border border-surface-dark-muted p-3 whitespace-pre overflow-auto";
+  const btnCls =
+    "px-2.5 py-1 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background";
+
+  return (
+    <div className="space-y-5 border-t border-surface-dark-muted pt-5">
+      <div>
+        <h3 className="font-display text-xs uppercase tracking-widest text-surface-dark-foreground/80 mb-2">
+          Integrazione Google Apps Script
+        </h3>
+        <p className="font-mono text-[11px] text-surface-dark-foreground/60 leading-relaxed">
+          L'endpoint riceve un report al giorno e lo mostra in tempo reale nella
+          home. Formato preferito del campo <code>content</code>: <strong>testo
+          semplice</strong> con ritorni a capo (i newline vengono preservati).
+          Il Markdown viene mostrato come testo grezzo — non è interpretato.
+          Lunghezza massima 200.000 caratteri.
+        </p>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+            Webhook URL (POST)
+          </span>
+          <button type="button" onClick={() => copy(webhookUrl)} className={btnCls}>
+            Copia
+          </button>
+        </div>
+        <div className={boxCls}>{webhookUrl}</div>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+            Header di autenticazione
+          </span>
+        </div>
+        <div className={boxCls}>
+          Authorization: Bearer &lt;MARKET_REPORTS_WEBHOOK_SECRET&gt;
+          {"\n"}# in alternativa: x-webhook-secret: &lt;MARKET_REPORTS_WEBHOOK_SECRET&gt;
+        </div>
+        <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+          Il valore del secret è già configurato lato server (Lovable Cloud →
+          Secrets → <code>MARKET_REPORTS_WEBHOOK_SECRET</code>). Copialo da lì
+          e incollalo come Script Property nello script Google.
+        </p>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+            Schema JSON del body
+          </span>
+        </div>
+        <div className={boxCls}>{`{
+  "title": "Report mercati",          // opzionale, max 300 char
+  "content": "Riga 1\\nRiga 2 ...",    // obbligatorio, testo, max 200000 char
+  "reportDate": "YYYY-MM-DD",          // opzionale, default = oggi (UTC)
+  "source": "Google Apps Script"       // opzionale, max 200 char
+}`}</div>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+            Test rapido (curl)
+          </span>
+          <button type="button" onClick={() => copy(curlExample)} className={btnCls}>
+            Copia
+          </button>
+        </div>
+        <div className={boxCls}>{curlExample}</div>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
+            Script pronto per Google Apps Script
+          </span>
+          <button type="button" onClick={() => copy(appsScript)} className={btnCls}>
+            Copia tutto
+          </button>
+        </div>
+        <textarea
+          readOnly
+          value={appsScript}
+          className={`${boxCls} min-h-[280px]`}
+          onFocus={(e) => e.currentTarget.select()}
+        />
+        <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+          Passi: 1) script.google.com → Nuovo progetto → incolla.{" "}
+          2) Impostazioni progetto → Proprietà script → aggiungi{" "}
+          <code>WEBHOOK_SECRET</code>. 3) Esegui una volta per autorizzare.{" "}
+          4) Trigger → Aggiungi: <code>sendDailyMarketReport</code>, time-driven,
+          ogni giorno all'orario desiderato.
+        </p>
+      </div>
+
+      <div className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+        Risposte: <code>201</code> = creato · <code>401</code> = secret errato ·
+        <code>400</code> = JSON o payload non valido · <code>503</code> = secret
+        mancante lato server.
+      </div>
+    </div>
+  );
+}
