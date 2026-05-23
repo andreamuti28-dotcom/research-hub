@@ -243,6 +243,8 @@ const updateSchema = z.object({
   homeFeaturedLabel: z.string().trim().min(1).max(120),
   homeMarketLabel: z.string().trim().min(1).max(120),
   homeMarketEnabled: z.boolean(),
+  homeMarketDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
+  archiveDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
 
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
