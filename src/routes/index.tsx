@@ -7,6 +7,7 @@ import { PaperRow } from "@/components/PaperRow";
 import { listPublishedPapers } from "@/lib/papers.functions";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
 import { getLatestMarketReport } from "@/lib/market-reports.functions";
+import { recordSiteVisit } from "@/lib/site-visits.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
@@ -79,6 +80,27 @@ function Index() {
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const KEY = "visitor_token";
+      const SESSION_KEY = "visit_recorded_at";
+      let token = localStorage.getItem(KEY);
+      if (!token) {
+        token = (crypto.randomUUID?.() ?? Math.random().toString(36).slice(2)).replace(/-/g, "");
+        localStorage.setItem(KEY, token);
+      }
+      const last = Number(sessionStorage.getItem(SESSION_KEY) ?? "0");
+      // Throttle: max 1 visit per 30 minutes per session
+      if (Date.now() - last < 30 * 60 * 1000) return;
+      sessionStorage.setItem(SESSION_KEY, String(Date.now()));
+      recordSiteVisit({ data: { visitorToken: token, path: "/" } }).catch(() => {});
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
 
   const featured = settings.featuredPaperIds
     .map((id) => papers.find((p) => p.id === id))
