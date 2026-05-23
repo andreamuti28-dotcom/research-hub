@@ -43,7 +43,7 @@ export const Route = createFileRoute("/archivio")({
   component: Archivio,
 });
 
-type SortKey = "recent" | "oldest" | "views" | "title";
+type SortKey = "recent" | "oldest" | "title";
 type Tab = "papers" | "market";
 
 function Archivio() {
