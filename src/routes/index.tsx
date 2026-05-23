@@ -145,11 +145,13 @@ function Index() {
                 </h2>
               </div>
               <span
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-base font-bold transition-all group-hover:border-primary group-hover:text-primary shrink-0"
-                style={{ transform: featuredOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all group-hover:border-primary group-hover:text-primary shrink-0"
+                style={{ transform: featuredOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                 aria-hidden
               >
-                +
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </span>
             </button>
             {featuredOpen && (
@@ -184,11 +186,13 @@ function Index() {
                 </h2>
               </div>
               <span
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border text-base font-bold transition-all group-hover:border-primary group-hover:text-primary shrink-0"
-                style={{ transform: marketOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all group-hover:border-primary group-hover:text-primary shrink-0"
+                style={{ transform: marketOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                 aria-hidden
               >
-                +
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
               </span>
             </button>
             {marketOpen && (
