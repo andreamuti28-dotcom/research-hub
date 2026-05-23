@@ -190,7 +190,7 @@ function Index() {
                         </span>
                       )}
                     </div>
-                    <div className="max-w-none whitespace-pre-line text-pretty leading-relaxed text-base">
+                    <div className="max-w-none whitespace-pre-line text-pretty text-justify leading-relaxed text-base">
                       {latestReport.content}
                     </div>
                     <div className="mt-6">
