@@ -5,10 +5,13 @@ import { LanguageToggle } from "@/components/LanguageToggle";
 import { useT } from "@/lib/i18n";
 
 export function SiteHeader() {
-  const { name } = useSiteSettings();
+  const { name, headerBg } = useSiteSettings();
   const t = useT();
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav
+      className="sticky top-0 z-50 backdrop-blur-md border-b border-border"
+      style={{ backgroundColor: headerBg }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-3">
         <Link
           to="/about"
