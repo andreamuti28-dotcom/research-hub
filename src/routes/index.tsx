@@ -177,25 +177,6 @@ function Index() {
         </section>
       )}
 
-      {featured.length > 0 && (
-        <section className="border-t border-border bg-background py-20 md:py-24">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="mb-12 md:mb-16">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                {t("home.featuredKicker")}
-              </div>
-              <h2 className="text-3xl font-display font-bold tracking-tighter italic">
-                {settings.homeFeaturedLabel || t("home.featuredTitle")}
-              </h2>
-            </div>
-            <div className="space-y-px bg-border border border-border">
-              {featured.map((p) => (
-                <PaperRow key={p.id} paper={p} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
