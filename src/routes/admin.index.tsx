@@ -8,6 +8,7 @@ import {
   listAllPapers,
   deletePaper,
 } from "@/lib/admin-papers.functions";
+import { getSiteVisitsStats } from "@/lib/site-visits.functions";
 import { formatDateShort } from "@/data/papers";
 
 export const Route = createFileRoute("/admin/")({
@@ -30,6 +31,7 @@ function AdminDashboard() {
   const queryClient = useQueryClient();
   const listFn = useServerFn(listAllPapers);
   const deleteFn = useServerFn(deletePaper);
+  const visitsFn = useServerFn(getSiteVisitsStats);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
   const adminQuery = useQuery({
@@ -54,6 +56,13 @@ function AdminDashboard() {
     queryKey: ["admin", "papers"],
     queryFn: () => listFn(),
     enabled: adminQuery.data?.isAdmin === true,
+  });
+
+  const visitsQuery = useQuery({
+    queryKey: ["admin", "site-visits"],
+    queryFn: () => visitsFn(),
+    enabled: adminQuery.data?.isAdmin === true,
+    refetchInterval: 60_000,
   });
 
   const deleteMutation = useMutation({
@@ -112,6 +121,31 @@ function AdminDashboard() {
         <StatCard label="Download PDF" value={totalDownloads.toLocaleString("it-IT")} />
         <StatCard label="Pubblicati" value={`${published} / ${papers.length}`} />
       </div>
+
+      <div className="mb-8 sm:mb-10">
+        <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70 mb-3">
+          Visite al sito
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <StatCard
+            label="Visite totali"
+            value={(visitsQuery.data?.total ?? 0).toLocaleString("it-IT")}
+          />
+          <StatCard
+            label="Visitatori unici"
+            value={(visitsQuery.data?.uniqueVisitors ?? 0).toLocaleString("it-IT")}
+          />
+          <StatCard
+            label="Ultimi 30 giorni"
+            value={(visitsQuery.data?.last30Days ?? 0).toLocaleString("it-IT")}
+          />
+          <StatCard
+            label="Oggi"
+            value={(visitsQuery.data?.today ?? 0).toLocaleString("it-IT")}
+          />
+        </div>
+      </div>
+
 
       {papers.length > 0 && (totalViews > 0 || totalDownloads > 0) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-10">
