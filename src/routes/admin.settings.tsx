@@ -125,6 +125,10 @@ function AdminSettingsPage() {
         linkedinUrl: s.linkedinUrl,
         portraitUrl: s.portraitUrl,
         featuredPaperIds: s.featuredPaperIds,
+        homeFeaturedLabel: s.homeFeaturedLabel,
+        homeMarketLabel: s.homeMarketLabel,
+        homeMarketEnabled: s.homeMarketEnabled,
+
         aboutRole: s.aboutRole,
         aboutBio: s.aboutBio,
         aboutKicker: s.aboutKicker,
