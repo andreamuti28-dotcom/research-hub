@@ -39,6 +39,10 @@ type FormState = {
   linkedinUrl: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  homeFeaturedLabel: string;
+  homeMarketLabel: string;
+  homeMarketEnabled: boolean;
+
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
