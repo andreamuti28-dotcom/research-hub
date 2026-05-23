@@ -130,6 +130,8 @@ function AdminSettingsPage() {
         homeFeaturedLabel: s.homeFeaturedLabel,
         homeMarketLabel: s.homeMarketLabel,
         homeMarketEnabled: s.homeMarketEnabled,
+        homeMarketDisclaimer: s.homeMarketDisclaimer,
+        archiveDisclaimer: s.archiveDisclaimer,
 
         aboutRole: s.aboutRole,
         aboutBio: s.aboutBio,
