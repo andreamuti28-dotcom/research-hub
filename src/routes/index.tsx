@@ -207,6 +207,11 @@ function Index() {
                     Nessun report disponibile.
                   </div>
                 )}
+                {marketDisclaimer && marketDisclaimer.trim() && (
+                  <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {marketDisclaimer}
+                  </p>
+                )}
               </div>
             )}
           </div>
