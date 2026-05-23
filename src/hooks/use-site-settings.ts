@@ -18,6 +18,8 @@ const DEFAULTS: SiteSettings = {
   homeFeaturedLabel: "Paper in Evidenza",
   homeMarketLabel: "Analisi Mercati Finanziari",
   homeMarketEnabled: true,
+  homeMarketDisclaimer: "Intelligenza Artificiale integrata",
+  archiveDisclaimer: "Intelligenza Artificiale integrata",
   aboutRole: "Ricercatore indipendente",
 
   aboutBio: "",

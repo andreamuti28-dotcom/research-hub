@@ -42,6 +42,8 @@ type FormState = {
   homeFeaturedLabel: string;
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
+  homeMarketDisclaimer: string;
+  archiveDisclaimer: string;
 
   aboutRole: string;
   aboutBio: string;
@@ -128,6 +130,8 @@ function AdminSettingsPage() {
         homeFeaturedLabel: s.homeFeaturedLabel,
         homeMarketLabel: s.homeMarketLabel,
         homeMarketEnabled: s.homeMarketEnabled,
+        homeMarketDisclaimer: s.homeMarketDisclaimer,
+        archiveDisclaimer: s.archiveDisclaimer,
 
         aboutRole: s.aboutRole,
         aboutBio: s.aboutBio,
@@ -428,6 +432,24 @@ function AdminSettingsPage() {
               Mostra sezione mercati nella home
             </span>
           </label>
+          <Field label="Disclaimer sotto al report finanziario (home)">
+            <input
+              type="text"
+              value={form.homeMarketDisclaimer}
+              onChange={(e) => setForm({ ...form, homeMarketDisclaimer: e.target.value })}
+              className={inputCls}
+              maxLength={300}
+            />
+          </Field>
+          <Field label="Disclaimer sotto al titolo 'Ricerca Pubblicata' (archivio)">
+            <input
+              type="text"
+              value={form.archiveDisclaimer}
+              onChange={(e) => setForm({ ...form, archiveDisclaimer: e.target.value })}
+              className={inputCls}
+              maxLength={300}
+            />
+          </Field>
           <MarketReportsIntegrationPanel />
 
         </section>

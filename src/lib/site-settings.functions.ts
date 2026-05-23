@@ -35,6 +35,8 @@ export type SiteSettings = {
   homeFeaturedLabel: string;
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
+  homeMarketDisclaimer: string;
+  archiveDisclaimer: string;
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
@@ -71,6 +73,8 @@ const DEFAULTS: SiteSettings = {
   homeFeaturedLabel: "Paper in Evidenza",
   homeMarketLabel: "Analisi Mercati Finanziari",
   homeMarketEnabled: true,
+  homeMarketDisclaimer: "Intelligenza Artificiale integrata",
+  archiveDisclaimer: "Intelligenza Artificiale integrata",
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
@@ -177,6 +181,8 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       homeMarketLabel: str(d.home_market_label, DEFAULTS.homeMarketLabel),
       homeMarketEnabled:
         typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
+      homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
+      archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
 
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
@@ -237,6 +243,8 @@ const updateSchema = z.object({
   homeFeaturedLabel: z.string().trim().min(1).max(120),
   homeMarketLabel: z.string().trim().min(1).max(120),
   homeMarketEnabled: z.boolean(),
+  homeMarketDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
+  archiveDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
 
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
@@ -282,6 +290,8 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       home_featured_label: data.homeFeaturedLabel,
       home_market_label: data.homeMarketLabel,
       home_market_enabled: data.homeMarketEnabled,
+      home_market_disclaimer: data.homeMarketDisclaimer,
+      archive_disclaimer: data.archiveDisclaimer,
 
       about_role: data.aboutRole,
       about_bio: data.aboutBio,

@@ -56,9 +56,10 @@ function Index() {
   const { data: latestReport } = useQuery(latestMarketReportQuery);
   const queryClient = useQueryClient();
   const t = useT();
-  const [heroTitle, heroIntro] = useTranslated([
+  const [heroTitle, heroIntro, marketDisclaimer] = useTranslated([
     settings.heroTitle,
     settings.heroIntro,
+    settings.homeMarketDisclaimer,
   ]);
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
@@ -205,6 +206,11 @@ function Index() {
                   <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
                     Nessun report disponibile.
                   </div>
+                )}
+                {marketDisclaimer && marketDisclaimer.trim() && (
+                  <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                    {marketDisclaimer}
+                  </p>
                 )}
               </div>
             )}

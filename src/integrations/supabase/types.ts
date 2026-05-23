@@ -120,10 +120,12 @@ export type Database = {
           about_tooltip_bg: string
           about_tooltip_border: string
           about_tooltip_fg: string
+          archive_disclaimer: string
           featured_paper_ids: string[]
           hero_intro: string
           hero_title: string
           home_featured_label: string
+          home_market_disclaimer: string
           home_market_enabled: boolean
           home_market_label: string
           id: string
@@ -157,10 +159,12 @@ export type Database = {
           about_tooltip_bg?: string
           about_tooltip_border?: string
           about_tooltip_fg?: string
+          archive_disclaimer?: string
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
           home_featured_label?: string
+          home_market_disclaimer?: string
           home_market_enabled?: boolean
           home_market_label?: string
           id?: string
@@ -194,10 +198,12 @@ export type Database = {
           about_tooltip_bg?: string
           about_tooltip_border?: string
           about_tooltip_fg?: string
+          archive_disclaimer?: string
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
           home_featured_label?: string
+          home_market_disclaimer?: string
           home_market_enabled?: boolean
           home_market_label?: string
           id?: string

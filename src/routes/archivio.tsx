@@ -8,6 +8,8 @@ import { listPublishedPapers } from "@/lib/papers.functions";
 import { listArchivedMarketReports } from "@/lib/market-reports.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useTranslated } from "@/hooks/use-translated";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -51,6 +53,8 @@ function Archivio() {
   const { data: marketReports } = useSuspenseQuery(marketReportsQuery);
   const queryClient = useQueryClient();
   const t = useT();
+  const settings = useSiteSettings();
+  const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [tab, setTab] = useState<Tab>("papers");
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
@@ -154,9 +158,14 @@ function Archivio() {
           <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
             {t("archive.kicker")}
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter italic mb-6">
+          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter italic mb-3">
             {t("archive.title")}
           </h1>
+          {archiveDisclaimer && archiveDisclaimer.trim() && (
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+              {archiveDisclaimer}
+            </p>
+          )}
         </div>
 
         <div className="flex gap-2 mb-8 border-b border-border">
