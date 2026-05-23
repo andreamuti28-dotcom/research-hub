@@ -16,6 +16,10 @@ import {
   type EducationItem,
 } from "@/lib/site-settings.functions";
 import { cropTo4x5Jpeg } from "@/lib/image-crop";
+import {
+  getLatestMarketReport,
+  upsertCurrentMarketReport,
+} from "@/lib/market-reports.functions";
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
