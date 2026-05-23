@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
 import { listPublishedPapers } from "@/lib/papers.functions";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
+import { getLatestMarketReport } from "@/lib/market-reports.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 
@@ -13,6 +16,12 @@ const papersQuery = {
   queryFn: () => listPublishedPapers(),
   staleTime: 0,
   refetchOnMount: "always" as const,
+};
+
+const latestMarketReportQuery = {
+  queryKey: ["market-reports", "latest"] as const,
+  queryFn: () => getLatestMarketReport(),
+  staleTime: 0,
 };
 
 export const Route = createFileRoute("/")({
@@ -36,6 +45,7 @@ export const Route = createFileRoute("/")({
     Promise.all([
       context.queryClient.ensureQueryData(papersQuery),
       context.queryClient.ensureQueryData(siteSettingsQuery),
+      context.queryClient.ensureQueryData(latestMarketReportQuery),
     ]),
   component: Index,
 });
@@ -43,11 +53,31 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { data: papers } = useSuspenseQuery(papersQuery);
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
+  const { data: latestReport } = useQuery(latestMarketReportQuery);
+  const queryClient = useQueryClient();
   const t = useT();
   const [heroTitle, heroIntro] = useTranslated([
     settings.heroTitle,
     settings.heroIntro,
   ]);
+  const [marketOpen, setMarketOpen] = useState(false);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("market-reports-home")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "market_reports" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["market-reports"] });
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   const featured = settings.featuredPaperIds
     .map((id) => papers.find((p) => p.id === id))
     .filter((p): p is (typeof papers)[number] => Boolean(p));
@@ -65,18 +95,78 @@ function Index() {
           </h1>
           <div className="max-w-[55ch] text-lg md:text-xl leading-relaxed text-pretty space-y-6">
             <p className="whitespace-pre-line">{heroIntro}</p>
-            <a
-              href={settings.linkedinUrl}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="inline-flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
-            >
-              {t("home.linkedin")}
-            </a>
           </div>
         </div>
       </section>
 
+      {settings.homeMarketEnabled && (
+        <section className="border-t border-border bg-background">
+          <div className="max-w-6xl mx-auto px-6">
+            <button
+              type="button"
+              onClick={() => setMarketOpen((v) => !v)}
+              aria-expanded={marketOpen}
+              className="w-full flex items-center justify-between gap-4 py-6 md:py-8 text-left hover:text-primary transition-colors"
+            >
+              <div>
+                <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-2">
+                  Live
+                </div>
+                <h2 className="text-2xl md:text-3xl font-display font-bold tracking-tighter italic">
+                  {settings.homeMarketLabel}
+                </h2>
+              </div>
+              <span
+                className="font-display text-2xl font-bold transition-transform shrink-0"
+                style={{ transform: marketOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                aria-hidden
+              >
+                +
+              </span>
+            </button>
+            {marketOpen && (
+              <div className="pb-10 md:pb-14 animate-fade-up">
+                {latestReport ? (
+                  <article className="border border-border bg-surface p-6 md:p-8">
+                    <div className="flex flex-wrap items-baseline gap-3 mb-4">
+                      <h3 className="font-display text-xl font-bold tracking-tight">
+                        {latestReport.title}
+                      </h3>
+                      <time className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
+                        {new Date(latestReport.reportDate).toLocaleDateString("it-IT", {
+                          day: "2-digit",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </time>
+                      {latestReport.source && (
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                          · {latestReport.source}
+                        </span>
+                      )}
+                    </div>
+                    <div className="max-w-none whitespace-pre-line text-pretty leading-relaxed text-base">
+                      {latestReport.content}
+                    </div>
+                    <div className="mt-6">
+                      <Link
+                        to="/archivio"
+                        className="font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 hover:text-primary hover:border-primary transition-all"
+                      >
+                        Archivio report →
+                      </Link>
+                    </div>
+                  </article>
+                ) : (
+                  <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
+                    Nessun report disponibile.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {featured.length > 0 && (
         <section className="border-t border-border bg-background py-20 md:py-24">
@@ -86,7 +176,7 @@ function Index() {
                 {t("home.featuredKicker")}
               </div>
               <h2 className="text-3xl font-display font-bold tracking-tighter italic">
-                {t("home.featuredTitle")}
+                {settings.homeFeaturedLabel || t("home.featuredTitle")}
               </h2>
             </div>
             <div className="space-y-px bg-border border border-border">
