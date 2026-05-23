@@ -98,7 +98,7 @@ function Index() {
             </h1>
           </div>
           <div className="md:col-span-5 md:pt-2">
-            <div className="text-base md:text-lg leading-relaxed text-pretty text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
+            <div className="text-base md:text-lg leading-relaxed text-pretty text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
               <p className="whitespace-pre-line">{heroIntro}</p>
             </div>
           </div>
@@ -190,7 +190,7 @@ function Index() {
                         </span>
                       )}
                     </div>
-                    <div className="max-w-none whitespace-pre-line text-pretty leading-relaxed text-base">
+                    <div className="max-w-none whitespace-pre-line text-pretty text-justify leading-relaxed text-base">
                       {latestReport.content}
                     </div>
                     <div className="mt-6">

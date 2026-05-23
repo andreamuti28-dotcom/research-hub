@@ -179,7 +179,7 @@ function Archivio() {
 
         {tab === "papers" ? (
           <>
-            <p className="max-w-[55ch] text-base text-muted-foreground leading-relaxed mb-6">
+            <p className="max-w-[55ch] text-base text-muted-foreground leading-relaxed text-justify mb-6">
               {t("archive.intro", papers.length)}
             </p>
             <div className="flex flex-col gap-3 mb-6">
@@ -253,7 +253,7 @@ function Archivio() {
           </>
         ) : (
           <>
-            <p className="max-w-[60ch] text-base text-muted-foreground leading-relaxed mb-6">
+            <p className="max-w-[60ch] text-base text-muted-foreground leading-relaxed text-justify mb-6">
               Archivio dei report sui mercati finanziari ricevuti dal sistema automatico.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -381,7 +381,7 @@ function MarketReportCard({
         </span>
       </button>
       {open && (
-        <div className="px-5 pb-5 whitespace-pre-line leading-relaxed text-sm md:text-base text-pretty">
+        <div className="px-5 pb-5 whitespace-pre-line leading-relaxed text-sm md:text-base text-pretty text-justify">
           {report.content}
         </div>
       )}

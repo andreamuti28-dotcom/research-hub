@@ -127,7 +127,7 @@ function AboutPage() {
                 {settings.name}
               </h1>
               <p className="text-muted-foreground text-lg mb-6">{role}</p>
-              <div className="max-w-[60ch] text-base md:text-lg leading-relaxed text-pretty space-y-4">
+              <div className="max-w-[60ch] text-base md:text-lg leading-relaxed text-pretty text-justify space-y-4">
                 {bio.split(/\n\n+/).map((para, i) => (
                   <p key={i} className="whitespace-pre-line">
                     {para}
