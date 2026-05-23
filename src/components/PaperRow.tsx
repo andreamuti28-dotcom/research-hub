@@ -37,7 +37,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
             {title}
           </h3>
         </Link>
-        <p className="text-muted-foreground max-w-[65ch] mb-8 leading-relaxed">
+        <p className="text-muted-foreground max-w-[65ch] mb-8 leading-relaxed text-justify">
           {abstract}
         </p>
         <div className="flex flex-wrap gap-3 font-display text-[11px] font-bold uppercase tracking-wider">
