@@ -213,7 +213,6 @@ function Archivio() {
                 >
                   <option value="recent">{t("archive.sort.recent")}</option>
                   <option value="oldest">{t("archive.sort.oldest")}</option>
-                  <option value="views">{t("archive.sort.views")}</option>
                   <option value="title">{t("archive.sort.title")}</option>
                 </select>
                 {hasFilters && (
