@@ -622,6 +622,7 @@ function AdminSettingsPage() {
           <LanguageEditor
             items={form.aboutLanguages}
             onChange={(items) => setForm({ ...form, aboutLanguages: items })}
+            uploadLogo={uploadLogo}
           />
 
           <LogoListEditor
