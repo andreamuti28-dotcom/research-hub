@@ -20,7 +20,7 @@ const DEFAULTS: SiteSettings = {
   homeMarketEnabled: true,
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
   archiveDisclaimer: "Intelligenza Artificiale integrata",
-  headerBg: "#ffffff",
+  headerBg: "",
   aboutRole: "Ricercatore indipendente",
 
   aboutBio: "",
