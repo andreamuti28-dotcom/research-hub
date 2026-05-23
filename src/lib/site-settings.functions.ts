@@ -185,7 +185,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
         typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
       homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
       archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
-      headerBg: str(d.header_bg, DEFAULTS.headerBg),
+      headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
 
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
