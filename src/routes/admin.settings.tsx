@@ -39,6 +39,10 @@ type FormState = {
   linkedinUrl: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  homeFeaturedLabel: string;
+  homeMarketLabel: string;
+  homeMarketEnabled: boolean;
+
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
@@ -121,6 +125,10 @@ function AdminSettingsPage() {
         linkedinUrl: s.linkedinUrl,
         portraitUrl: s.portraitUrl,
         featuredPaperIds: s.featuredPaperIds,
+        homeFeaturedLabel: s.homeFeaturedLabel,
+        homeMarketLabel: s.homeMarketLabel,
+        homeMarketEnabled: s.homeMarketEnabled,
+
         aboutRole: s.aboutRole,
         aboutBio: s.aboutBio,
         aboutKicker: s.aboutKicker,
@@ -400,6 +408,53 @@ function AdminSettingsPage() {
             );
           })}
         </section>
+
+        {/* Home — collapsibles labels */}
+        <section className="border border-surface-dark-muted p-6 space-y-5">
+          <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+            Home — pulsanti espandibili
+          </h2>
+          <Field label="Etichetta pulsante 'Paper in Evidenza'">
+            <input
+              type="text"
+              value={form.homeFeaturedLabel}
+              onChange={(e) => setForm({ ...form, homeFeaturedLabel: e.target.value })}
+              className={inputCls}
+              required
+              maxLength={120}
+            />
+          </Field>
+          <Field label="Etichetta pulsante 'Analisi Mercati Finanziari'">
+            <input
+              type="text"
+              value={form.homeMarketLabel}
+              onChange={(e) => setForm({ ...form, homeMarketLabel: e.target.value })}
+              className={inputCls}
+              required
+              maxLength={120}
+            />
+          </Field>
+          <label className="flex items-center gap-3 text-surface-dark-foreground/80">
+            <input
+              type="checkbox"
+              checked={form.homeMarketEnabled}
+              onChange={(e) => setForm({ ...form, homeMarketEnabled: e.target.checked })}
+            />
+            <span className="font-mono text-[11px] uppercase tracking-widest">
+              Mostra sezione mercati nella home
+            </span>
+          </label>
+          <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+            Endpoint per ricevere i report dal Google Apps Script:
+            <br />
+            <code className="text-[11px]">POST /api/public/market-reports</code>
+            <br />
+            Header: <code>Authorization: Bearer &lt;MARKET_REPORTS_WEBHOOK_SECRET&gt;</code>
+            <br />
+            Body JSON: <code>{`{ "title": "...", "content": "...", "reportDate": "YYYY-MM-DD", "source": "..." }`}</code>
+          </p>
+        </section>
+
 
         {/* About Me */}
         <section className="border border-surface-dark-muted p-6 space-y-6">
@@ -816,12 +871,13 @@ function LanguageEditor({
       <button
         type="button"
         onClick={() =>
-          onChange([...items, { name: "", level: 80, flag: "", description: "" }])
+          onChange([...items, { name: "", level: 80, flag: "", flagUrl: null, description: "" }])
         }
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
         + Aggiungi lingua
       </button>
+
     </div>
   );
 }

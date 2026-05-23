@@ -18,6 +18,7 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 
 const ArchivioRoute = ArchivioRouteImport.update({
@@ -65,6 +66,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMarketReportsRoute = ApiPublicMarketReportsRouteImport.update({
+  id: '/api/public/market-reports',
+  path: '/api/public/market-reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminEditIdRoute = AdminEditIdRouteImport.update({
   id: '/admin/edit/$id',
   path: '/admin/edit/$id',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/paper/$slug': typeof PaperSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
+  '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/paper/$slug': typeof PaperSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
+  '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/paper/$slug': typeof PaperSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
+  '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/paper/$slug'
     | '/admin/'
     | '/admin/edit/$id'
+    | '/api/public/market-reports'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/paper/$slug'
     | '/admin'
     | '/admin/edit/$id'
+    | '/api/public/market-reports'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/paper/$slug'
     | '/admin/'
     | '/admin/edit/$id'
+    | '/api/public/market-reports'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +170,7 @@ export interface RootRouteChildren {
   PaperSlugRoute: typeof PaperSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
+  ApiPublicMarketReportsRoute: typeof ApiPublicMarketReportsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/market-reports': {
+      id: '/api/public/market-reports'
+      path: '/api/public/market-reports'
+      fullPath: '/api/public/market-reports'
+      preLoaderRoute: typeof ApiPublicMarketReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/edit/$id': {
       id: '/admin/edit/$id'
       path: '/admin/edit/$id'
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   PaperSlugRoute: PaperSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminEditIdRoute: AdminEditIdRoute,
+  ApiPublicMarketReportsRoute: ApiPublicMarketReportsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

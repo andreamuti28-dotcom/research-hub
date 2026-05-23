@@ -15,7 +15,11 @@ const DEFAULTS: SiteSettings = {
   linkedinUrl: "https://www.linkedin.com",
   portraitUrl: null,
   featuredPaperIds: [],
+  homeFeaturedLabel: "Paper in Evidenza",
+  homeMarketLabel: "Analisi Mercati Finanziari",
+  homeMarketEnabled: true,
   aboutRole: "Ricercatore indipendente",
+
   aboutBio: "",
   aboutKicker: "Chi sono",
   aboutEducationLabel: "Formazione",

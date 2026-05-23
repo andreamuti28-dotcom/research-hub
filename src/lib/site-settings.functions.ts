@@ -14,7 +14,13 @@ async function assertAdmin(userId: string) {
   if (!data) throw new Error("Forbidden: admin role required");
 }
 
-export type LanguageItem = { name: string; level: number; flag: string; description: string };
+export type LanguageItem = {
+  name: string;
+  level: number;
+  flag: string;
+  flagUrl: string | null;
+  description: string;
+};
 export type LogoItem = { name: string; logoUrl: string | null; description: string };
 export type EducationItem = { name: string; detail: string; description: string };
 export type HobbyItem = { name: string; icon: string };
@@ -26,6 +32,9 @@ export type SiteSettings = {
   linkedinUrl: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  homeFeaturedLabel: string;
+  homeMarketLabel: string;
+  homeMarketEnabled: boolean;
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
@@ -49,6 +58,7 @@ export type SiteSettings = {
   aboutCertifications: LogoItem[];
 };
 
+
 const DEFAULTS: SiteSettings = {
   name: "Andrea Muti",
   heroTitle:
@@ -58,6 +68,9 @@ const DEFAULTS: SiteSettings = {
   linkedinUrl: "https://www.linkedin.com",
   portraitUrl: null,
   featuredPaperIds: [],
+  homeFeaturedLabel: "Paper in Evidenza",
+  homeMarketLabel: "Analisi Mercati Finanziari",
+  homeMarketEnabled: true,
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
@@ -82,6 +95,7 @@ const DEFAULTS: SiteSettings = {
   aboutCertifications: [],
 };
 
+
 function coerceLanguages(v: unknown): LanguageItem[] {
   if (!Array.isArray(v)) return [];
   return v
@@ -92,12 +106,14 @@ function coerceLanguages(v: unknown): LanguageItem[] {
       const lvl = typeof o.level === "number" ? o.level : Number(o.level);
       const level = Number.isFinite(lvl) ? Math.max(0, Math.min(100, Math.round(lvl))) : 0;
       const flag = typeof o.flag === "string" ? o.flag : "";
+      const flagUrl = typeof o.flagUrl === "string" && o.flagUrl ? o.flagUrl : null;
       const description = typeof o.description === "string" ? o.description : "";
       if (!name) return null;
-      return { name, level, flag, description };
+      return { name, level, flag, flagUrl, description };
     })
     .filter((x): x is LanguageItem => x !== null);
 }
+
 
 function coerceLogos(v: unknown): LogoItem[] {
   if (!Array.isArray(v)) return [];
@@ -157,6 +173,11 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       linkedinUrl: str(d.linkedin_url, DEFAULTS.linkedinUrl),
       portraitUrl: (d.portrait_url as string | null) ?? null,
       featuredPaperIds: Array.isArray(raw) ? raw.slice(0, 3) : [],
+      homeFeaturedLabel: str(d.home_featured_label, DEFAULTS.homeFeaturedLabel),
+      homeMarketLabel: str(d.home_market_label, DEFAULTS.homeMarketLabel),
+      homeMarketEnabled:
+        typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
+
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
       aboutKicker: str(d.about_kicker, DEFAULTS.aboutKicker),
@@ -186,6 +207,7 @@ const languageSchema = z.object({
   name: z.string().trim().min(1).max(60),
   level: z.number().int().min(0).max(100),
   flag: z.string().trim().max(8).default(""),
+  flagUrl: z.string().trim().url().max(1000).nullable().default(null),
   description: z.string().trim().max(300).default(""),
 });
 const logoSchema = z.object({
@@ -198,6 +220,7 @@ const educationSchema = z.object({
   detail: z.string().trim().max(300).default(""),
   description: z.string().trim().max(300).default(""),
 });
+
 // Accept hex with optional alpha: #RGB, #RRGGBB, #RRGGBBAA
 const hexColor = z
   .string()
@@ -211,6 +234,10 @@ const updateSchema = z.object({
   linkedinUrl: z.string().trim().url().max(500),
   portraitUrl: z.string().trim().url().max(1000).nullable().optional(),
   featuredPaperIds: z.array(z.string().uuid()).max(3).default([]),
+  homeFeaturedLabel: z.string().trim().min(1).max(120),
+  homeMarketLabel: z.string().trim().min(1).max(120),
+  homeMarketEnabled: z.boolean(),
+
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
   aboutKicker: z.string().trim().min(1).max(60),
@@ -252,6 +279,10 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       linkedin_url: data.linkedinUrl,
       portrait_url: data.portraitUrl ?? null,
       featured_paper_ids: data.featuredPaperIds,
+      home_featured_label: data.homeFeaturedLabel,
+      home_market_label: data.homeMarketLabel,
+      home_market_enabled: data.homeMarketEnabled,
+
       about_role: data.aboutRole,
       about_bio: data.aboutBio,
       about_kicker: data.aboutKicker,
@@ -348,7 +379,7 @@ const MIME_EXT: Record<string, string> = {
 const uploadLogoSchema = z.object({
   fileName: z.string().trim().min(1).max(255),
   mimeType: z.enum(ALLOWED_LOGO_MIME),
-  folder: z.enum(["software", "certifications"]),
+  folder: z.enum(["software", "certifications", "languages"]),
   base64: z.string().min(1),
 });
 
