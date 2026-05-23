@@ -791,19 +791,74 @@ function EducationEditor({
 function LanguageEditor({
   items,
   onChange,
+  uploadLogo,
 }: {
   items: LanguageItem[];
   onChange: (next: LanguageItem[]) => void;
+  uploadLogo: (args: {
+    data: {
+      fileName: string;
+      mimeType: "image/png" | "image/jpeg" | "image/webp" | "image/svg+xml";
+      folder: "software" | "certifications" | "languages";
+      base64: string;
+    };
+  }) => Promise<{ publicUrl: string }>;
 }) {
+  const [busy, setBusy] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const handleFlagFile = async (idx: number, file: File) => {
+    setErr(null);
+    setBusy(idx);
+    try {
+      const mime = file.type;
+      if (
+        mime !== "image/png" &&
+        mime !== "image/jpeg" &&
+        mime !== "image/webp" &&
+        mime !== "image/svg+xml"
+      ) {
+        throw new Error("Formato non supportato (PNG, JPG, WEBP, SVG).");
+      }
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Impossibile leggere il file."));
+        reader.readAsDataURL(file);
+      });
+      const { publicUrl } = await uploadLogo({
+        data: { fileName: file.name, mimeType: mime, folder: "languages", base64 },
+      });
+      const next = [...items];
+      next[idx] = { ...next[idx], flagUrl: publicUrl };
+      onChange(next);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Upload fallito");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
-        Lingue (voci) — incolla l'emoji bandiera (🇮🇹 🇬🇧 🇫🇷 …)
+        Lingue (voci) — emoji bandiera oppure carica un'immagine
       </div>
       <div className="space-y-4">
         {items.map((it, i) => (
           <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
-            <div className="grid grid-cols-[64px_1fr_120px_auto] gap-2 items-start">
+            <div className="grid grid-cols-[80px_72px_1fr_110px_auto] gap-2 items-center">
+              <div className="w-20 h-12 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
+                {it.flagUrl ? (
+                  <img src={it.flagUrl} alt="" className="w-full h-full object-cover" />
+                ) : it.flag ? (
+                  <span className="text-2xl leading-none">{it.flag}</span>
+                ) : (
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-neutral-400">
+                    no flag
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 value={it.flag}
@@ -813,7 +868,7 @@ function LanguageEditor({
                   next[i] = { ...it, flag: e.target.value };
                   onChange(next);
                 }}
-                className={`${inputCls} text-center text-2xl`}
+                className={`${inputCls} text-center text-2xl px-1`}
                 maxLength={8}
               />
               <input
@@ -854,6 +909,34 @@ function LanguageEditor({
                 ×
               </button>
             </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="px-3 py-2 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold cursor-pointer hover:border-background hover:text-background">
+                {busy === i ? "Carico…" : it.flagUrl ? "Sostituisci bandiera" : "Carica bandiera"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleFlagFile(i, f);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              {it.flagUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = [...items];
+                    next[i] = { ...it, flagUrl: null };
+                    onChange(next);
+                  }}
+                  className="px-3 py-2 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display hover:border-destructive hover:text-destructive"
+                >
+                  Rimuovi bandiera
+                </button>
+              )}
+            </div>
             <textarea
               value={it.description}
               placeholder="Testo tooltip (lascia vuoto per nascondere)"
@@ -868,6 +951,7 @@ function LanguageEditor({
           </div>
         ))}
       </div>
+      {err && <div className="font-mono text-[11px] text-destructive">{err}</div>}
       <button
         type="button"
         onClick={() =>
@@ -877,7 +961,6 @@ function LanguageEditor({
       >
         + Aggiungi lingua
       </button>
-
     </div>
   );
 }
