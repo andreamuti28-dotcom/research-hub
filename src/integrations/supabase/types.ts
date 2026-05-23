@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      market_reports: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_current: boolean
+          report_date: string
+          source: string | null
+          title: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          report_date?: string
+          source?: string | null
+          title?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          report_date?: string
+          source?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       papers: {
         Row: {
           abstract: string
@@ -93,6 +123,9 @@ export type Database = {
           featured_paper_ids: string[]
           hero_intro: string
           hero_title: string
+          home_featured_label: string
+          home_market_enabled: boolean
+          home_market_label: string
           id: string
           linkedin_url: string
           name: string
@@ -127,6 +160,9 @@ export type Database = {
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
+          home_featured_label?: string
+          home_market_enabled?: boolean
+          home_market_label?: string
           id?: string
           linkedin_url?: string
           name?: string
@@ -161,6 +197,9 @@ export type Database = {
           featured_paper_ids?: string[]
           hero_intro?: string
           hero_title?: string
+          home_featured_label?: string
+          home_market_enabled?: boolean
+          home_market_label?: string
           id?: string
           linkedin_url?: string
           name?: string
