@@ -179,7 +179,7 @@ function Archivio() {
 
         {tab === "papers" ? (
           <>
-            <p className="max-w-[55ch] text-base text-muted-foreground leading-relaxed mb-6">
+            <p className="max-w-[55ch] text-base text-muted-foreground leading-relaxed text-justify mb-6">
               {t("archive.intro", papers.length)}
             </p>
             <div className="flex flex-col gap-3 mb-6">
