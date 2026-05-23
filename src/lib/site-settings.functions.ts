@@ -290,6 +290,8 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       home_featured_label: data.homeFeaturedLabel,
       home_market_label: data.homeMarketLabel,
       home_market_enabled: data.homeMarketEnabled,
+      home_market_disclaimer: data.homeMarketDisclaimer,
+      archive_disclaimer: data.archiveDisclaimer,
 
       about_role: data.aboutRole,
       about_bio: data.aboutBio,
