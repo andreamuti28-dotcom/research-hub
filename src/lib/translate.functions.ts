@@ -9,13 +9,15 @@ const InputSchema = z.object({
   target: z.enum(["it", "en"]),
 });
 
-async function translateChunk(texts: string[], target: "it" | "en", apiKey: string) {
+async function translateChunk(
+  texts: string[],
+  target: "it" | "en",
+  apiKey: string,
+) {
   const source = target === "en" ? "Italian" : "English";
   const targetName = target === "en" ? "English" : "Italian";
 
-  const numbered = texts
-    .map((t, i) => `[[${i}]]\n${t}`)
-    .join("\n\n[[END]]\n\n");
+  const numbered = texts.map((t, i) => `[[${i}]]\n${t}`).join("\n\n[[END]]\n\n");
 
   const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
@@ -75,9 +77,7 @@ export const translateBatch = createServerFn({ method: "POST" })
     const { texts, target } = data;
     const translations: string[] = [];
     for (let i = 0; i < texts.length; i += SERVER_CHUNK_SIZE) {
-      translations.push(
-        ...(await translateChunk(texts.slice(i, i + SERVER_CHUNK_SIZE), target, apiKey)),
-      );
+      translations.push(...(await translateChunk(texts.slice(i, i + SERVER_CHUNK_SIZE), target, apiKey)));
     }
     return { translations };
   });

@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useLanguage } from "@/hooks/use-language";
 import { translateBatch } from "@/lib/translate.functions";
 
-const SOURCE: "it" = "it";
+const SOURCE = "it" as const;
 
 function hash(s: string): string {
   let h = 5381;
