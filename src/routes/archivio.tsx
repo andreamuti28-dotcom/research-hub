@@ -53,6 +53,8 @@ function Archivio() {
   const { data: marketReports } = useSuspenseQuery(marketReportsQuery);
   const queryClient = useQueryClient();
   const t = useT();
+  const settings = useSiteSettings();
+  const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [tab, setTab] = useState<Tab>("papers");
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
