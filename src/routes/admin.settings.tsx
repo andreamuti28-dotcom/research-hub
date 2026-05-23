@@ -453,11 +453,28 @@ function AdminSettingsPage() {
             />
           </Field>
           <Field label="Colore sfondo header (navigazione)">
-            <ColorField
-              value={form.headerBg}
-              onChange={(v) => setForm({ ...form, headerBg: v })}
-            />
+            <div className="space-y-2">
+              <ColorField
+                value={form.headerBg}
+                onChange={(v) => setForm({ ...form, headerBg: v })}
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, headerBg: "" })}
+                  className="px-3 py-1.5 border border-surface-dark-muted font-display text-[10px] font-bold uppercase tracking-wider hover:border-background hover:text-background transition-colors"
+                >
+                  Nessun colore
+                </button>
+                <span className="font-mono text-[10px] text-surface-dark-foreground/50">
+                  {form.headerBg
+                    ? "Colore personalizzato attivo"
+                    : "Automatico: bianco in chiaro, nero in scuro"}
+                </span>
+              </div>
+            </div>
           </Field>
+          <MarketReportEditorPanel />
           <MarketReportsIntegrationPanel />
 
         </section>
