@@ -253,7 +253,7 @@ function Archivio() {
           </>
         ) : (
           <>
-            <p className="max-w-[60ch] text-base text-muted-foreground leading-relaxed mb-6">
+            <p className="max-w-[60ch] text-base text-muted-foreground leading-relaxed text-justify mb-6">
               Archivio dei report sui mercati finanziari ricevuti dal sistema automatico.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
