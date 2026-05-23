@@ -14,7 +14,13 @@ async function assertAdmin(userId: string) {
   if (!data) throw new Error("Forbidden: admin role required");
 }
 
-export type LanguageItem = { name: string; level: number; flag: string; description: string };
+export type LanguageItem = {
+  name: string;
+  level: number;
+  flag: string;
+  flagUrl: string | null;
+  description: string;
+};
 export type LogoItem = { name: string; logoUrl: string | null; description: string };
 export type EducationItem = { name: string; detail: string; description: string };
 export type HobbyItem = { name: string; icon: string };
@@ -26,6 +32,9 @@ export type SiteSettings = {
   linkedinUrl: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  homeFeaturedLabel: string;
+  homeMarketLabel: string;
+  homeMarketEnabled: boolean;
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
@@ -48,6 +57,7 @@ export type SiteSettings = {
   aboutSoftware: LogoItem[];
   aboutCertifications: LogoItem[];
 };
+
 
 const DEFAULTS: SiteSettings = {
   name: "Andrea Muti",
