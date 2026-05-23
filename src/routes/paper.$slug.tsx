@@ -133,7 +133,7 @@ function PaperDetail() {
               ) : (
                 <p
                   key={i}
-                  className="text-pretty"
+                  className="text-pretty text-justify"
                   dangerouslySetInnerHTML={{ __html: renderMathHtml(block.text) }}
                 />
               ),
