@@ -122,6 +122,7 @@ export type Database = {
           about_tooltip_fg: string
           archive_disclaimer: string
           featured_paper_ids: string[]
+          header_bg: string
           hero_intro: string
           hero_title: string
           home_featured_label: string
@@ -161,6 +162,7 @@ export type Database = {
           about_tooltip_fg?: string
           archive_disclaimer?: string
           featured_paper_ids?: string[]
+          header_bg?: string
           hero_intro?: string
           hero_title?: string
           home_featured_label?: string
@@ -200,6 +202,7 @@ export type Database = {
           about_tooltip_fg?: string
           archive_disclaimer?: string
           featured_paper_ids?: string[]
+          header_bg?: string
           hero_intro?: string
           hero_title?: string
           home_featured_label?: string
@@ -212,6 +215,27 @@ export type Database = {
           portrait_url?: string | null
           singleton?: boolean
           updated_at?: string
+        }
+        Relationships: []
+      }
+      site_visits: {
+        Row: {
+          created_at: string
+          id: string
+          path: string | null
+          visitor_token: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path?: string | null
+          visitor_token?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string | null
+          visitor_token?: string | null
         }
         Relationships: []
       }
