@@ -92,9 +92,6 @@ function Index() {
       <section className="max-w-6xl mx-auto px-6 pt-16 md:pt-24 pb-12 md:pb-16 w-full">
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-start">
           <div className="md:col-span-7">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-              Ricerca · {new Date().getFullYear()}
-            </div>
             <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-6 italic">
               {heroTitle}
             </h1>
