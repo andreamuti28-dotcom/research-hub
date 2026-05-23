@@ -117,7 +117,7 @@ function Index() {
                 <span className="inline-flex items-center font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-foreground/10 text-foreground shrink-0">
                   {t("home.featuredKicker")}
                 </span>
-                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic truncate group-hover:text-primary transition-colors">
+                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
                   {settings.homeFeaturedLabel || t("home.featuredTitle")}
                 </h2>
               </div>
@@ -156,7 +156,7 @@ function Index() {
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   Live
                 </span>
-                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic truncate group-hover:text-primary transition-colors">
+                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
                   {settings.homeMarketLabel}
                 </h2>
               </div>
