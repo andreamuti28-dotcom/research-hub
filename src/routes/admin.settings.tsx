@@ -432,6 +432,24 @@ function AdminSettingsPage() {
               Mostra sezione mercati nella home
             </span>
           </label>
+          <Field label="Disclaimer sotto al report finanziario (home)">
+            <input
+              type="text"
+              value={form.homeMarketDisclaimer}
+              onChange={(e) => setForm({ ...form, homeMarketDisclaimer: e.target.value })}
+              className={inputCls}
+              maxLength={300}
+            />
+          </Field>
+          <Field label="Disclaimer sotto al titolo 'Ricerca Pubblicata' (archivio)">
+            <input
+              type="text"
+              value={form.archiveDisclaimer}
+              onChange={(e) => setForm({ ...form, archiveDisclaimer: e.target.value })}
+              className={inputCls}
+              maxLength={300}
+            />
+          </Field>
           <MarketReportsIntegrationPanel />
 
         </section>
