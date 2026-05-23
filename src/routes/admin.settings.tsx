@@ -44,6 +44,7 @@ type FormState = {
   homeMarketEnabled: boolean;
   homeMarketDisclaimer: string;
   archiveDisclaimer: string;
+  headerBg: string;
 
   aboutRole: string;
   aboutBio: string;
@@ -132,6 +133,7 @@ function AdminSettingsPage() {
         homeMarketEnabled: s.homeMarketEnabled,
         homeMarketDisclaimer: s.homeMarketDisclaimer,
         archiveDisclaimer: s.archiveDisclaimer,
+        headerBg: s.headerBg,
 
         aboutRole: s.aboutRole,
         aboutBio: s.aboutBio,
@@ -450,9 +452,16 @@ function AdminSettingsPage() {
               maxLength={300}
             />
           </Field>
+          <Field label="Colore sfondo header (navigazione)">
+            <ColorField
+              value={form.headerBg}
+              onChange={(v) => setForm({ ...form, headerBg: v })}
+            />
+          </Field>
           <MarketReportsIntegrationPanel />
 
         </section>
+
 
 
         {/* About Me */}
