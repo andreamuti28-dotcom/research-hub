@@ -48,13 +48,12 @@ function AboutPage() {
     settings.aboutSoftwareLabel,
     settings.aboutCertificationsLabel,
   ];
-  const panelGroups = [
-    trEducation.map((e) => [e.name, e.detail ?? "", e.description ?? ""]),
-    trLanguages.map((l) => [l.name, "", l.description ?? ""]),
-    trSoftware.map((s) => [s.name, "", s.description ?? ""]),
-    trCertifications.map((c) => [c.name, "", c.description ?? ""]),
+  const panelFlat = [
+    ...settings.aboutEducation.flatMap((e) => [e.name, e.detail ?? "", e.description ?? ""]),
+    ...settings.aboutLanguages.flatMap((l) => [l.name, "", l.description ?? ""]),
+    ...settings.aboutSoftware.flatMap((s) => [s.name, "", s.description ?? ""]),
+    ...settings.aboutCertifications.flatMap((c) => [c.name, "", c.description ?? ""]),
   ];
-  const panelFlat = panelGroups.flat(2);
   const all = useTranslated([...baseLabels, ...panelFlat]);
   const [bio, role, kicker, eduLabel, langLabel, softLabel, certLabel] = all;
   let cursor = baseLabels.length;
@@ -63,19 +62,19 @@ function AboutPage() {
     cursor += n;
     return slice;
   };
-  const trEducation = trEducation.map((e) => {
+  const trEducation = settings.aboutEducation.map((e) => {
     const [name, detail, description] = take(3);
     return { ...e, name, detail: e.detail ? detail : e.detail, description };
   });
-  const trLanguages = trLanguages.map((l) => {
+  const trLanguages = settings.aboutLanguages.map((l) => {
     const [name, , description] = take(3);
     return { ...l, name, description };
   });
-  const trSoftware = trSoftware.map((s) => {
+  const trSoftware = settings.aboutSoftware.map((s) => {
     const [name, , description] = take(3);
     return { ...s, name, description };
   });
-  const trCertifications = trCertifications.map((c) => {
+  const trCertifications = settings.aboutCertifications.map((c) => {
     const [name, , description] = take(3);
     return { ...c, name, description };
   });
