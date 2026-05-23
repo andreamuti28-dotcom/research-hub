@@ -235,7 +235,7 @@ function AdminSettingsPage() {
             Foto profilo (pagina About)
           </h2>
           <div className="flex items-start gap-6 flex-wrap">
-            <div className="w-32 aspect-[4/5] bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
+            <div className="w-40 h-40 rounded-full bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
               {form.portraitUrl ? (
                 <img
                   src={form.portraitUrl}
@@ -285,37 +285,21 @@ function AdminSettingsPage() {
                 <div className="font-mono text-[11px] text-destructive">{uploadError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                L'immagine viene ritagliata in 4:5. Usa i cursori per spostare il punto focale.
+                L'immagine viene ritagliata in un cerchio. Trascina il punto focale sulla griglia per scegliere cosa mostrare.
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
-            <Field label={`Posizione orizzontale: ${form.aboutPortraitPosX}%`}>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={form.aboutPortraitPosX}
-                onChange={(e) =>
-                  setForm({ ...form, aboutPortraitPosX: Number(e.target.value) })
-                }
-                className="w-full"
-              />
-            </Field>
-            <Field label={`Posizione verticale: ${form.aboutPortraitPosY}%`}>
-              <input
-                type="range"
-                min={0}
-                max={100}
-                value={form.aboutPortraitPosY}
-                onChange={(e) =>
-                  setForm({ ...form, aboutPortraitPosY: Number(e.target.value) })
-                }
-                className="w-full"
-              />
-            </Field>
-          </div>
+          {form.portraitUrl && (
+            <PortraitFocusPicker
+              src={form.portraitUrl}
+              posX={form.aboutPortraitPosX}
+              posY={form.aboutPortraitPosY}
+              onChange={(x, y) =>
+                setForm((f) => (f ? { ...f, aboutPortraitPosX: x, aboutPortraitPosY: y } : f))
+              }
+            />
+          )}
         </section>
 
         {/* Identità */}
