@@ -42,6 +42,8 @@ type FormState = {
   homeFeaturedLabel: string;
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
+  homeMarketDisclaimer: string;
+  archiveDisclaimer: string;
 
   aboutRole: string;
   aboutBio: string;
