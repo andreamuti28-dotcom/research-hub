@@ -39,7 +39,7 @@ const EMOJI_FONT =
 
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
-  const [bio, role, kicker, eduLabel, langLabel, softLabel, certLabel] = useTranslated([
+  const baseLabels = [
     settings.aboutBio,
     settings.aboutRole,
     settings.aboutKicker,
@@ -47,7 +47,38 @@ function AboutPage() {
     settings.aboutLanguagesLabel,
     settings.aboutSoftwareLabel,
     settings.aboutCertificationsLabel,
-  ]);
+  ];
+  const panelGroups = [
+    settings.aboutEducation.map((e) => [e.name, e.detail ?? "", e.description ?? ""]),
+    settings.aboutLanguages.map((l) => [l.name, "", l.description ?? ""]),
+    settings.aboutSoftware.map((s) => [s.name, "", s.description ?? ""]),
+    settings.aboutCertifications.map((c) => [c.name, "", c.description ?? ""]),
+  ];
+  const panelFlat = panelGroups.flat(2);
+  const all = useTranslated([...baseLabels, ...panelFlat]);
+  const [bio, role, kicker, eduLabel, langLabel, softLabel, certLabel] = all;
+  let cursor = baseLabels.length;
+  const take = (n: number) => {
+    const slice = all.slice(cursor, cursor + n);
+    cursor += n;
+    return slice;
+  };
+  const trEducation = settings.aboutEducation.map((e) => {
+    const [name, detail, description] = take(3);
+    return { ...e, name, detail: e.detail ? detail : e.detail, description };
+  });
+  const trLanguages = settings.aboutLanguages.map((l) => {
+    const [name, , description] = take(3);
+    return { ...l, name, description };
+  });
+  const trSoftware = settings.aboutSoftware.map((s) => {
+    const [name, , description] = take(3);
+    return { ...s, name, description };
+  });
+  const trCertifications = settings.aboutCertifications.map((c) => {
+    const [name, , description] = take(3);
+    return { ...c, name, description };
+  });
   const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
