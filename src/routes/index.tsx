@@ -92,9 +92,6 @@ function Index() {
       <section className="max-w-6xl mx-auto px-6 pt-16 md:pt-24 pb-12 md:pb-16 w-full">
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-start">
           <div className="md:col-span-7">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-              Ricerca · {new Date().getFullYear()}
-            </div>
             <h1 className="text-4xl md:text-6xl font-display font-bold tracking-tighter leading-[0.95] text-balance mb-6 italic">
               {heroTitle}
             </h1>
@@ -120,7 +117,7 @@ function Index() {
                 <span className="inline-flex items-center font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-foreground/10 text-foreground shrink-0">
                   {t("home.featuredKicker")}
                 </span>
-                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic truncate group-hover:text-primary transition-colors">
+                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
                   {settings.homeFeaturedLabel || t("home.featuredTitle")}
                 </h2>
               </div>
@@ -159,7 +156,7 @@ function Index() {
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   Live
                 </span>
-                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic truncate group-hover:text-primary transition-colors">
+                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
                   {settings.homeMarketLabel}
                 </h2>
               </div>
