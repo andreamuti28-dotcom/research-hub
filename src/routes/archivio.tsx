@@ -360,7 +360,7 @@ function MarketReportCard({
         <div className="min-w-0">
           <div className="flex flex-wrap items-baseline gap-3 mb-1">
             <h3 className="font-display text-base md:text-lg font-bold tracking-tight truncate">
-              {report.title}
+              {tTitle}
             </h3>
             {report.isCurrent && (
               <span className="font-mono text-[9px] uppercase tracking-widest bg-primary text-primary-foreground px-1.5 py-0.5">
@@ -374,7 +374,7 @@ function MarketReportCard({
               month: "long",
               year: "numeric",
             })}
-            {report.source && <span> · {report.source}</span>}
+            {tSource && <span> · {tSource}</span>}
           </div>
         </div>
         <span
