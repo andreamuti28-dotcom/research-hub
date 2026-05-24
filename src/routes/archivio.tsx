@@ -389,7 +389,7 @@ function MarketReportCard({
       </button>
       {open && (
         <div className="px-5 pb-5 whitespace-pre-line leading-relaxed text-sm md:text-base text-pretty text-justify">
-          {report.content}
+          {tContent}
         </div>
       )}
     </article>
