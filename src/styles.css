@@ -2,6 +2,19 @@
 @source "../src";
 @import "tw-animate-css";
 
+/* Self-hosted fonts (GDPR-friendly, no Google Fonts CDN) */
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/lora/400.css";
+@import "@fontsource/lora/500.css";
+@import "@fontsource/lora/600.css";
+@import "@fontsource/lora/400-italic.css";
+@import "@fontsource/lora/500-italic.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
