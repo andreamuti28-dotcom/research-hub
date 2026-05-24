@@ -16,18 +16,20 @@ import type { SiteSettings, LanguageItem } from "@/lib/site-settings.functions";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About Me — Andrea Muti" },
+      { title: "Chi sono — Andrea Muti" },
       {
         name: "description",
         content:
-          "Chi sono: formazione, lingue, software & AI e certificazioni.",
+          "Chi sono: formazione, lingue, software & AI e certificazioni di Andrea Muti, ricercatore indipendente.",
       },
-      { property: "og:title", content: "About Me — Andrea Muti" },
+      { property: "og:title", content: "Chi sono — Andrea Muti" },
       {
         property: "og:description",
         content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
       },
+      { property: "og:url", content: "/about" },
     ],
+    links: [{ rel: "canonical", href: "/about" }],
   }),
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(siteSettingsQuery),

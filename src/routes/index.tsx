@@ -40,7 +40,9 @@ export const Route = createFileRoute("/")({
         content:
           "Paper di ricerca autonoma su etica digitale, infrastrutture e modelli linguistici.",
       },
+      { property: "og:url", content: "/" },
     ],
+    links: [{ rel: "canonical", href: "/" }],
   }),
   loader: ({ context }) =>
     Promise.all([

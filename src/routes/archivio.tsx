@@ -35,7 +35,9 @@ export const Route = createFileRoute("/archivio")({
         property: "og:description",
         content: "Paper di ricerca e report dei mercati finanziari.",
       },
+      { property: "og:url", content: "/archivio" },
     ],
+    links: [{ rel: "canonical", href: "/archivio" }],
   }),
   loader: ({ context }) =>
     Promise.all([
