@@ -196,7 +196,7 @@ function Index() {
                   Live
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {settings.homeMarketLabel}
+                  {marketLabel}
                 </h2>
               </div>
               <span
