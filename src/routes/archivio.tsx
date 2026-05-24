@@ -345,6 +345,11 @@ function MarketReportCard({
   };
 }) {
   const [open, setOpen] = useState(false);
+  const [tTitle, tContent, tSource] = useTranslated([
+    report.title,
+    report.content,
+    report.source ?? "",
+  ]);
   return (
     <article className="border border-border bg-background">
       <button
