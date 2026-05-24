@@ -89,10 +89,11 @@ function CookiePolicyPage() {
           <section>
             <h2 className="font-display text-xl font-bold mb-2">Cookie di terze parti</h2>
             <p>
-              Il sito utilizza Google Fonts per caricare i font tipografici. Google può
-              registrare l'indirizzo IP della richiesta. Non vengono impostati cookie di
-              profilazione né di marketing di terze parti (es. Google Analytics, Meta
-              Pixel, ad network).
+              Il sito <strong>non utilizza cookie o servizi di terze parti</strong> di
+              profilazione o marketing. I font tipografici sono ospitati direttamente sul
+              sito (self-hosting), quindi nessun dato di navigazione viene trasmesso a
+              Google Fonts o ad altri CDN esterni. Non sono integrati Google Analytics,
+              Meta Pixel o ad network.
             </p>
           </section>
 
