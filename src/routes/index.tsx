@@ -11,6 +11,8 @@ import { recordSiteVisit } from "@/lib/site-visits.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
+import { useConsent } from "@/hooks/use-consent";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -97,8 +99,12 @@ function Index() {
     };
   }, [queryClient]);
 
+  const { consent } = useConsent();
+  const { linkedinUrl } = useSiteSettings();
+
   useEffect(() => {
     if (typeof window === "undefined") return;
+    if (consent !== "accepted") return;
     try {
       const KEY = "visitor_token";
       const SESSION_KEY = "visit_recorded_at";
@@ -115,7 +121,7 @@ function Index() {
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [consent]);
 
 
   const featured = settings.featuredPaperIds
