@@ -121,6 +121,7 @@ export type Database = {
           about_tooltip_border: string
           about_tooltip_fg: string
           archive_disclaimer: string
+          contact_email: string | null
           featured_paper_ids: string[]
           header_bg: string
           hero_intro: string
@@ -161,6 +162,7 @@ export type Database = {
           about_tooltip_border?: string
           about_tooltip_fg?: string
           archive_disclaimer?: string
+          contact_email?: string | null
           featured_paper_ids?: string[]
           header_bg?: string
           hero_intro?: string
@@ -201,6 +203,7 @@ export type Database = {
           about_tooltip_border?: string
           about_tooltip_fg?: string
           archive_disclaimer?: string
+          contact_email?: string | null
           featured_paper_ids?: string[]
           header_bg?: string
           hero_intro?: string
