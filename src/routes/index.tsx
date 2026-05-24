@@ -12,7 +12,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { useConsent } from "@/hooks/use-consent";
-import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -100,7 +99,6 @@ function Index() {
   }, [queryClient]);
 
   const { consent } = useConsent();
-  const { linkedinUrl } = useSiteSettings();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
