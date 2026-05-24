@@ -140,8 +140,40 @@ function Index() {
             </h1>
           </div>
           <div className="md:col-span-5 md:pt-2">
-            <div className="text-base md:text-lg leading-relaxed text-pretty text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
+            <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
               <p className="whitespace-pre-line">{heroIntro}</p>
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3 md:pl-6">
+              <Link
+                to="/archivio"
+                className="inline-flex items-center px-4 py-2.5 bg-foreground text-background font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors"
+              >
+                Leggi i paper →
+              </Link>
+              {settings.homeMarketEnabled && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMarketOpen(true);
+                    requestAnimationFrame(() =>
+                      document
+                        .getElementById("market-section")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                    );
+                  }}
+                  className="inline-flex items-center px-4 py-2.5 border border-foreground text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors"
+                >
+                  Analisi mercati
+                </button>
+              )}
+              <a
+                href={settings.linkedinUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex items-center px-4 py-2.5 border border-border text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors"
+              >
+                LinkedIn ↗
+              </a>
             </div>
           </div>
         </div>
@@ -188,7 +220,7 @@ function Index() {
       )}
 
       {settings.homeMarketEnabled && (
-        <section className="border-t border-border bg-background">
+        <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
           <div className="max-w-6xl mx-auto px-6">
             <button
               type="button"
