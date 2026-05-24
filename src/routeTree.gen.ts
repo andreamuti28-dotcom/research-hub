@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TerminiRouteImport } from './routes/termini'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as ArchivioRouteImport } from './routes/archivio'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -23,6 +25,11 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 
+const TerminiRoute = TerminiRouteImport.update({
+  id: '/termini',
+  path: '/termini',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -31,6 +38,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiePolicyRoute = CookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchivioRoute = ArchivioRouteImport.update({
@@ -93,8 +105,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termini': typeof TerminiRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -108,8 +122,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termini': typeof TerminiRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -124,8 +140,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
+  '/cookie-policy': typeof CookiePolicyRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termini': typeof TerminiRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -141,8 +159,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/archivio'
+    | '/cookie-policy'
     | '/privacy'
     | '/sitemap.xml'
+    | '/termini'
     | '/admin/login'
     | '/admin/new'
     | '/admin/settings'
@@ -156,8 +176,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/archivio'
+    | '/cookie-policy'
     | '/privacy'
     | '/sitemap.xml'
+    | '/termini'
     | '/admin/login'
     | '/admin/new'
     | '/admin/settings'
@@ -171,8 +193,10 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/archivio'
+    | '/cookie-policy'
     | '/privacy'
     | '/sitemap.xml'
+    | '/termini'
     | '/admin/login'
     | '/admin/new'
     | '/admin/settings'
@@ -187,8 +211,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ArchivioRoute: typeof ArchivioRoute
+  CookiePolicyRoute: typeof CookiePolicyRoute
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TerminiRoute: typeof TerminiRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -201,6 +227,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/termini': {
+      id: '/termini'
+      path: '/termini'
+      fullPath: '/termini'
+      preLoaderRoute: typeof TerminiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -213,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookie-policy': {
+      id: '/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/cookie-policy'
+      preLoaderRoute: typeof CookiePolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archivio': {
@@ -299,8 +339,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ArchivioRoute: ArchivioRoute,
+  CookiePolicyRoute: CookiePolicyRoute,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TerminiRoute: TerminiRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNewRoute: AdminNewRoute,
   AdminSettingsRoute: AdminSettingsRoute,
@@ -313,3 +355,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
