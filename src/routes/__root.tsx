@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { langBootstrapScript } from "@/hooks/use-language";
+import { CookieConsent } from "@/components/CookieConsent";
 
 import appCss from "../styles.css?url";
 
@@ -140,6 +141,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <CookieConsent />
     </QueryClientProvider>
   );
 }

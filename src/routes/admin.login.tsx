@@ -28,6 +28,31 @@ const credsSchema = z.object({
     .max(72, "La password è troppo lunga"),
 });
 
+const RL_KEY = "admin_login_rl_v1";
+const MAX_ATTEMPTS = 5;
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function readAttempts(): number[] {
+  try {
+    const raw = localStorage.getItem(RL_KEY);
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? arr.filter((n) => typeof n === "number") : [];
+  } catch {
+    return [];
+  }
+}
+
+function recordFailure() {
+  const now = Date.now();
+  const next = [...readAttempts().filter((t) => now - t < WINDOW_MS), now];
+  localStorage.setItem(RL_KEY, JSON.stringify(next));
+}
+
+function clearAttempts() {
+  localStorage.removeItem(RL_KEY);
+}
+
 function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -38,6 +63,15 @@ function LoginPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const now = Date.now();
+    const recent = readAttempts().filter((t) => now - t < WINDOW_MS);
+    if (recent.length >= MAX_ATTEMPTS) {
+      const wait = Math.ceil((WINDOW_MS - (now - recent[0])) / 60000);
+      setError(`Troppi tentativi. Riprova tra ~${wait} min.`);
+      return;
+    }
+
     setLoading(true);
     try {
       const parsed = credsSchema.safeParse({ email, password });
@@ -51,6 +85,7 @@ function LoginPage() {
           password: parsed.data.password,
         });
       if (signInError || !signInData.user) {
+        recordFailure();
         setError("Credenziali non valide.");
         return;
       }
@@ -63,9 +98,11 @@ function LoginPage() {
         .maybeSingle();
       if (!roleRow) {
         await supabase.auth.signOut();
+        recordFailure();
         setError("Accesso non autorizzato.");
         return;
       }
+      clearAttempts();
       await navigate({ to: "/admin" });
     } catch {
       setError("Errore imprevisto. Riprova.");
