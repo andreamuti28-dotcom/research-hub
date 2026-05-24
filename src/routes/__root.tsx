@@ -82,6 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "Andrea Muti" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Andrea Muti" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -95,6 +96,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Person",
+          name: "Andrea Muti",
+          jobTitle: "Ricercatore indipendente",
+          description:
+            "Ricercatore indipendente sull'intersezione tra etica digitale, infrastrutture e cognizione.",
+        }),
       },
     ],
   }),
