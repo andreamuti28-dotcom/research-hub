@@ -57,10 +57,24 @@ function Index() {
   const { data: latestReport } = useQuery(latestMarketReportQuery);
   const queryClient = useQueryClient();
   const t = useT();
-  const [heroTitle, heroIntro, marketDisclaimer] = useTranslated([
+  const [
+    heroTitle,
+    heroIntro,
+    marketDisclaimer,
+    marketLabel,
+    featuredLabel,
+    reportTitle,
+    reportContent,
+    reportSource,
+  ] = useTranslated([
     settings.heroTitle,
     settings.heroIntro,
     settings.homeMarketDisclaimer,
+    settings.homeMarketLabel,
+    settings.homeFeaturedLabel,
+    latestReport?.title ?? "",
+    latestReport?.content ?? "",
+    latestReport?.source ?? "",
   ]);
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
