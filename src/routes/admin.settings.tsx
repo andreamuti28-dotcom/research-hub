@@ -41,6 +41,7 @@ type FormState = {
   heroTitle: string;
   heroIntro: string;
   linkedinUrl: string;
+  contactEmail: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
   homeFeaturedLabel: string;
@@ -130,6 +131,7 @@ function AdminSettingsPage() {
         heroTitle: s.heroTitle,
         heroIntro: s.heroIntro,
         linkedinUrl: s.linkedinUrl,
+        contactEmail: s.contactEmail,
         portraitUrl: s.portraitUrl,
         featuredPaperIds: s.featuredPaperIds,
         homeFeaturedLabel: s.homeFeaturedLabel,
@@ -357,6 +359,17 @@ function AdminSettingsPage() {
               className={inputCls}
               required
               maxLength={500}
+            />
+          </Field>
+
+          <Field label="Email di contatto (mostrata nel footer)">
+            <input
+              type="email"
+              value={form.contactEmail}
+              onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
+              className={inputCls}
+              maxLength={254}
+              placeholder="nome@dominio.com"
             />
           </Field>
         </section>

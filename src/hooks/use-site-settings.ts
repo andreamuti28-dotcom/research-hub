@@ -13,6 +13,7 @@ const DEFAULTS: SiteSettings = {
   heroIntro:
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
   linkedinUrl: "https://www.linkedin.com",
+  contactEmail: "",
   portraitUrl: null,
   featuredPaperIds: [],
   homeFeaturedLabel: "Paper in Evidenza",
