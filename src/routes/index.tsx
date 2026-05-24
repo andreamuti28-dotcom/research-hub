@@ -79,8 +79,8 @@ function Index() {
     latestReport?.content ?? "",
     latestReport?.source ?? "",
   ]);
-  const [marketOpen, setMarketOpen] = useState(false);
-  const [featuredOpen, setFeaturedOpen] = useState(false);
+  const [marketOpen, setMarketOpen] = useState(true);
+  const [featuredOpen, setFeaturedOpen] = useState(true);
 
   useEffect(() => {
     const channel = supabase
