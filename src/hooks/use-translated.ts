@@ -50,13 +50,15 @@ export function useTranslated(texts: string[]): string[] {
     queryFn: async () => {
       const cached = readCache(key);
       if (cached && cached.length === texts.length) return cached;
-      const CHUNK = 40;
-      const out: string[] = [];
+      const CHUNK = 200;
+      const chunks: string[][] = [];
       for (let i = 0; i < texts.length; i += CHUNK) {
-        const chunk = texts.slice(i, i + CHUNK);
-        const res = await callFn({ data: { texts: chunk, target: lang } });
-        out.push(...res.translations);
+        chunks.push(texts.slice(i, i + CHUNK));
       }
+      const results = await Promise.all(
+        chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
+      );
+      const out = results.flatMap((r) => r.translations);
       writeCache(key, out);
       return out;
     },
