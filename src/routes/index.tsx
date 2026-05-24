@@ -155,7 +155,7 @@ function Index() {
                   {t("home.featuredKicker")}
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {settings.homeFeaturedLabel || t("home.featuredTitle")}
+                  {featuredLabel || t("home.featuredTitle")}
                 </h2>
               </div>
               <span
