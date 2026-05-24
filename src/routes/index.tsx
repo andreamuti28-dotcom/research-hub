@@ -57,10 +57,24 @@ function Index() {
   const { data: latestReport } = useQuery(latestMarketReportQuery);
   const queryClient = useQueryClient();
   const t = useT();
-  const [heroTitle, heroIntro, marketDisclaimer] = useTranslated([
+  const [
+    heroTitle,
+    heroIntro,
+    marketDisclaimer,
+    marketLabel,
+    featuredLabel,
+    reportTitle,
+    reportContent,
+    reportSource,
+  ] = useTranslated([
     settings.heroTitle,
     settings.heroIntro,
     settings.homeMarketDisclaimer,
+    settings.homeMarketLabel,
+    settings.homeFeaturedLabel,
+    latestReport?.title ?? "",
+    latestReport?.content ?? "",
+    latestReport?.source ?? "",
   ]);
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
@@ -141,7 +155,7 @@ function Index() {
                   {t("home.featuredKicker")}
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {settings.homeFeaturedLabel || t("home.featuredTitle")}
+                  {featuredLabel || t("home.featuredTitle")}
                 </h2>
               </div>
               <span
@@ -182,7 +196,7 @@ function Index() {
                   Live
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {settings.homeMarketLabel}
+                  {marketLabel}
                 </h2>
               </div>
               <span
@@ -201,7 +215,7 @@ function Index() {
                   <article className="border border-border bg-surface p-6 md:p-8">
                     <div className="flex flex-wrap items-baseline gap-3 mb-4">
                       <h3 className="font-display text-xl font-bold tracking-tight">
-                        {latestReport.title}
+                        {reportTitle}
                       </h3>
                       <time className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                         {new Date(latestReport.reportDate).toLocaleDateString("it-IT", {
@@ -210,14 +224,14 @@ function Index() {
                           year: "numeric",
                         })}
                       </time>
-                      {latestReport.source && (
+                      {reportSource && (
                         <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                          · {latestReport.source}
+                          · {reportSource}
                         </span>
                       )}
                     </div>
                     <div className="max-w-none whitespace-pre-line text-pretty text-justify leading-relaxed text-base">
-                      {latestReport.content}
+                      {reportContent}
                     </div>
                     <div className="mt-6">
                       <Link

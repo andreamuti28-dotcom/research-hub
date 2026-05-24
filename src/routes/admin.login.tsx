@@ -28,56 +28,42 @@ const credsSchema = z.object({
     .max(72, "La password è troppo lunga"),
 });
 
-const signupSchema = credsSchema.extend({
-  password: credsSchema.shape.password
-    .regex(/[A-Z]/, "Aggiungi almeno una lettera maiuscola")
-    .regex(/[a-z]/, "Aggiungi almeno una lettera minuscola")
-    .regex(/[0-9]/, "Aggiungi almeno un numero"),
-});
-
 function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setInfo(null);
     setLoading(true);
     try {
-      const schema = mode === "signup" ? signupSchema : credsSchema;
-      const parsed = schema.safeParse({ email, password });
+      const parsed = credsSchema.safeParse({ email, password });
       if (!parsed.success) {
         setError(parsed.error.issues[0]?.message ?? "Dati non validi");
         return;
       }
-      if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+      const { data: signInData, error: signInError } =
+        await supabase.auth.signInWithPassword({
           email: parsed.data.email,
           password: parsed.data.password,
-          options: { emailRedirectTo: `${window.location.origin}/admin` },
         });
-        if (error) {
-          // Generic message to prevent account enumeration / leaked-password leaks
-          setError("Impossibile creare l'account. Verifica i dati e riprova.");
-          return;
-        }
-        setInfo(
-          "Account creato. Controlla la tua email per confermare l'indirizzo prima di accedere.",
-        );
+      if (signInError || !signInData.user) {
+        setError("Credenziali non valide.");
         return;
       }
-      const { error } = await supabase.auth.signInWithPassword({
-        email: parsed.data.email,
-        password: parsed.data.password,
-      });
-      if (error) {
-        setError("Credenziali non valide.");
+      // Restrict access: only admin can stay logged in.
+      const { data: roleRow } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", signInData.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      if (!roleRow) {
+        await supabase.auth.signOut();
+        setError("Accesso non autorizzato.");
         return;
       }
       await navigate({ to: "/admin" });
@@ -93,15 +79,13 @@ function LoginPage() {
       <SiteHeader />
       <div className="flex-1 max-w-md mx-auto px-6 py-20 md:py-28 w-full">
         <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-          /admin · {mode === "login" ? "Accesso" : "Registrazione"}
+          /admin · Accesso
         </div>
         <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tighter italic mb-3">
           Area Riservata
         </h1>
         <p className="text-muted-foreground leading-relaxed mb-10 text-sm">
-          {mode === "login"
-            ? "Accedi per gestire i tuoi paper."
-            : "Il primo account registrato diventa automaticamente amministratore."}
+          Accesso riservato all'amministratore.
         </p>
 
         <form onSubmit={onSubmit} className="space-y-4">
@@ -137,36 +121,16 @@ function LoginPage() {
               {error}
             </div>
           )}
-          {info && (
-            <div className="border border-primary/30 bg-primary/5 text-foreground px-4 py-3 text-sm font-display">
-              {info}
-            </div>
-          )}
           <button
             type="submit"
             disabled={loading}
             className="w-full px-4 py-3 bg-foreground text-background font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors disabled:opacity-50"
           >
-            {loading
-              ? "Attendere…"
-              : mode === "login"
-                ? "Accedi"
-                : "Crea account"}
+            {loading ? "Attendere…" : "Accedi"}
           </button>
         </form>
 
-        <div className="mt-8 flex justify-between items-center text-xs">
-          <button
-            type="button"
-            onClick={() => {
-              setError(null);
-              setInfo(null);
-              setMode(mode === "login" ? "signup" : "login");
-            }}
-            className="font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {mode === "login" ? "→ Crea account" : "← Hai già un account?"}
-          </button>
+        <div className="mt-8 flex justify-end items-center text-xs">
           <Link
             to="/"
             className="font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
