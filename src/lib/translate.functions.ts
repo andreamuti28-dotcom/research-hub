@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const MAX_TRANSLATION_TEXTS = 500;
-const SERVER_CHUNK_SIZE = 40;
+const SERVER_CHUNK_SIZE = 80;
 
 const InputSchema = z.object({
   texts: z.array(z.string().max(20000)).min(1).max(MAX_TRANSLATION_TEXTS),
@@ -22,7 +22,7 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: "google/gemini-2.5-flash-lite",
       messages: [
         {
           role: "system",
@@ -71,11 +71,10 @@ export const translateBatch = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
 
     const { texts, target } = data;
-    const translations: string[] = [];
+    const chunks: string[][] = [];
     for (let i = 0; i < texts.length; i += SERVER_CHUNK_SIZE) {
-      translations.push(
-        ...(await translateChunk(texts.slice(i, i + SERVER_CHUNK_SIZE), target, apiKey)),
-      );
+      chunks.push(texts.slice(i, i + SERVER_CHUNK_SIZE));
     }
-    return { translations };
+    const results = await Promise.all(chunks.map((c) => translateChunk(c, target, apiKey)));
+    return { translations: results.flat() };
   });
