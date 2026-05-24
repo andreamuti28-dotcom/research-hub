@@ -23,18 +23,34 @@ export const Route = createFileRoute("/paper/$slug")({
     if (!paper) throw notFound();
     return { paper };
   },
-  head: ({ loaderData }) => {
+  head: ({ params, loaderData }) => {
     const paper = loaderData?.paper;
+    if (!paper) {
+      return { meta: [{ title: "Paper non trovato — Andrea Muti" }] };
+    }
     return {
-      meta: paper
-        ? [
-            { title: `${paper.title} — Andrea Muti` },
-            { name: "description", content: paper.abstract },
-            { property: "og:title", content: paper.title },
-            { property: "og:description", content: paper.abstract },
-            { property: "og:type", content: "article" },
-          ]
-        : [{ title: "Paper non trovato" }],
+      meta: [
+        { title: `${paper.title} — Andrea Muti` },
+        { name: "description", content: paper.abstract },
+        { property: "og:title", content: paper.title },
+        { property: "og:description", content: paper.abstract },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: `/paper/${params.slug}` },
+      ],
+      links: [{ rel: "canonical", href: `/paper/${params.slug}` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: paper.title,
+            description: paper.abstract,
+            datePublished: paper.publishedDate,
+            author: { "@type": "Person", name: "Andrea Muti" },
+          }),
+        },
+      ],
     };
   },
   notFoundComponent: NotFound,
