@@ -3,7 +3,7 @@ import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useT } from "@/lib/i18n";
 
 export function SiteFooter() {
-  const { name, linkedinUrl } = useSiteSettings();
+  const { name, linkedinUrl, contactEmail } = useSiteSettings();
   const t = useT();
   return (
     <footer className="py-12 border-t border-border">
@@ -16,6 +16,14 @@ export function SiteFooter() {
           <Link to="/privacy" className="hover:text-foreground transition-colors">
             Privacy
           </Link>
+          {contactEmail ? (
+            <a
+              href={`mailto:${contactEmail}`}
+              className="hover:text-foreground transition-colors"
+            >
+              Contatti
+            </a>
+          ) : null}
           <a
             href={linkedinUrl}
             target="_blank"

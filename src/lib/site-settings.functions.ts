@@ -30,6 +30,7 @@ export type SiteSettings = {
   heroTitle: string;
   heroIntro: string;
   linkedinUrl: string;
+  contactEmail: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
   homeFeaturedLabel: string;
@@ -69,6 +70,7 @@ const DEFAULTS: SiteSettings = {
   heroIntro:
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
   linkedinUrl: "https://www.linkedin.com",
+  contactEmail: "",
   portraitUrl: null,
   featuredPaperIds: [],
   homeFeaturedLabel: "Paper in Evidenza",
@@ -177,6 +179,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       heroTitle: str(d.hero_title, DEFAULTS.heroTitle),
       heroIntro: str(d.hero_intro, DEFAULTS.heroIntro),
       linkedinUrl: str(d.linkedin_url, DEFAULTS.linkedinUrl),
+      contactEmail: typeof d.contact_email === "string" ? d.contact_email : "",
       portraitUrl: (d.portrait_url as string | null) ?? null,
       featuredPaperIds: Array.isArray(raw) ? raw.slice(0, 3) : [],
       homeFeaturedLabel: str(d.home_featured_label, DEFAULTS.homeFeaturedLabel),
@@ -241,6 +244,7 @@ const updateSchema = z.object({
   heroTitle: z.string().trim().min(1).max(500),
   heroIntro: z.string().trim().min(1).max(2000),
   linkedinUrl: z.string().trim().url().max(500),
+  contactEmail: z.union([z.string().trim().email().max(254), z.literal("")]).default(""),
   portraitUrl: z.string().trim().url().max(1000).nullable().optional(),
   featuredPaperIds: z.array(z.string().uuid()).max(3).default([]),
   homeFeaturedLabel: z.string().trim().min(1).max(120),
@@ -289,6 +293,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       hero_title: data.heroTitle,
       hero_intro: data.heroIntro,
       linkedin_url: data.linkedinUrl,
+      contact_email: data.contactEmail || null,
       portrait_url: data.portraitUrl ?? null,
       featured_paper_ids: data.featuredPaperIds,
       home_featured_label: data.homeFeaturedLabel,
