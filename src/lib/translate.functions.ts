@@ -71,11 +71,10 @@ export const translateBatch = createServerFn({ method: "POST" })
     if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
 
     const { texts, target } = data;
-    const translations: string[] = [];
+    const chunks: string[][] = [];
     for (let i = 0; i < texts.length; i += SERVER_CHUNK_SIZE) {
-      translations.push(
-        ...(await translateChunk(texts.slice(i, i + SERVER_CHUNK_SIZE), target, apiKey)),
-      );
+      chunks.push(texts.slice(i, i + SERVER_CHUNK_SIZE));
     }
-    return { translations };
+    const results = await Promise.all(chunks.map((c) => translateChunk(c, target, apiKey)));
+    return { translations: results.flat() };
   });
