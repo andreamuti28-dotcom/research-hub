@@ -269,30 +269,25 @@ function TooltipItem({
 function LanguageRow({ item, settings }: { item: LanguageItem; settings: SiteSettings }) {
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 min-w-0">
-          {item.flagUrl ? (
-            <img
-              src={item.flagUrl}
-              alt=""
-              className="w-6 h-4 object-cover rounded-sm shrink-0"
-              loading="lazy"
-            />
-          ) : item.flag ? (
-            <span
-              className="text-xl leading-none shrink-0"
-              style={{ fontFamily: EMOJI_FONT }}
-              aria-hidden
-            >
-              {item.flag}
-            </span>
-          ) : null}
-          <span className="font-display text-xs font-bold uppercase tracking-widest truncate">
-            {item.name}
+      <div className="flex items-center gap-2 min-w-0">
+        {item.flagUrl ? (
+          <img
+            src={item.flagUrl}
+            alt=""
+            className="w-6 h-4 object-cover rounded-sm shrink-0"
+            loading="lazy"
+          />
+        ) : item.flag ? (
+          <span
+            className="text-xl leading-none shrink-0"
+            style={{ fontFamily: EMOJI_FONT }}
+            aria-hidden
+          >
+            {item.flag}
           </span>
-        </div>
-        <span className="font-mono text-[11px] font-bold tabular-nums shrink-0">
-          {item.level}%
+        ) : null}
+        <span className="font-display text-xs font-bold uppercase tracking-widest truncate">
+          {item.name}
         </span>
       </div>
       <div
