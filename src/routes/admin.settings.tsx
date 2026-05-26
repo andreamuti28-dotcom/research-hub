@@ -477,6 +477,23 @@ function AdminSettingsPage() {
               maxLength={300}
             />
           </Field>
+          <Field label="URL feed News Finanziarie (Google Apps Script)">
+            <input
+              type="url"
+              value={form.newsApiUrl}
+              onChange={(e) => setForm({ ...form, newsApiUrl: e.target.value })}
+              className={inputCls}
+              required
+              maxLength={1000}
+              placeholder="https://script.google.com/macros/s/..../exec"
+            />
+          </Field>
+          <Field label="Colore barra countdown News (5s all'apertura)">
+            <ColorField
+              value={form.newsCountdownColor}
+              onChange={(v) => setForm({ ...form, newsCountdownColor: v })}
+            />
+          </Field>
           <Field label="Colore sfondo header (navigazione)">
             <div className="space-y-2">
               <ColorField
