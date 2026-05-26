@@ -36,13 +36,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Archivio di paper e saggi di ricerca indipendente sull'intersezione tra etica digitale, infrastrutture e cognizione.",
+          "Andrea Muti — finanza quantitativa, mercati e investimenti. Idee concrete per chi vuole capire davvero i numeri.",
       },
       { property: "og:title", content: "Andrea Muti — Ricerca autonoma" },
       {
         property: "og:description",
         content:
-          "Paper di ricerca autonoma su etica digitale, infrastrutture e modelli linguistici.",
+          "Andrea Muti — finanza quantitativa, mercati e investimenti. Idee concrete per chi vuole capire davvero i numeri.",
       },
       { property: "og:url", content: "/" },
     ],
