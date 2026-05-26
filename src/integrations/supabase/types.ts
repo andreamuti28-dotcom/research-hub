@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      news_archive: {
+        Row: {
+          created_at: string
+          first_seen_at: string
+          id: string
+          image: string | null
+          published_at: string
+          snippet: string | null
+          source: string | null
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          first_seen_at?: string
+          id?: string
+          image?: string | null
+          published_at?: string
+          snippet?: string | null
+          source?: string | null
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          first_seen_at?: string
+          id?: string
+          image?: string | null
+          published_at?: string
+          snippet?: string | null
+          source?: string | null
+          title?: string
+          url?: string
+        }
+        Relationships: []
+      }
       papers: {
         Row: {
           abstract: string

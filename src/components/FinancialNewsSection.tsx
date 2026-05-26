@@ -1,33 +1,20 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-
-interface NewsItem {
-  data: string;
-  titolo: string;
-  fonte: string;
-  url: string;
-  snippet: string;
-  immagine: string;
-}
-
-const NEWS_URL =
-  "https://script.google.com/macros/s/AKfycbyS4MxYpizImm4c2KaO4JuvSCjKQyHRtwFw5lSqWuuy8pCQf01yLyfpv-zVcCJMnyRkiQ/exec";
-
-async function fetchNews(): Promise<NewsItem[]> {
-  const res = await fetch(NEWS_URL);
-  if (!res.ok) throw new Error("Errore nel caricamento delle news");
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
-}
+import { useServerFn } from "@tanstack/react-start";
+import { getLatestNews, type NewsItem } from "@/lib/news.functions";
 
 export function FinancialNewsSection() {
   const [open, setOpen] = useState(false);
+  const fetchNews = useServerFn(getLatestNews);
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["financial-news"],
-    queryFn: fetchNews,
+    queryFn: () => fetchNews(),
     enabled: open,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
+
+  const items: NewsItem[] = data?.items ?? [];
 
   return (
     <section className="border-t border-border bg-background">
@@ -69,13 +56,10 @@ export function FinancialNewsSection() {
 
         {open && (
           <div className="pb-10 md:pb-14 animate-fade-up">
-            {isLoading || isFetching && !data ? (
+            {(isLoading || (isFetching && items.length === 0)) ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="border border-border bg-surface animate-pulse"
-                  >
+                  <div key={i} className="border border-border bg-surface animate-pulse">
                     <div className="aspect-[16/9] bg-muted" />
                     <div className="p-4 space-y-3">
                       <div className="h-4 bg-muted rounded w-3/4" />
@@ -98,61 +82,61 @@ export function FinancialNewsSection() {
                   Riprova
                 </button>
               </div>
-            ) : !data || data.length === 0 ? (
+            ) : items.length === 0 ? (
               <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
                 Nessuna news disponibile.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.map((item, idx) => (
-                  <a
-                    key={`${item.url}-${idx}`}
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="group flex flex-col border border-border bg-surface hover:border-foreground transition-colors overflow-hidden"
-                  >
-                    {item.immagine ? (
-                      <div className="aspect-[16/9] bg-muted overflow-hidden">
-                        <img
-                          src={item.immagine}
-                          alt={item.titolo}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).style.display = "none";
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="aspect-[16/9] bg-muted" />
-                    )}
-                    <div className="p-4 flex flex-col flex-1 gap-3">
-                      <div className="flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                        <span className="truncate">{item.fonte}</span>
-                        {item.data && (
-                          <time className="shrink-0">
-                            {new Date(item.data).toLocaleDateString("it-IT", {
-                              day: "2-digit",
-                              month: "short",
-                            })}
-                          </time>
-                        )}
-                      </div>
-                      <h3 className="font-display font-bold tracking-tight leading-snug text-base group-hover:text-primary transition-colors line-clamp-3">
-                        {item.titolo}
-                      </h3>
-                      {item.snippet && (
-                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                          {item.snippet}
-                        </p>
+                {items.map((item) => {
+                  const seen = new Date(item.first_seen_at);
+                  return (
+                    <a
+                      key={item.url}
+                      href={item.url}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="group flex flex-col border border-border bg-surface hover:border-foreground transition-colors overflow-hidden"
+                    >
+                      {item.image ? (
+                        <div className="aspect-[16/9] bg-muted overflow-hidden">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            loading="lazy"
+                            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).style.display = "none";
+                            }}
+                          />
+                        </div>
+                      ) : (
+                        <div className="aspect-[16/9] bg-muted" />
                       )}
-                      <span className="mt-auto pt-2 font-display text-[11px] font-bold uppercase tracking-widest text-foreground group-hover:text-primary transition-colors">
-                        Leggi la fonte ↗
-                      </span>
-                    </div>
-                  </a>
-                ))}
+                      <div className="p-4 flex flex-col flex-1 gap-3">
+                        <div className="flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                          <span className="truncate">{item.source ?? ""}</span>
+                          <time className="shrink-0 tabular-nums" dateTime={item.first_seen_at}>
+                            {seen.toLocaleDateString("it-IT", { day: "2-digit", month: "short" })}
+                            {" · "}
+                            {seen.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                          </time>
+                        </div>
+                        <h3 className="font-display font-bold tracking-tight leading-snug text-base group-hover:text-primary transition-colors line-clamp-3">
+                          {item.title}
+                        </h3>
+                        {item.snippet && (
+                          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                            {item.snippet}
+                          </p>
+                        )}
+                        <span className="mt-auto pt-2 font-display text-[11px] font-bold uppercase tracking-widest text-foreground group-hover:text-primary transition-colors">
+                          Leggi la fonte ↗
+                        </span>
+                      </div>
+                    </a>
+                  );
+                })}
               </div>
             )}
           </div>
