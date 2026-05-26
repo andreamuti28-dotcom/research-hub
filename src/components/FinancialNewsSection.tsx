@@ -12,7 +12,7 @@ export function FinancialNewsSection() {
   const fetchNews = useServerFn(getLatestNews);
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["financial-news"],
-    queryFn: () => fetchNews({ data: { t: Date.now() } }),
+    queryFn: () => fetchNews(),
     enabled: open,
     staleTime: 0,
     gcTime: 0,
