@@ -297,6 +297,10 @@ function Index() {
         </section>
       )}
 
+      <FinancialNewsSection />
+
+
+
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
