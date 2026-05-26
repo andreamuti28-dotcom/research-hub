@@ -20,6 +20,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminNewsRouteImport } from './routes/admin.news'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminKeysRouteImport } from './routes/admin.keys'
@@ -81,6 +82,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminNewsRoute = AdminNewsRouteImport.update({
+  id: '/admin/news',
+  path: '/admin/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminNewRoute = AdminNewRouteImport.update({
   id: '/admin/new',
   path: '/admin/new',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
+  '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/paper/$slug': typeof PaperSlugRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
+  '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/paper/$slug': typeof PaperSlugRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/new': typeof AdminNewRoute
+  '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/paper/$slug': typeof PaperSlugRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/admin/keys'
     | '/admin/login'
     | '/admin/new'
+    | '/admin/news'
     | '/admin/settings'
     | '/admin/users'
     | '/paper/$slug'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/admin/keys'
     | '/admin/login'
     | '/admin/new'
+    | '/admin/news'
     | '/admin/settings'
     | '/admin/users'
     | '/paper/$slug'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/admin/keys'
     | '/admin/login'
     | '/admin/new'
+    | '/admin/news'
     | '/admin/settings'
     | '/admin/users'
     | '/paper/$slug'
@@ -230,6 +242,7 @@ export interface RootRouteChildren {
   AdminKeysRoute: typeof AdminKeysRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminNewRoute: typeof AdminNewRoute
+  AdminNewsRoute: typeof AdminNewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   PaperSlugRoute: typeof PaperSlugRoute
@@ -317,6 +330,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/news': {
+      id: '/admin/news'
+      path: '/admin/news'
+      fullPath: '/admin/news'
+      preLoaderRoute: typeof AdminNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/new': {
       id: '/admin/new'
       path: '/admin/new'
@@ -366,6 +386,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminKeysRoute: AdminKeysRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminNewRoute: AdminNewRoute,
+  AdminNewsRoute: AdminNewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminUsersRoute: AdminUsersRoute,
   PaperSlugRoute: PaperSlugRoute,
@@ -376,3 +397,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
