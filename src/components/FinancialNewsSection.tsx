@@ -12,11 +12,19 @@ export function FinancialNewsSection() {
   const fetchNews = useServerFn(getLatestNews);
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["financial-news"],
-    queryFn: () => fetchNews(),
-    enabled: open,
+    queryFn: async () => {
+      const reqTs = Date.now();
+      console.log(`[news-client ${reqTs}] requesting`);
+      const result = await fetchNews();
+      const resTs = Date.now();
+      const count = result?.items?.length ?? 0;
+      console.log(`[news-client ${resTs}] received ${count} items (${resTs - reqTs}ms)`);
+      return result;
+    },
+    enabled: true,
     staleTime: 0,
     gcTime: 0,
-    refetchInterval: open ? 30000 : false,
+    refetchInterval: 15000,
     refetchIntervalInBackground: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
