@@ -194,6 +194,10 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
       archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
       headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
+      newsApiUrl: str(d.news_api_url, DEFAULTS.newsApiUrl),
+      newsCountdownColor: str(d.news_countdown_color, DEFAULTS.newsCountdownColor),
+
+
 
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
