@@ -42,7 +42,8 @@ export const listPublishedPapers = createServerFn({ method: "GET" }).handler(
       .from("papers")
       .select(SELECT_COLS)
       .eq("is_published", true)
-      .order("published_date", { ascending: false });
+      .order("published_date", { ascending: false })
+      .order("id", { ascending: true });
 
     if (error) throw new Error(error.message);
     return (data ?? []).map(mapPaper);
