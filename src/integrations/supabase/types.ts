@@ -169,6 +169,8 @@ export type Database = {
           id: string
           linkedin_url: string
           name: string
+          news_api_url: string
+          news_countdown_color: string
           portrait_url: string | null
           singleton: boolean
           updated_at: string
@@ -210,6 +212,8 @@ export type Database = {
           id?: string
           linkedin_url?: string
           name?: string
+          news_api_url?: string
+          news_countdown_color?: string
           portrait_url?: string | null
           singleton?: boolean
           updated_at?: string
@@ -251,6 +255,8 @@ export type Database = {
           id?: string
           linkedin_url?: string
           name?: string
+          news_api_url?: string
+          news_countdown_color?: string
           portrait_url?: string | null
           singleton?: boolean
           updated_at?: string

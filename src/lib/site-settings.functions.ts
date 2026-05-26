@@ -39,6 +39,8 @@ export type SiteSettings = {
   homeMarketDisclaimer: string;
   archiveDisclaimer: string;
   headerBg: string;
+  newsApiUrl: string;
+  newsCountdownColor: string;
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
@@ -79,6 +81,9 @@ const DEFAULTS: SiteSettings = {
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
   archiveDisclaimer: "Intelligenza Artificiale integrata",
   headerBg: "",
+  newsApiUrl:
+    "https://script.google.com/macros/s/AKfycbyS4MxYpizImm4c2KaO4JuvSCjKQyHRtwFw5lSqWuuy8pCQf01yLyfpv-zVcCJMnyRkiQ/exec",
+  newsCountdownColor: "#9ca3af",
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
@@ -189,6 +194,10 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
       archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
       headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
+      newsApiUrl: str(d.news_api_url, DEFAULTS.newsApiUrl),
+      newsCountdownColor: str(d.news_countdown_color, DEFAULTS.newsCountdownColor),
+
+
 
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
@@ -253,6 +262,10 @@ const updateSchema = z.object({
   homeMarketDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
   archiveDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
   headerBg: z.union([hexColor, z.literal("")]),
+  newsApiUrl: z.string().trim().url().max(1000),
+  newsCountdownColor: hexColor,
+
+
 
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
@@ -302,6 +315,10 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       home_market_disclaimer: data.homeMarketDisclaimer,
       archive_disclaimer: data.archiveDisclaimer,
       header_bg: data.headerBg,
+      news_api_url: data.newsApiUrl,
+      news_countdown_color: data.newsCountdownColor,
+
+
 
       about_role: data.aboutRole,
       about_bio: data.aboutBio,

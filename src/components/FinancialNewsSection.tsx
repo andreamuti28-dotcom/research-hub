@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getLatestNews, type NewsItem } from "@/lib/news.functions";
+import { useSiteSettings } from "@/hooks/use-site-settings";
+
+const COUNTDOWN_MS = 5000;
 
 export function FinancialNewsSection() {
   const [open, setOpen] = useState(false);
+  const settings = useSiteSettings();
   const fetchNews = useServerFn(getLatestNews);
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: ["financial-news"],
@@ -15,6 +19,29 @@ export function FinancialNewsSection() {
   });
 
   const items: NewsItem[] = data?.items ?? [];
+
+  // Countdown bar on expand
+  const [countdown, setCountdown] = useState(0); // 0 -> 100
+  const rafRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!open) {
+      setCountdown(0);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      return;
+    }
+    const start = performance.now();
+    const tick = (now: number) => {
+      const pct = Math.min(100, ((now - start) / COUNTDOWN_MS) * 100);
+      setCountdown(pct);
+      if (pct < 100) rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [open]);
+
+  const barColor = settings.newsCountdownColor || "#9ca3af";
 
   return (
     <section className="border-t border-border bg-background">
@@ -56,6 +83,20 @@ export function FinancialNewsSection() {
 
         {open && (
           <div className="pb-10 md:pb-14 animate-fade-up">
+            {/* 5s countdown bar */}
+            <div
+              className="h-1 w-full bg-muted overflow-hidden mb-6"
+              aria-hidden
+            >
+              <div
+                className="h-full transition-[width] ease-linear"
+                style={{
+                  width: `${countdown}%`,
+                  backgroundColor: barColor,
+                }}
+              />
+            </div>
+
             {(isLoading || (isFetching && items.length === 0)) ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (

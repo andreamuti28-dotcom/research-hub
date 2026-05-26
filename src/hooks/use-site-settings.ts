@@ -22,6 +22,9 @@ const DEFAULTS: SiteSettings = {
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
   archiveDisclaimer: "Intelligenza Artificiale integrata",
   headerBg: "",
+  newsApiUrl:
+    "https://script.google.com/macros/s/AKfycbyS4MxYpizImm4c2KaO4JuvSCjKQyHRtwFw5lSqWuuy8pCQf01yLyfpv-zVcCJMnyRkiQ/exec",
+  newsCountdownColor: "#9ca3af",
   aboutRole: "Ricercatore indipendente",
 
   aboutBio: "",
