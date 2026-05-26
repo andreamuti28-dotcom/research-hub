@@ -13,6 +13,8 @@ import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
