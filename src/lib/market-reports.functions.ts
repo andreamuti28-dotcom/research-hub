@@ -32,33 +32,21 @@ export const upsertCurrentMarketReport = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const reportDate = data.reportDate ?? new Date().toISOString().slice(0, 10);
 
-    const { data: existing } = await supabaseAdmin
+    // Demote any previous "current" report so it stays in the archive.
+    const { error: demoteErr } = await supabaseAdmin
       .from("market_reports")
-      .select("id")
-      .eq("is_current", true)
-      .maybeSingle();
+      .update({ is_current: false })
+      .eq("is_current", true);
+    if (demoteErr) throw new Error(demoteErr.message);
 
-    if (existing) {
-      const { error } = await supabaseAdmin
-        .from("market_reports")
-        .update({
-          title: data.title,
-          content: data.content,
-          report_date: reportDate,
-          source: data.source ?? null,
-        })
-        .eq("id", existing.id);
-      if (error) throw new Error(error.message);
-    } else {
-      const { error } = await supabaseAdmin.from("market_reports").insert({
-        title: data.title,
-        content: data.content,
-        report_date: reportDate,
-        source: data.source ?? null,
-        is_current: true,
-      });
-      if (error) throw new Error(error.message);
-    }
+    const { error } = await supabaseAdmin.from("market_reports").insert({
+      title: data.title,
+      content: data.content,
+      report_date: reportDate,
+      source: data.source ?? null,
+      is_current: true,
+    });
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
 
