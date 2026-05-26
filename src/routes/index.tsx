@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { useConsent } from "@/hooks/use-consent";
+import { FinancialNewsSection } from "@/components/FinancialNewsSection";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -295,6 +296,10 @@ function Index() {
           </div>
         </section>
       )}
+
+      <FinancialNewsSection />
+
+
 
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
