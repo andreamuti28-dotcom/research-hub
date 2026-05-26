@@ -271,8 +271,8 @@ function Index() {
                         </span>
                       )}
                     </div>
-                    <div className="max-w-none whitespace-pre-line text-pretty text-justify leading-relaxed text-base">
-                      {reportContent}
+                    <div className="prose prose-neutral dark:prose-invert max-w-none text-pretty leading-relaxed text-base prose-headings:font-display prose-headings:tracking-tight prose-a:text-primary prose-strong:text-foreground">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{reportContent}</ReactMarkdown>
                     </div>
                     <div className="mt-6">
                       <Link
