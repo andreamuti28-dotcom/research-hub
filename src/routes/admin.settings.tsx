@@ -144,6 +144,10 @@ function AdminSettingsPage() {
         homeMarketDisclaimer: s.homeMarketDisclaimer,
         archiveDisclaimer: s.archiveDisclaimer,
         headerBg: s.headerBg,
+        newsApiUrl: s.newsApiUrl,
+        newsCountdownColor: s.newsCountdownColor,
+
+
 
         aboutRole: s.aboutRole,
         aboutBio: s.aboutBio,
