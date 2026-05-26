@@ -39,6 +39,8 @@ export type SiteSettings = {
   homeMarketDisclaimer: string;
   archiveDisclaimer: string;
   headerBg: string;
+  newsApiUrl: string;
+  newsCountdownColor: string;
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
