@@ -13,6 +13,8 @@ import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -269,8 +271,8 @@ function Index() {
                         </span>
                       )}
                     </div>
-                    <div className="max-w-none whitespace-pre-line text-pretty text-justify leading-relaxed text-base">
-                      {reportContent}
+                    <div className="prose prose-neutral dark:prose-invert max-w-none text-pretty leading-relaxed text-base prose-headings:font-display prose-headings:tracking-tight prose-a:text-primary prose-strong:text-foreground">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{reportContent}</ReactMarkdown>
                     </div>
                     <div className="mt-6">
                       <Link
