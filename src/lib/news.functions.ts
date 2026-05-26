@@ -46,14 +46,31 @@ async function syncFromSource(): Promise<void> {
     const configured = (s as { news_api_url?: string | null } | null)?.news_api_url;
     if (configured && typeof configured === "string" && configured.trim()) url = configured.trim();
 
-    const bustUrl = url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
-    const res = await fetch(bustUrl, {
-      headers: { Accept: "application/json" },
+    const finalUrl = url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+    const reqTs = Date.now();
+    console.log(`[news ${reqTs}] GET ${finalUrl}`);
+
+    const res = await fetch(finalUrl, {
+      method: "GET",
       cache: "no-store",
+      headers: {
+        Accept: "application/json",
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
     });
-    if (!res.ok) return;
+
+    const resTs = Date.now();
+    if (!res.ok) {
+      console.error(`[news ${resTs}] HTTP ${res.status} (${resTs - reqTs}ms)`);
+      return;
+    }
     const raw = (await res.json()) as unknown;
-    if (!Array.isArray(raw)) return;
+    if (!Array.isArray(raw)) {
+      console.warn(`[news ${resTs}] non-array payload`);
+      return;
+    }
+    console.log(`[news ${resTs}] received ${raw.length} articles (${resTs - reqTs}ms)`);
 
     const items = (raw as ExternalNewsItem[])
       .filter((it) => it && typeof it.url === "string" && it.url.trim() && typeof it.titolo === "string")
@@ -68,12 +85,11 @@ async function syncFromSource(): Promise<void> {
 
     if (items.length === 0) return;
 
-    // Upsert by url; ignore conflicts on existing rows (don't overwrite first_seen_at)
     await supabaseAdmin
       .from("news_archive")
       .upsert(items, { onConflict: "url", ignoreDuplicates: true });
-  } catch {
-    // swallow — we still return whatever is in the archive
+  } catch (e) {
+    console.error("[news] sync error", e);
   }
 }
 
