@@ -50,6 +50,10 @@ type FormState = {
   homeMarketDisclaimer: string;
   archiveDisclaimer: string;
   headerBg: string;
+  newsApiUrl: string;
+  newsCountdownColor: string;
+
+
 
   aboutRole: string;
   aboutBio: string;
