@@ -14,8 +14,12 @@ export function FinancialNewsSection() {
     queryKey: ["financial-news"],
     queryFn: () => fetchNews(),
     enabled: open,
-    staleTime: 2 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    gcTime: 0,
+    refetchInterval: open ? 30000 : false,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   const items: NewsItem[] = data?.items ?? [];
