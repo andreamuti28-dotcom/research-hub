@@ -46,7 +46,11 @@ async function syncFromSource(): Promise<void> {
     const configured = (s as { news_api_url?: string | null } | null)?.news_api_url;
     if (configured && typeof configured === "string" && configured.trim()) url = configured.trim();
 
-    const res = await fetch(url, { headers: { Accept: "application/json" } });
+    const bustUrl = url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+    const res = await fetch(bustUrl, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
     if (!res.ok) return;
     const raw = (await res.json()) as unknown;
     if (!Array.isArray(raw)) return;
