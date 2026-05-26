@@ -51,6 +51,7 @@ async function syncFromSource(): Promise<void> {
       headers: { Accept: "application/json" },
       cache: "no-store",
     });
+    if (!res.ok) return;
     const raw = (await res.json()) as unknown;
     if (!Array.isArray(raw)) return;
 
