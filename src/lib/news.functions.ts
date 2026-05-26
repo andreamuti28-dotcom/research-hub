@@ -37,7 +37,16 @@ function parseDate(v: unknown): string {
 
 async function syncFromSource(): Promise<void> {
   try {
-    const res = await fetch(NEWS_URL, { headers: { Accept: "application/json" } });
+    let url = DEFAULT_NEWS_URL;
+    const { data: s } = await supabaseAdmin
+      .from("site_settings")
+      .select("news_api_url")
+      .eq("singleton", true)
+      .maybeSingle();
+    const configured = (s as { news_api_url?: string | null } | null)?.news_api_url;
+    if (configured && typeof configured === "string" && configured.trim()) url = configured.trim();
+
+    const res = await fetch(url, { headers: { Accept: "application/json" } });
     if (!res.ok) return;
     const raw = (await res.json()) as unknown;
     if (!Array.isArray(raw)) return;
