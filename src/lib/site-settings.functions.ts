@@ -315,6 +315,10 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       home_market_disclaimer: data.homeMarketDisclaimer,
       archive_disclaimer: data.archiveDisclaimer,
       header_bg: data.headerBg,
+      news_api_url: data.newsApiUrl,
+      news_countdown_color: data.newsCountdownColor,
+
+
 
       about_role: data.aboutRole,
       about_bio: data.aboutBio,
