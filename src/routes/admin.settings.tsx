@@ -404,6 +404,110 @@ function AdminSettingsPage() {
           )}
         </section>
 
+        {/* Favicon */}
+        <section className="border border-surface-dark-muted p-6 space-y-4">
+          <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+            Favicon (icona scheda browser)
+          </h2>
+          <div className="flex items-start gap-6 flex-wrap">
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-32 h-32 bg-surface-dark-muted overflow-hidden border border-surface-dark-muted flex-shrink-0">
+                {form.faviconUrl ? (
+                  <img
+                    src={form.faviconUrl}
+                    alt="Anteprima favicon"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/40 text-center px-2">
+                    Nessuna<br />favicon
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2 bg-black/40 border border-surface-dark-muted px-2 py-1">
+                {form.faviconUrl ? (
+                  <img src={form.faviconUrl} alt="" className="w-4 h-4" />
+                ) : (
+                  <div className="w-4 h-4 bg-surface-dark-muted" />
+                )}
+                <span className="font-mono text-[10px] text-surface-dark-foreground/60">
+                  Anteprima 16×16
+                </span>
+              </div>
+            </div>
+            <div className="flex-1 min-w-[260px] space-y-3">
+              <input
+                ref={faviconInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleFaviconFile(f);
+                  e.target.value = "";
+                }}
+              />
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => faviconInputRef.current?.click()}
+                  disabled={faviconBusy}
+                  className="px-4 py-2 bg-background text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
+                >
+                  {faviconBusy
+                    ? "Caricamento…"
+                    : form.faviconOriginalUrl
+                      ? "Sostituisci immagine"
+                      : "Carica immagine"}
+                </button>
+                {form.faviconOriginalUrl && (
+                  <button
+                    type="button"
+                    onClick={regenerateFaviconFromOriginal}
+                    disabled={faviconBusy}
+                    className="px-4 py-2 border border-surface-dark-muted font-display text-[11px] font-bold uppercase tracking-wider hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                  >
+                    Applica ritaglio
+                  </button>
+                )}
+                {(form.faviconUrl || form.faviconOriginalUrl) && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((f) =>
+                        f ? { ...f, faviconUrl: null, faviconOriginalUrl: null } : f,
+                      )
+                    }
+                    className="px-4 py-2 border border-surface-dark-muted font-display text-[11px] font-bold uppercase tracking-wider hover:border-destructive hover:text-destructive transition-colors"
+                  >
+                    Rimuovi
+                  </button>
+                )}
+              </div>
+              {faviconError && (
+                <div className="font-mono text-[11px] text-destructive">{faviconError}</div>
+              )}
+              <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+                La favicon viene ritagliata in un quadrato 256×256. Sposta il punto focale e
+                premi <strong>Applica ritaglio</strong> per rigenerarla. Salva poi le impostazioni
+                per pubblicarla.
+              </p>
+            </div>
+          </div>
+
+          {form.faviconOriginalUrl && (
+            <PortraitFocusPicker
+              src={form.faviconOriginalUrl}
+              posX={form.faviconPosX}
+              posY={form.faviconPosY}
+              onChange={(x, y) =>
+                setForm((f) => (f ? { ...f, faviconPosX: x, faviconPosY: y } : f))
+              }
+            />
+          )}
+        </section>
+
+
         {/* Identità */}
         <section className="border border-surface-dark-muted p-6 space-y-5">
           <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
