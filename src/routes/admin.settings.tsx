@@ -250,6 +250,75 @@ function AdminSettingsPage() {
     }
   };
 
+  const blobToBase64 = (b: Blob) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Impossibile leggere l'immagine."));
+      reader.readAsDataURL(b);
+    });
+
+  const handleFaviconFile = async (file: File) => {
+    setFaviconError(null);
+    setFaviconBusy(true);
+    try {
+      const originalBase64 = await blobToBase64(file);
+      const mime =
+        file.type === "image/png" || file.type === "image/webp"
+          ? (file.type as "image/png" | "image/webp")
+          : "image/jpeg";
+      const { publicUrl: originalUrl } = await uploadFavicon({
+        data: { fileName: file.name, mimeType: mime, kind: "original", base64: originalBase64 },
+      });
+      const posX = form?.faviconPosX ?? 50;
+      const posY = form?.faviconPosY ?? 50;
+      const croppedBlob = await cropFaviconPng(file, posX, posY);
+      const croppedBase64 = await blobToBase64(croppedBlob);
+      const { publicUrl: croppedUrl } = await uploadFavicon({
+        data: {
+          fileName: "favicon.png",
+          mimeType: "image/png",
+          kind: "cropped",
+          base64: croppedBase64,
+        },
+      });
+      setForm((f) =>
+        f ? { ...f, faviconOriginalUrl: originalUrl, faviconUrl: croppedUrl } : f,
+      );
+    } catch (e) {
+      setFaviconError(e instanceof Error ? e.message : "Upload favicon fallito");
+    } finally {
+      setFaviconBusy(false);
+    }
+  };
+
+  const regenerateFaviconFromOriginal = async () => {
+    if (!form?.faviconOriginalUrl) return;
+    setFaviconError(null);
+    setFaviconBusy(true);
+    try {
+      const croppedBlob = await cropFaviconPngFromUrl(
+        form.faviconOriginalUrl,
+        form.faviconPosX,
+        form.faviconPosY,
+      );
+      const croppedBase64 = await blobToBase64(croppedBlob);
+      const { publicUrl: croppedUrl } = await uploadFavicon({
+        data: {
+          fileName: "favicon.png",
+          mimeType: "image/png",
+          kind: "cropped",
+          base64: croppedBase64,
+        },
+      });
+      setForm((f) => (f ? { ...f, faviconUrl: croppedUrl } : f));
+    } catch (e) {
+      setFaviconError(e instanceof Error ? e.message : "Rigenerazione favicon fallita");
+    } finally {
+      setFaviconBusy(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form) return;
