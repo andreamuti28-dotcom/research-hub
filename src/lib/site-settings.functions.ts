@@ -41,6 +41,10 @@ export type SiteSettings = {
   headerBg: string;
   newsApiUrl: string;
   newsCountdownColor: string;
+  faviconUrl: string | null;
+  faviconOriginalUrl: string | null;
+  faviconPosX: number;
+  faviconPosY: number;
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
