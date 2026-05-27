@@ -158,6 +158,10 @@ export type Database = {
           about_tooltip_fg: string
           archive_disclaimer: string
           contact_email: string | null
+          favicon_original_url: string | null
+          favicon_pos_x: number
+          favicon_pos_y: number
+          favicon_url: string | null
           featured_paper_ids: string[]
           header_bg: string
           hero_intro: string
@@ -201,6 +205,10 @@ export type Database = {
           about_tooltip_fg?: string
           archive_disclaimer?: string
           contact_email?: string | null
+          favicon_original_url?: string | null
+          favicon_pos_x?: number
+          favicon_pos_y?: number
+          favicon_url?: string | null
           featured_paper_ids?: string[]
           header_bg?: string
           hero_intro?: string
@@ -244,6 +252,10 @@ export type Database = {
           about_tooltip_fg?: string
           archive_disclaimer?: string
           contact_email?: string | null
+          favicon_original_url?: string | null
+          favicon_pos_x?: number
+          favicon_pos_y?: number
+          favicon_url?: string | null
           featured_paper_ids?: string[]
           header_bg?: string
           hero_intro?: string
