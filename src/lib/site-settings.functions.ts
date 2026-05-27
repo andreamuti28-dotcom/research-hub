@@ -88,6 +88,10 @@ const DEFAULTS: SiteSettings = {
   newsApiUrl:
     "https://script.google.com/macros/s/AKfycbyS4MxYpizImm4c2KaO4JuvSCjKQyHRtwFw5lSqWuuy8pCQf01yLyfpv-zVcCJMnyRkiQ/exec",
   newsCountdownColor: "#9ca3af",
+  faviconUrl: null,
+  faviconOriginalUrl: null,
+  faviconPosX: 50,
+  faviconPosY: 50,
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
