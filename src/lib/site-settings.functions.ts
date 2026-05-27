@@ -204,6 +204,10 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
       newsApiUrl: str(d.news_api_url, DEFAULTS.newsApiUrl),
       newsCountdownColor: str(d.news_countdown_color, DEFAULTS.newsCountdownColor),
+      faviconUrl: (d.favicon_url as string | null) ?? null,
+      faviconOriginalUrl: (d.favicon_original_url as string | null) ?? null,
+      faviconPosX: clampInt(d.favicon_pos_x, 0, 100, DEFAULTS.faviconPosX),
+      faviconPosY: clampInt(d.favicon_pos_y, 0, 100, DEFAULTS.faviconPosY),
 
 
 
@@ -272,6 +276,10 @@ const updateSchema = z.object({
   headerBg: z.union([hexColor, z.literal("")]),
   newsApiUrl: z.string().trim().url().max(1000),
   newsCountdownColor: hexColor,
+  faviconUrl: z.string().trim().url().max(1000).nullable().optional(),
+  faviconOriginalUrl: z.string().trim().url().max(1000).nullable().optional(),
+  faviconPosX: z.number().int().min(0).max(100).default(50),
+  faviconPosY: z.number().int().min(0).max(100).default(50),
 
 
 
@@ -325,6 +333,10 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       header_bg: data.headerBg,
       news_api_url: data.newsApiUrl,
       news_countdown_color: data.newsCountdownColor,
+      favicon_url: data.faviconUrl ?? null,
+      favicon_original_url: data.faviconOriginalUrl ?? null,
+      favicon_pos_x: data.faviconPosX,
+      favicon_pos_y: data.faviconPosY,
 
 
 
