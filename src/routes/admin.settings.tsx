@@ -11,11 +11,12 @@ import {
   updateSiteSettings,
   uploadSitePortrait,
   uploadSiteLogo,
+  uploadSiteFavicon,
   type LanguageItem,
   type LogoItem,
   type EducationItem,
 } from "@/lib/site-settings.functions";
-import { cropTo4x5Jpeg } from "@/lib/image-crop";
+import { cropTo4x5Jpeg, cropFaviconPng, cropFaviconPngFromUrl } from "@/lib/image-crop";
 import {
   getLatestMarketReport,
   upsertCurrentMarketReport,
@@ -52,6 +53,10 @@ type FormState = {
   headerBg: string;
   newsApiUrl: string;
   newsCountdownColor: string;
+  faviconUrl: string | null;
+  faviconOriginalUrl: string | null;
+  faviconPosX: number;
+  faviconPosY: number;
 
 
 
@@ -85,6 +90,10 @@ function AdminSettingsPage() {
   const updateFn = useServerFn(updateSiteSettings);
   const uploadPortrait = useServerFn(uploadSitePortrait);
   const uploadLogo = useServerFn(uploadSiteLogo);
+  const uploadFavicon = useServerFn(uploadSiteFavicon);
+  const faviconInputRef = useRef<HTMLInputElement>(null);
+  const [faviconBusy, setFaviconBusy] = useState(false);
+  const [faviconError, setFaviconError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [sessionReady, setSessionReady] = useState(false);
@@ -146,6 +155,10 @@ function AdminSettingsPage() {
         headerBg: s.headerBg,
         newsApiUrl: s.newsApiUrl,
         newsCountdownColor: s.newsCountdownColor,
+        faviconUrl: s.faviconUrl,
+        faviconOriginalUrl: s.faviconOriginalUrl,
+        faviconPosX: s.faviconPosX,
+        faviconPosY: s.faviconPosY,
 
 
 
