@@ -41,6 +41,10 @@ export type SiteSettings = {
   headerBg: string;
   newsApiUrl: string;
   newsCountdownColor: string;
+  faviconUrl: string | null;
+  faviconOriginalUrl: string | null;
+  faviconPosX: number;
+  faviconPosY: number;
   aboutRole: string;
   aboutBio: string;
   aboutKicker: string;
@@ -84,6 +88,10 @@ const DEFAULTS: SiteSettings = {
   newsApiUrl:
     "https://script.google.com/macros/s/AKfycbyS4MxYpizImm4c2KaO4JuvSCjKQyHRtwFw5lSqWuuy8pCQf01yLyfpv-zVcCJMnyRkiQ/exec",
   newsCountdownColor: "#9ca3af",
+  faviconUrl: null,
+  faviconOriginalUrl: null,
+  faviconPosX: 50,
+  faviconPosY: 50,
   aboutRole: "Ricercatore indipendente",
   aboutBio:
     "Ciao! Mi chiamo Andrea e sono un ricercatore indipendente.\n\nDa anni mi occupo di etica digitale e infrastrutture software.",
@@ -196,6 +204,10 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
       newsApiUrl: str(d.news_api_url, DEFAULTS.newsApiUrl),
       newsCountdownColor: str(d.news_countdown_color, DEFAULTS.newsCountdownColor),
+      faviconUrl: (d.favicon_url as string | null) ?? null,
+      faviconOriginalUrl: (d.favicon_original_url as string | null) ?? null,
+      faviconPosX: clampInt(d.favicon_pos_x, 0, 100, DEFAULTS.faviconPosX),
+      faviconPosY: clampInt(d.favicon_pos_y, 0, 100, DEFAULTS.faviconPosY),
 
 
 
@@ -264,6 +276,10 @@ const updateSchema = z.object({
   headerBg: z.union([hexColor, z.literal("")]),
   newsApiUrl: z.string().trim().url().max(1000),
   newsCountdownColor: hexColor,
+  faviconUrl: z.string().trim().url().max(1000).nullable().optional(),
+  faviconOriginalUrl: z.string().trim().url().max(1000).nullable().optional(),
+  faviconPosX: z.number().int().min(0).max(100).default(50),
+  faviconPosY: z.number().int().min(0).max(100).default(50),
 
 
 
@@ -317,6 +333,10 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       header_bg: data.headerBg,
       news_api_url: data.newsApiUrl,
       news_countdown_color: data.newsCountdownColor,
+      favicon_url: data.faviconUrl ?? null,
+      favicon_original_url: data.faviconOriginalUrl ?? null,
+      favicon_pos_x: data.faviconPosX,
+      favicon_pos_y: data.faviconPosY,
 
 
 
@@ -384,6 +404,57 @@ export const uploadSitePortrait = createServerFn({ method: "POST" })
         .replace(/[^a-z0-9_-]+/g, "-")
         .replace(/^-+|-+$/g, "") || "homepage-photo";
     const path = `homepage/${Date.now()}-${safeName}.jpg`;
+
+    const { error } = await supabaseAdmin.storage
+      .from("site-assets")
+      .upload(path, bytes.buffer, {
+        contentType: data.mimeType,
+        upsert: false,
+      });
+    if (error) throw new Error(error.message);
+
+    const { data: publicData } = supabaseAdmin.storage
+      .from("site-assets")
+      .getPublicUrl(path);
+
+    return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
+  });
+
+const ALLOWED_FAVICON_MIME = ["image/png", "image/jpeg", "image/webp"] as const;
+const FAVICON_MIME_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+};
+
+const uploadFaviconSchema = z.object({
+  fileName: z.string().trim().min(1).max(255),
+  mimeType: z.enum(ALLOWED_FAVICON_MIME),
+  kind: z.enum(["original", "cropped"]).default("cropped"),
+  base64: z.string().min(1),
+});
+
+export const uploadSiteFavicon = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => uploadFaviconSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const encoded = data.base64.includes(",")
+      ? data.base64.split(",").pop()
+      : data.base64;
+    if (!encoded) throw new Error("Immagine non valida.");
+
+    const binary = atob(encoded);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    const ext = FAVICON_MIME_EXT[data.mimeType] ?? "png";
+    const safeName =
+      data.fileName
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "favicon";
+    const path = `favicon/${data.kind}-${Date.now()}-${safeName}.${ext}`;
 
     const { error } = await supabaseAdmin.storage
       .from("site-assets")
