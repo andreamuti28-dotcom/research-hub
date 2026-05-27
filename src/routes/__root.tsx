@@ -7,9 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 import appCss from "../styles.css?url";
 
@@ -88,6 +90,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/jpeg", href: "/favicon.jpg" },
     ],
     scripts: [
       {
@@ -130,8 +133,26 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <FaviconSwap />
       <Outlet />
       <CookieConsent />
     </QueryClientProvider>
   );
+}
+
+function FaviconSwap() {
+  const settings = useSiteSettings();
+  const href = settings.faviconUrl;
+  useEffect(() => {
+    if (typeof document === "undefined" || !href) return;
+    const links = Array.from(
+      document.querySelectorAll<HTMLLinkElement>("link[rel~='icon']"),
+    );
+    links.forEach((l) => l.parentNode?.removeChild(l));
+    const link = document.createElement("link");
+    link.rel = "icon";
+    link.href = href;
+    document.head.appendChild(link);
+  }, [href]);
+  return null;
 }
