@@ -420,6 +420,57 @@ export const uploadSitePortrait = createServerFn({ method: "POST" })
     return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
   });
 
+const ALLOWED_FAVICON_MIME = ["image/png", "image/jpeg", "image/webp"] as const;
+const FAVICON_MIME_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+};
+
+const uploadFaviconSchema = z.object({
+  fileName: z.string().trim().min(1).max(255),
+  mimeType: z.enum(ALLOWED_FAVICON_MIME),
+  kind: z.enum(["original", "cropped"]).default("cropped"),
+  base64: z.string().min(1),
+});
+
+export const uploadSiteFavicon = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => uploadFaviconSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+
+    const encoded = data.base64.includes(",")
+      ? data.base64.split(",").pop()
+      : data.base64;
+    if (!encoded) throw new Error("Immagine non valida.");
+
+    const binary = atob(encoded);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    const ext = FAVICON_MIME_EXT[data.mimeType] ?? "png";
+    const safeName =
+      data.fileName
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "favicon";
+    const path = `favicon/${data.kind}-${Date.now()}-${safeName}.${ext}`;
+
+    const { error } = await supabaseAdmin.storage
+      .from("site-assets")
+      .upload(path, bytes.buffer, {
+        contentType: data.mimeType,
+        upsert: false,
+      });
+    if (error) throw new Error(error.message);
+
+    const { data: publicData } = supabaseAdmin.storage
+      .from("site-assets")
+      .getPublicUrl(path);
+
+    return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
+  });
+
 const ALLOWED_LOGO_MIME = [
   "image/png",
   "image/jpeg",
