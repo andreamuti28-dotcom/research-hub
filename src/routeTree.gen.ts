@@ -26,6 +26,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminKeysRouteImport } from './routes/admin.keys'
 import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
+import { Route as ApiPublicHooksMarketSyncRouteImport } from './routes/api/public/hooks/market-sync'
 
 const TerminiRoute = TerminiRouteImport.update({
   id: '/termini',
@@ -112,6 +113,12 @@ const AdminEditIdRoute = AdminEditIdRouteImport.update({
   path: '/admin/edit/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksMarketSyncRoute =
+  ApiPublicHooksMarketSyncRouteImport.update({
+    id: '/api/public/hooks/market-sync',
+    path: '/api/public/hooks/market-sync',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
+  '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
+  '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
+  '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
+    | '/api/public/hooks/market-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
+    | '/api/public/hooks/market-sync'
   id:
     | '__root__'
     | '/'
@@ -229,6 +241,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
+    | '/api/public/hooks/market-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,6 +262,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
   ApiPublicMarketReportsRoute: typeof ApiPublicMarketReportsRoute
+  ApiPublicHooksMarketSyncRoute: typeof ApiPublicHooksMarketSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -372,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEditIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/market-sync': {
+      id: '/api/public/hooks/market-sync'
+      path: '/api/public/hooks/market-sync'
+      fullPath: '/api/public/hooks/market-sync'
+      preLoaderRoute: typeof ApiPublicHooksMarketSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -393,7 +414,18 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminEditIdRoute: AdminEditIdRoute,
   ApiPublicMarketReportsRoute: ApiPublicMarketReportsRoute,
+  ApiPublicHooksMarketSyncRoute: ApiPublicHooksMarketSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
