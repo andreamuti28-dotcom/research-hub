@@ -2,6 +2,119 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { fetchGoogleDocAsMarkdown } from "./google-docs.server";
+
+/**
+ * Internal: fetch the configured Google Doc and write a new "current" report.
+ * Demotes the previous current report so it remains in the archive.
+ */
+export async function syncMarketReportFromGoogleDocInternal(opts?: {
+  documentId?: string;
+}): Promise<{ ok: true; title: string; documentId: string; syncedAt: string }> {
+  const { data: settings } = await supabaseAdmin
+    .from("site_settings")
+    .select("market_doc_id")
+    .eq("singleton", true)
+    .maybeSingle();
+  const docId =
+    opts?.documentId?.trim() ||
+    (settings as { market_doc_id?: string } | null)?.market_doc_id ||
+    "";
+  if (!docId) throw new Error("Nessun ID Google Doc configurato.");
+
+  const doc = await fetchGoogleDocAsMarkdown(docId);
+  if (!doc.markdown.trim()) throw new Error("Il documento Google è vuoto.");
+
+  const { error: demoteErr } = await supabaseAdmin
+    .from("market_reports")
+    .update({ is_current: false })
+    .eq("is_current", true);
+  if (demoteErr) throw new Error(demoteErr.message);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const { error: insertErr } = await supabaseAdmin.from("market_reports").insert({
+    title: doc.title,
+    content: doc.markdown,
+    report_date: today,
+    source: `Google Doc · ${doc.title}`,
+    is_current: true,
+  });
+  if (insertErr) throw new Error(insertErr.message);
+
+  const syncedAt = new Date().toISOString();
+  await supabaseAdmin
+    .from("site_settings")
+    .update({
+      market_last_sync_at: syncedAt,
+      market_last_sync_file: doc.title,
+      market_doc_id: doc.documentId,
+    })
+    .eq("singleton", true);
+
+  return { ok: true, title: doc.title, documentId: doc.documentId, syncedAt };
+}
+
+export const syncMarketReportFromGoogleDoc = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({ documentId: z.string().trim().min(10).max(200).optional() })
+      .parse(input ?? {}),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    return syncMarketReportFromGoogleDocInternal({ documentId: data.documentId });
+  });
+
+const marketSyncConfigSchema = z.object({
+  marketDocId: z.string().trim().min(10).max(200),
+  marketSyncSchedule: z.enum(["manual", "hourly", "daily", "weekly"]),
+});
+
+export const updateMarketSyncConfig = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => marketSyncConfigSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { error } = await supabaseAdmin
+      .from("site_settings")
+      .update({
+        market_doc_id: data.marketDocId,
+        market_sync_schedule: data.marketSyncSchedule,
+      })
+      .eq("singleton", true);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export type MarketSyncStatus = {
+  marketDocId: string;
+  marketSyncSchedule: "manual" | "hourly" | "daily" | "weekly";
+  lastSyncAt: string | null;
+  lastSyncFile: string | null;
+};
+
+export const getMarketSyncStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<MarketSyncStatus> => {
+    await assertAdmin(context.userId);
+    const { data, error } = await supabaseAdmin
+      .from("site_settings")
+      .select("market_doc_id, market_sync_schedule, market_last_sync_at, market_last_sync_file")
+      .eq("singleton", true)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    const d = (data ?? {}) as Record<string, unknown>;
+    const sched = (d.market_sync_schedule as string) || "manual";
+    return {
+      marketDocId: (d.market_doc_id as string) || "1vqcD0XRhjqMPyX2JsB99Sk_zlCU_xaJU9Obve_lV3q8",
+      marketSyncSchedule: (["manual", "hourly", "daily", "weekly"].includes(sched)
+        ? sched
+        : "manual") as MarketSyncStatus["marketSyncSchedule"],
+      lastSyncAt: (d.market_last_sync_at as string | null) ?? null,
+      lastSyncFile: (d.market_last_sync_file as string | null) ?? null,
+    };
+  });
 
 async function assertAdmin(userId: string) {
   const { data, error } = await supabaseAdmin
