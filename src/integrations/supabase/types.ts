@@ -172,6 +172,10 @@ export type Database = {
           home_market_label: string
           id: string
           linkedin_url: string
+          market_doc_id: string
+          market_last_sync_at: string | null
+          market_last_sync_file: string | null
+          market_sync_schedule: string
           name: string
           news_api_url: string
           news_countdown_color: string
@@ -219,6 +223,10 @@ export type Database = {
           home_market_label?: string
           id?: string
           linkedin_url?: string
+          market_doc_id?: string
+          market_last_sync_at?: string | null
+          market_last_sync_file?: string | null
+          market_sync_schedule?: string
           name?: string
           news_api_url?: string
           news_countdown_color?: string
@@ -266,6 +274,10 @@ export type Database = {
           home_market_label?: string
           id?: string
           linkedin_url?: string
+          market_doc_id?: string
+          market_last_sync_at?: string | null
+          market_last_sync_file?: string | null
+          market_sync_schedule?: string
           name?: string
           news_api_url?: string
           news_countdown_color?: string

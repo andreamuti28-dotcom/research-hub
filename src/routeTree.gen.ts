@@ -22,10 +22,12 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminNewsRouteImport } from './routes/admin.news'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
+import { Route as AdminMarketSyncRouteImport } from './routes/admin.market-sync'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminKeysRouteImport } from './routes/admin.keys'
 import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
+import { Route as ApiPublicHooksMarketSyncRouteImport } from './routes/api/public/hooks/market-sync'
 
 const TerminiRoute = TerminiRouteImport.update({
   id: '/termini',
@@ -92,6 +94,11 @@ const AdminNewRoute = AdminNewRouteImport.update({
   path: '/admin/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMarketSyncRoute = AdminMarketSyncRouteImport.update({
+  id: '/admin/market-sync',
+  path: '/admin/market-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -112,6 +119,12 @@ const AdminEditIdRoute = AdminEditIdRouteImport.update({
   path: '/admin/edit/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksMarketSyncRoute =
+  ApiPublicHooksMarketSyncRouteImport.update({
+    id: '/api/public/hooks/market-sync',
+    path: '/api/public/hooks/market-sync',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -123,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/termini': typeof TerminiRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/market-sync': typeof AdminMarketSyncRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -131,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
+  '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -142,6 +157,7 @@ export interface FileRoutesByTo {
   '/termini': typeof TerminiRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/market-sync': typeof AdminMarketSyncRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -150,6 +166,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
+  '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -162,6 +179,7 @@ export interface FileRoutesById {
   '/termini': typeof TerminiRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/market-sync': typeof AdminMarketSyncRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -170,6 +188,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
+  '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -183,6 +202,7 @@ export interface FileRouteTypes {
     | '/termini'
     | '/admin/keys'
     | '/admin/login'
+    | '/admin/market-sync'
     | '/admin/new'
     | '/admin/news'
     | '/admin/settings'
@@ -191,6 +211,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
+    | '/api/public/hooks/market-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -202,6 +223,7 @@ export interface FileRouteTypes {
     | '/termini'
     | '/admin/keys'
     | '/admin/login'
+    | '/admin/market-sync'
     | '/admin/new'
     | '/admin/news'
     | '/admin/settings'
@@ -210,6 +232,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
+    | '/api/public/hooks/market-sync'
   id:
     | '__root__'
     | '/'
@@ -221,6 +244,7 @@ export interface FileRouteTypes {
     | '/termini'
     | '/admin/keys'
     | '/admin/login'
+    | '/admin/market-sync'
     | '/admin/new'
     | '/admin/news'
     | '/admin/settings'
@@ -229,6 +253,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
+    | '/api/public/hooks/market-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -241,6 +266,7 @@ export interface RootRouteChildren {
   TerminiRoute: typeof TerminiRoute
   AdminKeysRoute: typeof AdminKeysRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMarketSyncRoute: typeof AdminMarketSyncRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminNewsRoute: typeof AdminNewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -249,6 +275,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
   ApiPublicMarketReportsRoute: typeof ApiPublicMarketReportsRoute
+  ApiPublicHooksMarketSyncRoute: typeof ApiPublicHooksMarketSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -344,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/market-sync': {
+      id: '/admin/market-sync'
+      path: '/admin/market-sync'
+      fullPath: '/admin/market-sync'
+      preLoaderRoute: typeof AdminMarketSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -372,6 +406,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEditIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/market-sync': {
+      id: '/api/public/hooks/market-sync'
+      path: '/api/public/hooks/market-sync'
+      fullPath: '/api/public/hooks/market-sync'
+      preLoaderRoute: typeof ApiPublicHooksMarketSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -385,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerminiRoute: TerminiRoute,
   AdminKeysRoute: AdminKeysRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMarketSyncRoute: AdminMarketSyncRoute,
   AdminNewRoute: AdminNewRoute,
   AdminNewsRoute: AdminNewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
@@ -393,17 +435,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminEditIdRoute: AdminEditIdRoute,
   ApiPublicMarketReportsRoute: ApiPublicMarketReportsRoute,
+  ApiPublicHooksMarketSyncRoute: ApiPublicHooksMarketSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
