@@ -22,6 +22,7 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminNewsRouteImport } from './routes/admin.news'
 import { Route as AdminNewRouteImport } from './routes/admin.new'
+import { Route as AdminMarketSyncRouteImport } from './routes/admin.market-sync'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminKeysRouteImport } from './routes/admin.keys'
 import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
@@ -93,6 +94,11 @@ const AdminNewRoute = AdminNewRouteImport.update({
   path: '/admin/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMarketSyncRoute = AdminMarketSyncRouteImport.update({
+  id: '/admin/market-sync',
+  path: '/admin/market-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/termini': typeof TerminiRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/market-sync': typeof AdminMarketSyncRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/termini': typeof TerminiRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/market-sync': typeof AdminMarketSyncRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/termini': typeof TerminiRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/market-sync': typeof AdminMarketSyncRoute
   '/admin/new': typeof AdminNewRoute
   '/admin/news': typeof AdminNewsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/termini'
     | '/admin/keys'
     | '/admin/login'
+    | '/admin/market-sync'
     | '/admin/new'
     | '/admin/news'
     | '/admin/settings'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/termini'
     | '/admin/keys'
     | '/admin/login'
+    | '/admin/market-sync'
     | '/admin/new'
     | '/admin/news'
     | '/admin/settings'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/termini'
     | '/admin/keys'
     | '/admin/login'
+    | '/admin/market-sync'
     | '/admin/new'
     | '/admin/news'
     | '/admin/settings'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   TerminiRoute: typeof TerminiRoute
   AdminKeysRoute: typeof AdminKeysRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMarketSyncRoute: typeof AdminMarketSyncRoute
   AdminNewRoute: typeof AdminNewRoute
   AdminNewsRoute: typeof AdminNewsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/market-sync': {
+      id: '/admin/market-sync'
+      path: '/admin/market-sync'
+      fullPath: '/admin/market-sync'
+      preLoaderRoute: typeof AdminMarketSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -406,6 +426,7 @@ const rootRouteChildren: RootRouteChildren = {
   TerminiRoute: TerminiRoute,
   AdminKeysRoute: AdminKeysRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminMarketSyncRoute: AdminMarketSyncRoute,
   AdminNewRoute: AdminNewRoute,
   AdminNewsRoute: AdminNewsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
@@ -419,3 +440,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
