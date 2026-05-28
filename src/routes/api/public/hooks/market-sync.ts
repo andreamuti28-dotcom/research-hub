@@ -45,7 +45,7 @@ export const Route = createFileRoute("/api/public/hooks/market-sync")({
 
         try {
           const result = await syncMarketReportFromGoogleDocInternal();
-          return json({ ok: true, synced: true, ...result });
+          return json({ synced: true, ...result });
         } catch (e) {
           const msg = e instanceof Error ? e.message : String(e);
           return json({ ok: false, error: msg }, 500);
