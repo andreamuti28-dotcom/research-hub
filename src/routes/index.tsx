@@ -286,8 +286,20 @@ function Index() {
                         })}
                       </time>
                     </div>
-                    <div className="whitespace-pre-wrap leading-relaxed text-base text-pretty text-foreground">
-                      {reportContent}
+                    {settings.homeMarketImageUrl && (
+                      <div className="mb-6 -mx-6 md:-mx-8 border-y border-border bg-background">
+                        <img
+                          src={settings.homeMarketImageUrl}
+                          alt=""
+                          className="block w-full max-h-72 md:max-h-96 object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    )}
+                    <div className="market-report-prose text-foreground">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {reportContent}
+                      </ReactMarkdown>
                     </div>
                     <div className="mt-6">
                       <Link
