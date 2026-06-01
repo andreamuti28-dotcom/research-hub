@@ -91,7 +91,7 @@ function Index() {
 
   useEffect(() => {
     const channel = supabase
-      .channel("market-reports-home")
+      .channel("home-realtime")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "market_reports" },
@@ -99,9 +99,21 @@ function Index() {
           queryClient.invalidateQueries({ queryKey: ["market-reports"] });
         },
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "papers" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["papers"] });
+        },
+      )
       .subscribe();
+    // Poll every 30s so scheduled publish_at transitions surface without reload.
+    const interval = window.setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["papers"] });
+    }, 30_000);
     return () => {
       supabase.removeChannel(channel);
+      window.clearInterval(interval);
     };
   }, [queryClient]);
 
