@@ -1,13 +1,15 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const MAX_TRANSLATION_TEXTS = 500;
-const SERVER_CHUNK_SIZE = 80;
+const MAX_TRANSLATION_TEXTS = 60;
+const MAX_TEXT_CHARS = 4000;
+const SERVER_CHUNK_SIZE = 30;
 
 const InputSchema = z.object({
-  texts: z.array(z.string().max(20000)).min(1).max(MAX_TRANSLATION_TEXTS),
+  texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
   target: z.enum(["it", "en"]),
 });
+
 
 async function translateChunk(texts: string[], target: "it" | "en", apiKey: string) {
   const source = target === "en" ? "Italian" : "English";
