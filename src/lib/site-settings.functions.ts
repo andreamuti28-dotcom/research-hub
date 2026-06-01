@@ -202,6 +202,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       homeMarketEnabled:
         typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
       homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
+      homeMarketImageUrl: (d.home_market_image_url as string | null) ?? null,
       archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
       headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
       newsApiUrl: str(d.news_api_url, DEFAULTS.newsApiUrl),
