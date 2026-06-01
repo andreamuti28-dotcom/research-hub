@@ -147,3 +147,91 @@
 @utility animate-fade-up {
   animation: fadeUp 0.6s var(--ease-out-expo) both;
 }
+
+/* Market report markdown rendering */
+.market-report-prose {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--color-foreground);
+}
+.market-report-prose > * + * { margin-top: 1em; }
+.market-report-prose h1,
+.market-report-prose h2,
+.market-report-prose h3,
+.market-report-prose h4 {
+  font-family: var(--font-display, var(--font-serif));
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--color-foreground);
+}
+.market-report-prose h1 { font-size: 1.6rem; margin-top: 1.4em; }
+.market-report-prose h2 { font-size: 1.3rem; margin-top: 1.3em; }
+.market-report-prose h3 { font-size: 1.1rem; margin-top: 1.2em; }
+.market-report-prose h4 { font-size: 1rem; margin-top: 1.1em; text-transform: uppercase; letter-spacing: 0.05em; }
+.market-report-prose p { text-wrap: pretty; }
+.market-report-prose strong { font-weight: 700; color: var(--color-foreground); }
+.market-report-prose em { font-style: italic; }
+.market-report-prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.market-report-prose a:hover { text-decoration-thickness: 2px; }
+.market-report-prose ul,
+.market-report-prose ol {
+  padding-left: 1.5em;
+}
+.market-report-prose ul { list-style: disc; }
+.market-report-prose ol { list-style: decimal; }
+.market-report-prose li { margin-top: 0.35em; }
+.market-report-prose li::marker { color: color-mix(in oklab, var(--color-foreground) 55%, transparent); }
+.market-report-prose blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 1em;
+  color: color-mix(in oklab, var(--color-foreground) 80%, transparent);
+  font-style: italic;
+}
+.market-report-prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 2em 0;
+}
+.market-report-prose code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.9em;
+  background: color-mix(in oklab, var(--color-foreground) 8%, transparent);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+.market-report-prose pre {
+  background: color-mix(in oklab, var(--color-foreground) 6%, transparent);
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 0.9em;
+}
+.market-report-prose pre code { background: transparent; padding: 0; }
+.market-report-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+  margin-top: 1em;
+}
+.market-report-prose th,
+.market-report-prose td {
+  border: 1px solid var(--color-border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+  vertical-align: top;
+}
+.market-report-prose th {
+  background: color-mix(in oklab, var(--color-foreground) 5%, transparent);
+  font-weight: 700;
+  font-family: var(--font-display, var(--font-serif));
+}
+.market-report-prose tr:nth-child(even) td {
+  background: color-mix(in oklab, var(--color-foreground) 3%, transparent);
+}

@@ -37,6 +37,7 @@ export type SiteSettings = {
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
   homeMarketDisclaimer: string;
+  homeMarketImageUrl: string | null;
   archiveDisclaimer: string;
   headerBg: string;
   newsApiUrl: string;
@@ -83,6 +84,7 @@ const DEFAULTS: SiteSettings = {
   homeMarketLabel: "Analisi Mercati Finanziari",
   homeMarketEnabled: true,
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
+  homeMarketImageUrl: null,
   archiveDisclaimer: "Intelligenza Artificiale integrata",
   headerBg: "",
   newsApiUrl:
@@ -200,6 +202,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       homeMarketEnabled:
         typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
       homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
+      homeMarketImageUrl: (d.home_market_image_url as string | null) ?? null,
       archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
       headerBg: typeof d.header_bg === "string" ? d.header_bg : DEFAULTS.headerBg,
       newsApiUrl: str(d.news_api_url, DEFAULTS.newsApiUrl),
@@ -272,6 +275,7 @@ const updateSchema = z.object({
   homeMarketLabel: z.string().trim().min(1).max(120),
   homeMarketEnabled: z.boolean(),
   homeMarketDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
+  homeMarketImageUrl: z.string().trim().url().max(1000).nullable().optional(),
   archiveDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
   headerBg: z.union([hexColor, z.literal("")]),
   newsApiUrl: z.string().trim().url().max(1000),
@@ -329,6 +333,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       home_market_label: data.homeMarketLabel,
       home_market_enabled: data.homeMarketEnabled,
       home_market_disclaimer: data.homeMarketDisclaimer,
+      home_market_image_url: data.homeMarketImageUrl ?? null,
       archive_disclaimer: data.archiveDisclaimer,
       header_bg: data.headerBg,
       news_api_url: data.newsApiUrl,
@@ -527,3 +532,46 @@ export const uploadSiteLogo = createServerFn({ method: "POST" })
 
     return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
   });
+
+const ALLOWED_MARKET_IMAGE_MIME = ["image/png", "image/jpeg", "image/webp"] as const;
+const MARKET_IMAGE_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+};
+
+const uploadMarketImageSchema = z.object({
+  fileName: z.string().trim().min(1).max(255),
+  mimeType: z.enum(ALLOWED_MARKET_IMAGE_MIME),
+  base64: z.string().min(1),
+});
+
+export const uploadMarketReportImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => uploadMarketImageSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const encoded = data.base64.includes(",")
+      ? data.base64.split(",").pop()
+      : data.base64;
+    if (!encoded) throw new Error("Immagine non valida.");
+    const binary = atob(encoded);
+    const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+    const ext = MARKET_IMAGE_EXT[data.mimeType] ?? "png";
+    const safeName =
+      data.fileName
+        .toLowerCase()
+        .replace(/\.[a-z0-9]+$/i, "")
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "market-report";
+    const path = `market-report/${Date.now()}-${safeName}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from("site-assets")
+      .upload(path, bytes.buffer, { contentType: data.mimeType, upsert: false });
+    if (error) throw new Error(error.message);
+    const { data: publicData } = supabaseAdmin.storage
+      .from("site-assets")
+      .getPublicUrl(path);
+    return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
+  });
+

@@ -172,6 +172,7 @@ export type Database = {
           home_featured_label: string
           home_market_disclaimer: string
           home_market_enabled: boolean
+          home_market_image_url: string | null
           home_market_label: string
           id: string
           linkedin_url: string
@@ -223,6 +224,7 @@ export type Database = {
           home_featured_label?: string
           home_market_disclaimer?: string
           home_market_enabled?: boolean
+          home_market_image_url?: string | null
           home_market_label?: string
           id?: string
           linkedin_url?: string
@@ -274,6 +276,7 @@ export type Database = {
           home_featured_label?: string
           home_market_disclaimer?: string
           home_market_enabled?: boolean
+          home_market_image_url?: string | null
           home_market_label?: string
           id?: string
           linkedin_url?: string

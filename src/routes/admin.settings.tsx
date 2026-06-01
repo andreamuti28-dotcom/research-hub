@@ -12,6 +12,7 @@ import {
   uploadSitePortrait,
   uploadSiteLogo,
   uploadSiteFavicon,
+  uploadMarketReportImage,
   type LanguageItem,
   type LogoItem,
   type EducationItem,
@@ -49,6 +50,7 @@ type FormState = {
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
   homeMarketDisclaimer: string;
+  homeMarketImageUrl: string | null;
   archiveDisclaimer: string;
   headerBg: string;
   newsApiUrl: string;
@@ -91,10 +93,14 @@ function AdminSettingsPage() {
   const uploadPortrait = useServerFn(uploadSitePortrait);
   const uploadLogo = useServerFn(uploadSiteLogo);
   const uploadFavicon = useServerFn(uploadSiteFavicon);
+  const uploadMarketImage = useServerFn(uploadMarketReportImage);
   const faviconInputRef = useRef<HTMLInputElement>(null);
   const [faviconBusy, setFaviconBusy] = useState(false);
   const [faviconError, setFaviconError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const marketImageInputRef = useRef<HTMLInputElement>(null);
+  const [marketImageBusy, setMarketImageBusy] = useState(false);
+  const [marketImageError, setMarketImageError] = useState<string | null>(null);
 
   const [sessionReady, setSessionReady] = useState(false);
   useEffect(() => {
@@ -151,6 +157,7 @@ function AdminSettingsPage() {
         homeMarketLabel: s.homeMarketLabel,
         homeMarketEnabled: s.homeMarketEnabled,
         homeMarketDisclaimer: s.homeMarketDisclaimer,
+        homeMarketImageUrl: s.homeMarketImageUrl,
         archiveDisclaimer: s.archiveDisclaimer,
         headerBg: s.headerBg,
         newsApiUrl: s.newsApiUrl,
@@ -318,6 +325,31 @@ function AdminSettingsPage() {
       setFaviconBusy(false);
     }
   };
+
+  const handleMarketImageFile = async (file: File) => {
+    setMarketImageError(null);
+    setMarketImageBusy(true);
+    try {
+      const allowed = ["image/png", "image/jpeg", "image/webp"] as const;
+      if (!(allowed as readonly string[]).includes(file.type)) {
+        throw new Error("Formato non supportato. Usa PNG, JPEG o WEBP.");
+      }
+      const base64 = await blobToBase64(file);
+      const { publicUrl } = await uploadMarketImage({
+        data: {
+          fileName: file.name,
+          mimeType: file.type as (typeof allowed)[number],
+          base64,
+        },
+      });
+      setForm((f) => (f ? { ...f, homeMarketImageUrl: publicUrl } : f));
+    } catch (e) {
+      setMarketImageError(e instanceof Error ? e.message : "Upload fallito");
+    } finally {
+      setMarketImageBusy(false);
+    }
+  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -653,6 +685,65 @@ function AdminSettingsPage() {
               className={inputCls}
               maxLength={300}
             />
+          </Field>
+          <Field label="Immagine sotto al titolo 'Report giornaliero' (home)">
+            <div className="space-y-3">
+              {form.homeMarketImageUrl ? (
+                <div className="border border-surface-dark-muted bg-black/20 p-2">
+                  <img
+                    src={form.homeMarketImageUrl}
+                    alt="Anteprima immagine report mercati"
+                    className="block w-full max-h-64 object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="border border-dashed border-surface-dark-muted p-6 text-center font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/50">
+                  Nessuna immagine impostata
+                </div>
+              )}
+              <input
+                ref={marketImageInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleMarketImageFile(f);
+                  e.target.value = "";
+                }}
+              />
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => marketImageInputRef.current?.click()}
+                  disabled={marketImageBusy}
+                  className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                >
+                  {marketImageBusy
+                    ? "Caricamento…"
+                    : form.homeMarketImageUrl
+                    ? "Sostituisci immagine"
+                    : "Carica immagine"}
+                </button>
+                {form.homeMarketImageUrl && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((f) => (f ? { ...f, homeMarketImageUrl: null } : f))
+                    }
+                    className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/30 text-surface-dark-foreground/70 px-4 py-2 hover:border-red-500 hover:text-red-500 transition-colors"
+                  >
+                    Rimuovi
+                  </button>
+                )}
+              </div>
+              {marketImageError && (
+                <p className="font-mono text-[11px] text-red-400">{marketImageError}</p>
+              )}
+              <p className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/40">
+                PNG / JPEG / WEBP — stessa immagine per ogni report
+              </p>
+            </div>
           </Field>
           <Field label="Disclaimer sotto al titolo 'Ricerca Pubblicata' (archivio)">
             <input
