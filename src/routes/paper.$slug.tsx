@@ -25,8 +25,14 @@ export const Route = createFileRoute("/paper/$slug")({
   },
   head: ({ params, loaderData }) => {
     const paper = loaderData?.paper;
+    const url = `https://www.andreamuti.com/paper/${params.slug}`;
     if (!paper) {
-      return { meta: [{ title: "Paper non trovato — Andrea Muti" }] };
+      return {
+        meta: [
+          { title: "Paper non trovato — Andrea Muti" },
+          { name: "robots", content: "noindex" },
+        ],
+      };
     }
     return {
       meta: [
@@ -35,9 +41,14 @@ export const Route = createFileRoute("/paper/$slug")({
         { property: "og:title", content: paper.title },
         { property: "og:description", content: paper.abstract },
         { property: "og:type", content: "article" },
-        { property: "og:url", content: `/paper/${params.slug}` },
+        { property: "og:url", content: url },
+        { property: "article:published_time", content: paper.publishedDate },
+        { property: "article:author", content: "Andrea Muti" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: paper.title },
+        { name: "twitter:description", content: paper.abstract },
       ],
-      links: [{ rel: "canonical", href: `/paper/${params.slug}` }],
+      links: [{ rel: "canonical", href: url }],
       scripts: [
         {
           type: "application/ld+json",
@@ -47,7 +58,21 @@ export const Route = createFileRoute("/paper/$slug")({
             headline: paper.title,
             description: paper.abstract,
             datePublished: paper.publishedDate,
-            author: { "@type": "Person", name: "Andrea Muti" },
+            author: { "@type": "Person", name: "Andrea Muti", url: "https://www.andreamuti.com/about" },
+            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            inLanguage: paper.language ?? "it",
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.andreamuti.com/" },
+              { "@type": "ListItem", position: 2, name: "Archivio", item: "https://www.andreamuti.com/archivio" },
+              { "@type": "ListItem", position: 3, name: paper.title, item: url },
+            ],
           }),
         },
       ],

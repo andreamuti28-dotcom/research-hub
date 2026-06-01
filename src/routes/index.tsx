@@ -30,21 +30,29 @@ const latestMarketReportQuery = {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Andrea Muti — Ricerca autonoma" },
+      { title: "Andrea Muti — Ricerca autonoma su finanza e mercati" },
       {
         name: "description",
         content:
-          "Andrea Muti — finanza quantitativa, mercati e investimenti. Idee concrete per chi vuole capire davvero i numeri.",
+          "Andrea Muti — finanza quantitativa, mercati e investimenti. Paper, analisi e idee concrete per chi vuole capire davvero i numeri.",
       },
-      { property: "og:title", content: "Andrea Muti — Ricerca autonoma" },
+      { property: "og:title", content: "Andrea Muti — Ricerca autonoma su finanza e mercati" },
       {
         property: "og:description",
         content:
-          "Andrea Muti — finanza quantitativa, mercati e investimenti. Idee concrete per chi vuole capire davvero i numeri.",
+          "Andrea Muti — finanza quantitativa, mercati e investimenti. Paper, analisi e idee concrete per chi vuole capire davvero i numeri.",
       },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: "https://www.andreamuti.com/" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Andrea Muti — Ricerca autonoma su finanza e mercati" },
+      {
+        name: "twitter:description",
+        content:
+          "Finanza quantitativa, mercati e investimenti. Paper e analisi indipendenti.",
+      },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
   }),
   loader: ({ context }) =>
     Promise.all([
