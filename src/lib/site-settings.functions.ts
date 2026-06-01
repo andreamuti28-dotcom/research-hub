@@ -333,6 +333,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       home_market_label: data.homeMarketLabel,
       home_market_enabled: data.homeMarketEnabled,
       home_market_disclaimer: data.homeMarketDisclaimer,
+      home_market_image_url: data.homeMarketImageUrl ?? null,
       archive_disclaimer: data.archiveDisclaimer,
       header_bg: data.headerBg,
       news_api_url: data.newsApiUrl,
