@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getLatestNews, type NewsItem } from "@/lib/news.functions";
 import { useSiteSettings } from "@/hooks/use-site-settings";
+import { useT } from "@/lib/i18n";
+import { useTranslated } from "@/hooks/use-translated";
 
 const COUNTDOWN_MS = 5000;
 
@@ -31,6 +33,17 @@ export function FinancialNewsSection() {
   });
 
   const items: NewsItem[] = data?.items ?? [];
+  const t = useT();
+  // Translate news titles + snippets in order; cache keyed by content.
+  const translatable = useMemo(() => {
+    const arr: string[] = [];
+    for (const it of items) {
+      arr.push(it.title ?? "");
+      arr.push(it.snippet ?? "");
+    }
+    return arr;
+  }, [items]);
+  const translated = useTranslated(translatable);
 
   // Countdown bar on expand
   const [countdown, setCountdown] = useState(0); // 0 -> 100
@@ -67,10 +80,10 @@ export function FinancialNewsSection() {
           <div className="flex items-center gap-4 min-w-0">
             <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-primary/10 text-primary shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Live
+              {t("news.live")}
             </span>
             <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-              News Finanziarie
+              {t("news.title")}
             </h2>
           </div>
           <span
@@ -125,24 +138,26 @@ export function FinancialNewsSection() {
             ) : isError ? (
               <div className="border border-border p-10 text-center bg-surface">
                 <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4">
-                  Impossibile caricare le news.
+                  {t("news.error")}
                 </p>
                 <button
                   type="button"
                   onClick={() => refetch()}
                   className="inline-flex items-center px-4 py-2 border border-foreground text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors"
                 >
-                  Riprova
+                  {t("news.retry")}
                 </button>
               </div>
             ) : items.length === 0 ? (
               <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
-                Nessuna news disponibile.
+                {t("news.empty")}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map((item) => {
+                {items.map((item, idx) => {
                   const seen = new Date(item.first_seen_at);
+                  const title = translated[idx * 2] || item.title;
+                  const snippet = translated[idx * 2 + 1] || item.snippet || "";
                   return (
                     <a
                       key={item.url}
@@ -155,7 +170,7 @@ export function FinancialNewsSection() {
                         <div className="aspect-[16/9] bg-muted overflow-hidden">
                           <img
                             src={item.image}
-                            alt={item.title}
+                            alt={title}
                             loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
                             onError={(e) => {
@@ -176,15 +191,15 @@ export function FinancialNewsSection() {
                           </time>
                         </div>
                         <h3 className="font-display font-bold tracking-tight leading-snug text-base group-hover:text-primary transition-colors line-clamp-3">
-                          {item.title}
+                          {title}
                         </h3>
-                        {item.snippet && (
+                        {snippet && (
                           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                            {item.snippet}
+                            {snippet}
                           </p>
                         )}
                         <span className="mt-auto pt-2 font-display text-[11px] font-bold uppercase tracking-widest text-foreground group-hover:text-primary transition-colors">
-                          Leggi la fonte ↗
+                          {t("news.readSource")}
                         </span>
                       </div>
                     </a>
