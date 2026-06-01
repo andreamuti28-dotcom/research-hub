@@ -275,6 +275,7 @@ const updateSchema = z.object({
   homeMarketLabel: z.string().trim().min(1).max(120),
   homeMarketEnabled: z.boolean(),
   homeMarketDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
+  homeMarketImageUrl: z.string().trim().url().max(1000).nullable().optional(),
   archiveDisclaimer: z.string().trim().max(300).default("Intelligenza Artificiale integrata"),
   headerBg: z.union([hexColor, z.literal("")]),
   newsApiUrl: z.string().trim().url().max(1000),
