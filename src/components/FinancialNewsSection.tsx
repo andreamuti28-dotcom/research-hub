@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getLatestNews, type NewsItem } from "@/lib/news.functions";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useT } from "@/lib/i18n";
-import { useTranslated } from "@/hooks/use-translated";
+import { useTranslatedAlways } from "@/hooks/use-translated";
 
 const COUNTDOWN_MS = 5000;
 
