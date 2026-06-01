@@ -132,8 +132,10 @@ function Index() {
   const featured = settings.featuredPaperIds
     .map((id) => papers.find((p) => p.id === id))
     .filter((p): p is (typeof papers)[number] => Boolean(p));
-  const featuredIds = new Set(featured.map((p) => p.id));
-  const latest = papers.filter((p) => !featuredIds.has(p.id)).slice(0, 3);
+  // Latest 3 papers in chronological order (newest first), including featured.
+  const latest = [...papers]
+    .sort((a, b) => (a.publishedDate < b.publishedDate ? 1 : -1))
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen flex flex-col">
