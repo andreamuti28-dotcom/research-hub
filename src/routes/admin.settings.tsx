@@ -93,10 +93,14 @@ function AdminSettingsPage() {
   const uploadPortrait = useServerFn(uploadSitePortrait);
   const uploadLogo = useServerFn(uploadSiteLogo);
   const uploadFavicon = useServerFn(uploadSiteFavicon);
+  const uploadMarketImage = useServerFn(uploadMarketReportImage);
   const faviconInputRef = useRef<HTMLInputElement>(null);
   const [faviconBusy, setFaviconBusy] = useState(false);
   const [faviconError, setFaviconError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const marketImageInputRef = useRef<HTMLInputElement>(null);
+  const [marketImageBusy, setMarketImageBusy] = useState(false);
+  const [marketImageError, setMarketImageError] = useState<string | null>(null);
 
   const [sessionReady, setSessionReady] = useState(false);
   useEffect(() => {
