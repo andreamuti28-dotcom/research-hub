@@ -20,16 +20,23 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Chi sono: formazione, lingue, software & AI e certificazioni di Andrea Muti, ricercatore indipendente.",
+          "Chi sono: formazione, lingue, software & AI e certificazioni di Andrea Muti, ricercatore indipendente in finanza e mercati.",
       },
       { property: "og:title", content: "Chi sono — Andrea Muti" },
       {
         property: "og:description",
         content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
       },
-      { property: "og:url", content: "/about" },
+      { property: "og:url", content: "https://www.andreamuti.com/about" },
+      { property: "og:type", content: "profile" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Chi sono — Andrea Muti" },
+      {
+        name: "twitter:description",
+        content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
+      },
     ],
-    links: [{ rel: "canonical", href: "/about" }],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/about" }],
   }),
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(siteSettingsQuery),

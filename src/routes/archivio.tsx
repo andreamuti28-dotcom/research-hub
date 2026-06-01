@@ -24,20 +24,27 @@ const marketReportsQuery = {
 export const Route = createFileRoute("/archivio")({
   head: () => ({
     meta: [
-      { title: "Archivio — Andrea Muti" },
+      { title: "Archivio paper e report finanziari — Andrea Muti" },
       {
         name: "description",
         content:
-          "Archivio completo dei paper di ricerca e dei report dei mercati finanziari.",
+          "Archivio completo dei paper di ricerca di Andrea Muti e dei report giornalieri sui mercati finanziari.",
       },
-      { property: "og:title", content: "Archivio — Andrea Muti" },
+      { property: "og:title", content: "Archivio paper e report finanziari — Andrea Muti" },
       {
         property: "og:description",
         content: "Paper di ricerca e report dei mercati finanziari.",
       },
-      { property: "og:url", content: "/archivio" },
+      { property: "og:url", content: "https://www.andreamuti.com/archivio" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Archivio paper e report finanziari — Andrea Muti" },
+      {
+        name: "twitter:description",
+        content: "Paper di ricerca e report dei mercati finanziari.",
+      },
     ],
-    links: [{ rel: "canonical", href: "/archivio" }],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/archivio" }],
   }),
   loader: ({ context }) =>
     Promise.all([
