@@ -33,6 +33,17 @@ export function FinancialNewsSection() {
   });
 
   const items: NewsItem[] = data?.items ?? [];
+  const t = useT();
+  // Translate news titles + snippets in order; cache keyed by content.
+  const translatable = useMemo(() => {
+    const arr: string[] = [];
+    for (const it of items) {
+      arr.push(it.title ?? "");
+      arr.push(it.snippet ?? "");
+    }
+    return arr;
+  }, [items]);
+  const translated = useTranslated(translatable);
 
   // Countdown bar on expand
   const [countdown, setCountdown] = useState(0); // 0 -> 100
