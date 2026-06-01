@@ -84,6 +84,7 @@ const DEFAULTS: SiteSettings = {
   homeMarketLabel: "Analisi Mercati Finanziari",
   homeMarketEnabled: true,
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
+  homeMarketImageUrl: null,
   archiveDisclaimer: "Intelligenza Artificiale integrata",
   headerBg: "",
   newsApiUrl:
