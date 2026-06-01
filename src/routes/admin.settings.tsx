@@ -326,6 +326,31 @@ function AdminSettingsPage() {
     }
   };
 
+  const handleMarketImageFile = async (file: File) => {
+    setMarketImageError(null);
+    setMarketImageBusy(true);
+    try {
+      const allowed = ["image/png", "image/jpeg", "image/webp"] as const;
+      if (!(allowed as readonly string[]).includes(file.type)) {
+        throw new Error("Formato non supportato. Usa PNG, JPEG o WEBP.");
+      }
+      const base64 = await blobToBase64(file);
+      const { publicUrl } = await uploadMarketImage({
+        data: {
+          fileName: file.name,
+          mimeType: file.type as (typeof allowed)[number],
+          base64,
+        },
+      });
+      setForm((f) => (f ? { ...f, homeMarketImageUrl: publicUrl } : f));
+    } catch (e) {
+      setMarketImageError(e instanceof Error ? e.message : "Upload fallito");
+    } finally {
+      setMarketImageBusy(false);
+    }
+  };
+
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form) return;
