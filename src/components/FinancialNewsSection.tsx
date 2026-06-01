@@ -80,10 +80,10 @@ export function FinancialNewsSection() {
           <div className="flex items-center gap-4 min-w-0">
             <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-primary/10 text-primary shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-              Live
+              {t("news.live")}
             </span>
             <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-              News Finanziarie
+              {t("news.title")}
             </h2>
           </div>
           <span
