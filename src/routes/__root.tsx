@@ -7,11 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
-import { useSiteSettings } from "@/hooks/use-site-settings";
+
 
 import appCss from "../styles.css?url";
 
@@ -94,8 +94,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/jpeg", href: "/favicon.jpg" },
-      { rel: "apple-touch-icon", href: "/favicon.jpg" },
+      { rel: "icon", type: "image/x-icon", sizes: "16x16 32x32 48x48", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.ico" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
+      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
+      { rel: "mask-icon", color: "#3b5bdb", href: "/maskable-icon.png" },
+      { rel: "manifest", href: "/manifest.json" },
     ],
     scripts: [
       {
@@ -150,26 +156,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <FaviconSwap />
       <Outlet />
       <CookieConsent />
     </QueryClientProvider>
   );
-}
-
-function FaviconSwap() {
-  const settings = useSiteSettings();
-  const href = settings.faviconUrl;
-  useEffect(() => {
-    if (typeof document === "undefined" || !href) return;
-    const links = Array.from(
-      document.querySelectorAll<HTMLLinkElement>("link[rel~='icon']"),
-    );
-    links.forEach((l) => l.parentNode?.removeChild(l));
-    const link = document.createElement("link");
-    link.rel = "icon";
-    link.href = href;
-    document.head.appendChild(link);
-  }, [href]);
-  return null;
 }
