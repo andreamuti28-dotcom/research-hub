@@ -107,7 +107,15 @@ const dict = {
     "paper.pdfRenderError": "Error while loading the PDF.",
     "paper.notFound": "Paper not found",
     "paper.backToArchive": "Back to archive",
+    "paper.notFound": "Paper not found",
+    "paper.backToArchive": "Back to archive",
     "langToggle.label": (next: string) => `Language: switch to ${next}`,
+    "news.title": "Financial News",
+    "news.live": "Live",
+    "news.error": "Could not load the news.",
+    "news.retry": "Retry",
+    "news.empty": "No news available.",
+    "news.readSource": "Read source ↗",
   },
 } as const;
 
