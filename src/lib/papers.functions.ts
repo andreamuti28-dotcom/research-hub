@@ -38,15 +38,16 @@ function mapPaper(row: {
 
 export const listPublishedPapers = createServerFn({ method: "GET" }).handler(
   async () => {
+    const nowIso = new Date().toISOString();
     const { data, error } = await supabaseAdmin
       .from("papers")
       .select(SELECT_COLS)
-      .eq("is_published", true)
+      .or(`is_published.eq.true,and(publish_at.not.is.null,publish_at.lte.${nowIso})`)
       .order("published_date", { ascending: false })
       .order("id", { ascending: true });
 
     if (error) throw new Error(error.message);
-    return (data ?? []).map(mapPaper);
+    return (data ?? []).map(mapPaper).map((p) => ({ ...p, isPublished: true }));
   },
 );
 
