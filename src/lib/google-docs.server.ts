@@ -236,6 +236,7 @@ export async function fetchGoogleDocAsText(documentId: string): Promise<FetchedG
   return {
     documentId: doc.documentId ?? cleanId,
     title: (doc.title ?? "Report giornaliero").trim() || "Report giornaliero",
-    text: googleDocToPlainText(doc),
+    text: googleDocToMarkdown(doc),
   };
 }
+
