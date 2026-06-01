@@ -154,8 +154,10 @@ export function FinancialNewsSection() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map((item) => {
+                {items.map((item, idx) => {
                   const seen = new Date(item.first_seen_at);
+                  const title = translated[idx * 2] || item.title;
+                  const snippet = translated[idx * 2 + 1] || item.snippet || "";
                   return (
                     <a
                       key={item.url}
@@ -168,7 +170,7 @@ export function FinancialNewsSection() {
                         <div className="aspect-[16/9] bg-muted overflow-hidden">
                           <img
                             src={item.image}
-                            alt={item.title}
+                            alt={title}
                             loading="lazy"
                             className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
                             onError={(e) => {
@@ -189,15 +191,15 @@ export function FinancialNewsSection() {
                           </time>
                         </div>
                         <h3 className="font-display font-bold tracking-tight leading-snug text-base group-hover:text-primary transition-colors line-clamp-3">
-                          {item.title}
+                          {title}
                         </h3>
-                        {item.snippet && (
+                        {snippet && (
                           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                            {item.snippet}
+                            {snippet}
                           </p>
                         )}
                         <span className="mt-auto pt-2 font-display text-[11px] font-bold uppercase tracking-widest text-foreground group-hover:text-primary transition-colors">
-                          Leggi la fonte ↗
+                          {t("news.readSource")}
                         </span>
                       </div>
                     </a>
