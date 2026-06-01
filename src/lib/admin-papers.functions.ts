@@ -46,6 +46,13 @@ const paperInputSchema = z.object({
   publishedDate: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, "Data non valida (YYYY-MM-DD)"),
+  publishAt: z
+    .string()
+    .trim()
+    .min(1)
+    .nullable()
+    .optional()
+    .transform((v) => (v && v.length > 0 ? new Date(v).toISOString() : null)),
   isPublished: z.boolean().default(true),
   language: z.enum(["it", "en", "both"]).default("it"),
 });
@@ -105,6 +112,7 @@ export const createPaper = createServerFn({ method: "POST" })
         tags: data.tags,
         pdf_url: data.pdfUrl ?? null,
         published_date: data.publishedDate,
+        publish_at: data.publishAt ?? null,
         is_published: data.isPublished,
         language: data.language,
       })
@@ -132,6 +140,7 @@ export const updatePaper = createServerFn({ method: "POST" })
         tags: rest.tags,
         pdf_url: rest.pdfUrl ?? null,
         published_date: rest.publishedDate,
+        publish_at: rest.publishAt ?? null,
         is_published: rest.isPublished,
         language: rest.language,
       })
