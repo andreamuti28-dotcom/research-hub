@@ -77,7 +77,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Andrea Muti — Ricerca autonoma" },
+      { title: "Andrea Muti — Finance" },
       {
         name: "description",
         content:
@@ -87,6 +87,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Andrea Muti" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "Andrea Muti — Finance" },
+      { name: "twitter:title", content: "Andrea Muti — Finance" },
+      { name: "description", content: "Research Hub is a modern, minimal web platform for publishing and managing research papers." },
+      { property: "og:description", content: "Research Hub is a modern, minimal web platform for publishing and managing research papers." },
+      { name: "twitter:description", content: "Research Hub is a modern, minimal web platform for publishing and managing research papers." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/7BOU0jag74TfXciM4PPtGGOgrlv2/social-images/social-1780350090658-favicon.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/7BOU0jag74TfXciM4PPtGGOgrlv2/social-images/social-1780350090658-favicon.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
