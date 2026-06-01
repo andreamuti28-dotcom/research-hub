@@ -13,8 +13,6 @@ import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -71,7 +69,6 @@ function Index() {
     featuredLabel,
     reportTitle,
     reportContent,
-    reportSource,
   ] = useTranslated([
     settings.heroTitle,
     settings.heroIntro,
@@ -80,7 +77,6 @@ function Index() {
     settings.homeFeaturedLabel,
     latestReport?.title ?? "",
     latestReport?.content ?? "",
-    latestReport?.source ?? "",
   ]);
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
@@ -265,14 +261,9 @@ function Index() {
                           year: "numeric",
                         })}
                       </time>
-                      {reportSource && (
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                          · {reportSource}
-                        </span>
-                      )}
                     </div>
-                    <div className="prose prose-neutral dark:prose-invert max-w-none text-pretty leading-relaxed text-base prose-headings:font-display prose-headings:tracking-tight prose-a:text-primary prose-strong:text-foreground">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{reportContent}</ReactMarkdown>
+                    <div className="whitespace-pre-wrap leading-relaxed text-base text-pretty text-foreground">
+                      {reportContent}
                     </div>
                     <div className="mt-6">
                       <Link
