@@ -12,6 +12,7 @@ import {
   uploadSitePortrait,
   uploadSiteLogo,
   uploadSiteFavicon,
+  uploadMarketReportImage,
   type LanguageItem,
   type LogoItem,
   type EducationItem,
