@@ -43,7 +43,7 @@ export function FinancialNewsSection() {
     }
     return arr;
   }, [items]);
-  const translated = useTranslated(translatable);
+  const translated = useTranslatedAlways(translatable);
 
   // Countdown bar on expand
   const [countdown, setCountdown] = useState(0); // 0 -> 100
