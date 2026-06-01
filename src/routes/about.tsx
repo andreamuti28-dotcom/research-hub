@@ -252,11 +252,39 @@ function TooltipItem({
   if (!description || !description.trim()) {
     return <li>{children}</li>;
   }
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const closeOnTouchOutside = (e: TouchEvent) => {
+      if (
+        triggerRef.current &&
+        !triggerRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("touchstart", closeOnTouchOutside);
+    return () => document.removeEventListener("touchstart", closeOnTouchOutside);
+  }, [open]);
+
   return (
     <li>
-      <Tooltip>
+      <Tooltip open={open} onOpenChange={setOpen}>
         <TooltipTrigger asChild>
-          <div className="cursor-help">{children}</div>
+          <div
+            ref={triggerRef}
+            className="cursor-help"
+            tabIndex={0}
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+            onFocus={() => setOpen(true)}
+            onBlur={() => setOpen(false)}
+            onTouchStart={() => setOpen((v) => !v)}
+          >
+            {children}
+          </div>
         </TooltipTrigger>
         <TooltipContent
           side="top"
