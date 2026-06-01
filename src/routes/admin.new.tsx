@@ -39,6 +39,7 @@ function NewPaper() {
           tags: v.tags,
           pdfUrl: v.pdfUrl ? v.pdfUrl : null,
           publishedDate: v.publishedDate,
+          publishAt: v.publishAt ? v.publishAt : null,
           isPublished: v.isPublished,
           language: v.language,
         },

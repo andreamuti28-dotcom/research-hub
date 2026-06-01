@@ -47,6 +47,7 @@ function EditPaper() {
           tags: v.tags,
           pdfUrl: v.pdfUrl ? v.pdfUrl : null,
           publishedDate: v.publishedDate,
+          publishAt: v.publishAt ? v.publishAt : null,
           isPublished: v.isPublished,
           language: v.language,
         },
@@ -77,7 +78,10 @@ function EditPaper() {
     );
   }
 
-  const p = paperQuery.data;
+  const p = paperQuery.data as typeof paperQuery.data & { publish_at?: string | null };
+  const publishAtLocal = p.publish_at
+    ? new Date(p.publish_at).toISOString().slice(0, 16)
+    : "";
   const initial: PaperFormValues = {
     slug: p.slug,
     title: p.title,
@@ -86,6 +90,7 @@ function EditPaper() {
     tags: p.tags ?? [],
     pdfUrl: p.pdf_url ?? "",
     publishedDate: p.published_date,
+    publishAt: publishAtLocal,
     isPublished: p.is_published,
     language: (p.language ?? "it") as PaperFormValues["language"],
   };
