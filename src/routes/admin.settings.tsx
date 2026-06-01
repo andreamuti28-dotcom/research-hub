@@ -153,6 +153,7 @@ function AdminSettingsPage() {
         homeMarketLabel: s.homeMarketLabel,
         homeMarketEnabled: s.homeMarketEnabled,
         homeMarketDisclaimer: s.homeMarketDisclaimer,
+        homeMarketImageUrl: s.homeMarketImageUrl,
         archiveDisclaimer: s.archiveDisclaimer,
         headerBg: s.headerBg,
         newsApiUrl: s.newsApiUrl,
