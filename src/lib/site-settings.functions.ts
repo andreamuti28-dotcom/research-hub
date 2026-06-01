@@ -37,6 +37,7 @@ export type SiteSettings = {
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
   homeMarketDisclaimer: string;
+  homeMarketImageUrl: string | null;
   archiveDisclaimer: string;
   headerBg: string;
   newsApiUrl: string;
