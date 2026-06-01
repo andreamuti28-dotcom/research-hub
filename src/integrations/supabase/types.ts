@@ -90,6 +90,7 @@ export type Database = {
           is_published: boolean
           language: string
           pdf_url: string | null
+          publish_at: string | null
           published_date: string
           slug: string
           tags: string[]
@@ -106,6 +107,7 @@ export type Database = {
           is_published?: boolean
           language?: string
           pdf_url?: string | null
+          publish_at?: string | null
           published_date?: string
           slug: string
           tags?: string[]
@@ -122,6 +124,7 @@ export type Database = {
           is_published?: boolean
           language?: string
           pdf_url?: string | null
+          publish_at?: string | null
           published_date?: string
           slug?: string
           tags?: string[]

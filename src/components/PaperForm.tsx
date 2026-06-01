@@ -11,6 +11,7 @@ export interface PaperFormValues {
   tags: string[];
   pdfUrl: string;
   publishedDate: string;
+  publishAt: string; // datetime-local value, may be ""
   isPublished: boolean;
   language: PaperLanguage;
 }
@@ -23,6 +24,7 @@ export const emptyPaperForm: PaperFormValues = {
   tags: [],
   pdfUrl: "",
   publishedDate: new Date().toISOString().slice(0, 10),
+  publishAt: "",
   isPublished: true,
   language: "it",
 };
@@ -224,6 +226,20 @@ export function PaperForm({
         />
         Pubblicato (visibile sul sito pubblico)
       </label>
+
+      {!values.isPublished && (
+        <Field label="Pubblica automaticamente il (data e ora, opzionale)">
+          <input
+            type="datetime-local"
+            value={values.publishAt}
+            onChange={(e) => update("publishAt", e.target.value)}
+            className={inputCls}
+          />
+          <span className="block mt-1 font-mono text-[10px] text-surface-dark-foreground/60 uppercase tracking-widest">
+            Il paper diventerà pubblico automaticamente all'ora indicata (controllo ogni 5 minuti).
+          </span>
+        </Field>
+      )}
 
       {error && (
         <div className="border border-destructive/40 bg-destructive/10 text-destructive px-4 py-3 text-sm font-display">

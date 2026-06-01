@@ -347,11 +347,7 @@ function MarketReportCard({
   };
 }) {
   const [open, setOpen] = useState(false);
-  const [tTitle, tContent, tSource] = useTranslated([
-    report.title,
-    report.content,
-    report.source ?? "",
-  ]);
+  const [tTitle, tContent] = useTranslated([report.title, report.content]);
   return (
     <article className="border border-border bg-background">
       <button
@@ -376,7 +372,6 @@ function MarketReportCard({
               month: "long",
               year: "numeric",
             })}
-            {tSource && <span> · {tSource}</span>}
           </div>
         </div>
         <span
@@ -390,7 +385,7 @@ function MarketReportCard({
         </span>
       </button>
       {open && (
-        <div className="px-5 pb-5 whitespace-pre-line leading-relaxed text-sm md:text-base text-pretty text-justify">
+        <div className="px-5 pb-5 whitespace-pre-wrap leading-relaxed text-sm md:text-base text-pretty">
           {tContent}
         </div>
       )}

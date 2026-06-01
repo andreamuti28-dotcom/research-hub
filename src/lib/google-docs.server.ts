@@ -168,13 +168,48 @@ export function googleDocToMarkdown(doc: GDoc): string {
   return out.join("\n\n").trim();
 }
 
+function googleDocToPlainText(doc: GDoc): string {
+  const blocks: string[] = [];
+  const renderRun = (r: GDocTextRun): string => {
+    let t = r.content ?? "";
+    if (t.endsWith("\n")) t = t.slice(0, -1);
+    return t;
+  };
+  const renderPara = (p: GDocParagraph): string => {
+    const text = (p.elements ?? [])
+      .map((el) => (el.textRun ? renderRun(el.textRun) : ""))
+      .join("");
+    if (p.bullet) {
+      const indent = "  ".repeat(Math.max(0, p.bullet.nestingLevel ?? 0));
+      return `${indent}• ${text}`;
+    }
+    return text;
+  };
+  for (const el of doc.body?.content ?? []) {
+    if (el.paragraph) {
+      blocks.push(renderPara(el.paragraph));
+    } else if (el.table) {
+      for (const row of el.table.tableRows ?? []) {
+        const cells = (row.tableCells ?? []).map((c) =>
+          (c.content ?? [])
+            .map((sub) => (sub.paragraph ? renderPara(sub.paragraph) : ""))
+            .join(" ")
+            .trim(),
+        );
+        blocks.push(cells.join("\t"));
+      }
+    }
+  }
+  return blocks.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+}
+
 export type FetchedGoogleDoc = {
   documentId: string;
   title: string;
-  markdown: string;
+  text: string;
 };
 
-export async function fetchGoogleDocAsMarkdown(documentId: string): Promise<FetchedGoogleDoc> {
+export async function fetchGoogleDocAsText(documentId: string): Promise<FetchedGoogleDoc> {
   const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
   if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY non configurato");
   const GOOGLE_DOCS_API_KEY = process.env.GOOGLE_DOCS_API_KEY;
@@ -198,10 +233,9 @@ export async function fetchGoogleDocAsMarkdown(documentId: string): Promise<Fetc
     throw new Error(`Google Docs API ${res.status}: ${body.slice(0, 500)}`);
   }
   const doc = JSON.parse(body) as GDoc;
-  const markdown = googleDocToMarkdown(doc);
   return {
     documentId: doc.documentId ?? cleanId,
-    title: (doc.title ?? "Report mercati").trim() || "Report mercati",
-    markdown,
+    title: (doc.title ?? "Report giornaliero").trim() || "Report giornaliero",
+    text: googleDocToPlainText(doc),
   };
 }
