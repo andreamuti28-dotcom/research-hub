@@ -107,8 +107,6 @@ const dict = {
     "paper.pdfRenderError": "Error while loading the PDF.",
     "paper.notFound": "Paper not found",
     "paper.backToArchive": "Back to archive",
-    "paper.notFound": "Paper not found",
-    "paper.backToArchive": "Back to archive",
     "langToggle.label": (next: string) => `Language: switch to ${next}`,
     "news.title": "Financial News",
     "news.live": "Live",
