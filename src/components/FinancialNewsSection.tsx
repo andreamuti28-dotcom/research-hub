@@ -138,19 +138,19 @@ export function FinancialNewsSection() {
             ) : isError ? (
               <div className="border border-border p-10 text-center bg-surface">
                 <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground mb-4">
-                  Impossibile caricare le news.
+                  {t("news.error")}
                 </p>
                 <button
                   type="button"
                   onClick={() => refetch()}
                   className="inline-flex items-center px-4 py-2 border border-foreground text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors"
                 >
-                  Riprova
+                  {t("news.retry")}
                 </button>
               </div>
             ) : items.length === 0 ? (
               <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
-                Nessuna news disponibile.
+                {t("news.empty")}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
