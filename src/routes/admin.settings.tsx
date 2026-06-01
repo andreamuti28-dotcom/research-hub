@@ -686,6 +686,65 @@ function AdminSettingsPage() {
               maxLength={300}
             />
           </Field>
+          <Field label="Immagine sotto al titolo 'Report giornaliero' (home)">
+            <div className="space-y-3">
+              {form.homeMarketImageUrl ? (
+                <div className="border border-surface-dark-muted bg-black/20 p-2">
+                  <img
+                    src={form.homeMarketImageUrl}
+                    alt="Anteprima immagine report mercati"
+                    className="block w-full max-h-64 object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="border border-dashed border-surface-dark-muted p-6 text-center font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/50">
+                  Nessuna immagine impostata
+                </div>
+              )}
+              <input
+                ref={marketImageInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleMarketImageFile(f);
+                  e.target.value = "";
+                }}
+              />
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => marketImageInputRef.current?.click()}
+                  disabled={marketImageBusy}
+                  className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                >
+                  {marketImageBusy
+                    ? "Caricamento…"
+                    : form.homeMarketImageUrl
+                    ? "Sostituisci immagine"
+                    : "Carica immagine"}
+                </button>
+                {form.homeMarketImageUrl && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setForm((f) => (f ? { ...f, homeMarketImageUrl: null } : f))
+                    }
+                    className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/30 text-surface-dark-foreground/70 px-4 py-2 hover:border-red-500 hover:text-red-500 transition-colors"
+                  >
+                    Rimuovi
+                  </button>
+                )}
+              </div>
+              {marketImageError && (
+                <p className="font-mono text-[11px] text-red-400">{marketImageError}</p>
+              )}
+              <p className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/40">
+                PNG / JPEG / WEBP — stessa immagine per ogni report
+              </p>
+            </div>
+          </Field>
           <Field label="Disclaimer sotto al titolo 'Ricerca Pubblicata' (archivio)">
             <input
               type="text"
