@@ -51,6 +51,12 @@ const dict = {
     "paper.notFound": "Paper non trovato",
     "paper.backToArchive": "Torna all'archivio",
     "langToggle.label": (next: string) => `Lingua: passa a ${next}`,
+    "news.title": "News Finanziarie",
+    "news.live": "Live",
+    "news.error": "Impossibile caricare le news.",
+    "news.retry": "Riprova",
+    "news.empty": "Nessuna news disponibile.",
+    "news.readSource": "Leggi la fonte ↗",
   },
   en: {
     "nav.archive": "Archive",
