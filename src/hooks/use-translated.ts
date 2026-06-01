@@ -70,3 +70,40 @@ export function useTranslated(texts: string[]): string[] {
   if (!needsTranslation) return texts;
   return data ?? texts;
 }
+
+/**
+ * Translate to the current UI language regardless of the source language.
+ * Use for content whose source language is unknown or non-Italian (e.g. news
+ * feeds in English). The translator keeps already-target texts as-is.
+ */
+export function useTranslatedAlways(texts: string[]): string[] {
+  const { lang } = useLanguage();
+  const callFn = useServerFn(translateBatch);
+  const hasContent = texts.some((t) => t.trim().length > 0);
+  const key = `auto:${cacheKey(lang, texts)}`;
+
+  const { data } = useQuery({
+    queryKey: ["translate-auto", key],
+    queryFn: async () => {
+      const cached = readCache(key);
+      if (cached && cached.length === texts.length) return cached;
+      const CHUNK = 200;
+      const chunks: string[][] = [];
+      for (let i = 0; i < texts.length; i += CHUNK) {
+        chunks.push(texts.slice(i, i + CHUNK));
+      }
+      const results = await Promise.all(
+        chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
+      );
+      const out = results.flatMap((r) => r.translations);
+      writeCache(key, out);
+      return out;
+    },
+    enabled: hasContent,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  if (!hasContent) return texts;
+  return data ?? texts;
+}
