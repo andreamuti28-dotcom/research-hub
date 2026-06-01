@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect } from "react";
+
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
