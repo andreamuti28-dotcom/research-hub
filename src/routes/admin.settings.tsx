@@ -50,6 +50,7 @@ type FormState = {
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
   homeMarketDisclaimer: string;
+  homeMarketImageUrl: string | null;
   archiveDisclaimer: string;
   headerBg: string;
   newsApiUrl: string;
