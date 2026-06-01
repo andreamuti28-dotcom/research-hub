@@ -74,7 +74,7 @@ function Archivio() {
 
   useEffect(() => {
     const channel = supabase
-      .channel("market-reports-archive")
+      .channel("archive-realtime")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "market_reports" },
@@ -82,9 +82,20 @@ function Archivio() {
           queryClient.invalidateQueries({ queryKey: ["market-reports"] });
         },
       )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "papers" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["papers"] });
+        },
+      )
       .subscribe();
+    const interval = window.setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: ["papers"] });
+    }, 30_000);
     return () => {
       supabase.removeChannel(channel);
+      window.clearInterval(interval);
     };
   }, [queryClient]);
 
