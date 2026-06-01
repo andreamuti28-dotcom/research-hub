@@ -2,11 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { fetchGoogleDocAsMarkdown } from "./google-docs.server";
+import { fetchGoogleDocAsText } from "./google-docs.server";
+
+const REPORT_TITLE = "Report giornaliero";
 
 /**
  * Internal: fetch the configured Google Doc and write a new "current" report.
- * Demotes the previous current report so it remains in the archive.
+ * Stores the document as plain text, fixed title "Report giornaliero", no source.
  */
 export async function syncMarketReportFromGoogleDocInternal(opts?: {
   documentId?: string;
@@ -22,8 +24,8 @@ export async function syncMarketReportFromGoogleDocInternal(opts?: {
     "";
   if (!docId) throw new Error("Nessun ID Google Doc configurato.");
 
-  const doc = await fetchGoogleDocAsMarkdown(docId);
-  if (!doc.markdown.trim()) throw new Error("Il documento Google è vuoto.");
+  const doc = await fetchGoogleDocAsText(docId);
+  if (!doc.text.trim()) throw new Error("Il documento Google è vuoto.");
 
   const { error: demoteErr } = await supabaseAdmin
     .from("market_reports")
@@ -33,10 +35,10 @@ export async function syncMarketReportFromGoogleDocInternal(opts?: {
 
   const today = new Date().toISOString().slice(0, 10);
   const { error: insertErr } = await supabaseAdmin.from("market_reports").insert({
-    title: doc.title,
-    content: doc.markdown,
+    title: REPORT_TITLE,
+    content: doc.text,
     report_date: today,
-    source: `Google Doc · ${doc.title}`,
+    source: null,
     is_current: true,
   });
   if (insertErr) throw new Error(insertErr.message);
@@ -66,9 +68,12 @@ export const syncMarketReportFromGoogleDoc = createServerFn({ method: "POST" })
     return syncMarketReportFromGoogleDocInternal({ documentId: data.documentId });
   });
 
+export const SCHEDULE_VALUES = ["manual", "hourly", "daily", "weekly", "weekdays_7am"] as const;
+export type MarketSchedule = (typeof SCHEDULE_VALUES)[number];
+
 const marketSyncConfigSchema = z.object({
   marketDocId: z.string().trim().min(10).max(200),
-  marketSyncSchedule: z.enum(["manual", "hourly", "daily", "weekly"]),
+  marketSyncSchedule: z.enum(SCHEDULE_VALUES),
 });
 
 export const updateMarketSyncConfig = createServerFn({ method: "POST" })
@@ -89,7 +94,7 @@ export const updateMarketSyncConfig = createServerFn({ method: "POST" })
 
 export type MarketSyncStatus = {
   marketDocId: string;
-  marketSyncSchedule: "manual" | "hourly" | "daily" | "weekly";
+  marketSyncSchedule: MarketSchedule;
   lastSyncAt: string | null;
   lastSyncFile: string | null;
 };
@@ -105,12 +110,12 @@ export const getMarketSyncStatus = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     const d = (data ?? {}) as Record<string, unknown>;
-    const sched = (d.market_sync_schedule as string) || "manual";
+    const sched = (d.market_sync_schedule as string) || "weekdays_7am";
     return {
       marketDocId: (d.market_doc_id as string) || "1vqcD0XRhjqMPyX2JsB99Sk_zlCU_xaJU9Obve_lV3q8",
-      marketSyncSchedule: (["manual", "hourly", "daily", "weekly"].includes(sched)
+      marketSyncSchedule: (SCHEDULE_VALUES.includes(sched as MarketSchedule)
         ? sched
-        : "manual") as MarketSyncStatus["marketSyncSchedule"],
+        : "weekdays_7am") as MarketSchedule,
       lastSyncAt: (d.market_last_sync_at as string | null) ?? null,
       lastSyncFile: (d.market_last_sync_file as string | null) ?? null,
     };
@@ -145,7 +150,6 @@ export const upsertCurrentMarketReport = createServerFn({ method: "POST" })
     await assertAdmin(context.userId);
     const reportDate = data.reportDate ?? new Date().toISOString().slice(0, 10);
 
-    // Demote any previous "current" report so it stays in the archive.
     const { error: demoteErr } = await supabaseAdmin
       .from("market_reports")
       .update({ is_current: false })
@@ -163,9 +167,48 @@ export const upsertCurrentMarketReport = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const updateSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().trim().min(1).max(300),
+  content: z.string().trim().min(1).max(200_000),
+  reportDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
+
+export const updateMarketReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => updateSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { error } = await supabaseAdmin
+      .from("market_reports")
+      .update({
+        title: data.title,
+        content: data.content,
+        report_date: data.reportDate,
+      })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteMarketReport = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ id: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { error } = await supabaseAdmin
+      .from("market_reports")
+      .delete()
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export type MarketReport = {
   id: string;
-  reportDate: string; // ISO date
+  reportDate: string;
   title: string;
   content: string;
   source: string | null;
