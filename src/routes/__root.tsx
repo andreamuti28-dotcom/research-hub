@@ -11,6 +11,7 @@ import {
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 
 import appCss from "../styles.css?url";
@@ -156,8 +157,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ThemeOverridesStyle />
       <Outlet />
       <CookieConsent />
     </QueryClientProvider>
   );
+}
+
+function ThemeOverridesStyle() {
+  const { themeOverrides } = useSiteSettings();
+  const entries = Object.entries(themeOverrides ?? {});
+  if (entries.length === 0) return null;
+  const css = `:root{${entries
+    .map(([k, v]) => `${k}:${String(v).replace(/[;}{]/g, "")};`)
+    .join("")}}`;
+  return <style dangerouslySetInnerHTML={{ __html: css }} />;
 }

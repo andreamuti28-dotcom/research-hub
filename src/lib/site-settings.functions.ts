@@ -67,6 +67,8 @@ export type SiteSettings = {
   aboutLanguages: LanguageItem[];
   aboutSoftware: LogoItem[];
   aboutCertifications: LogoItem[];
+  i18nOverrides: Record<string, { it?: string; en?: string }>;
+  themeOverrides: Record<string, string>;
 };
 
 
@@ -116,7 +118,35 @@ const DEFAULTS: SiteSettings = {
   aboutLanguages: [],
   aboutSoftware: [],
   aboutCertifications: [],
+  i18nOverrides: {},
+  themeOverrides: {},
 };
+
+function coerceI18nOverrides(v: unknown): Record<string, { it?: string; en?: string }> {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, { it?: string; en?: string }> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    if (!val || typeof val !== "object") continue;
+    const o = val as Record<string, unknown>;
+    const it = typeof o.it === "string" ? o.it : undefined;
+    const en = typeof o.en === "string" ? o.en : undefined;
+    if (it === undefined && en === undefined) continue;
+    out[k] = { ...(it !== undefined ? { it } : {}), ...(en !== undefined ? { en } : {}) };
+  }
+  return out;
+}
+
+function coerceThemeOverrides(v: unknown): Record<string, string> {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, string> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    if (typeof val !== "string") continue;
+    if (!/^--[a-z0-9-]+$/i.test(k)) continue;
+    if (val.length > 200) continue;
+    out[k] = val;
+  }
+  return out;
+}
 
 
 function coerceLanguages(v: unknown): LanguageItem[] {
@@ -235,6 +265,8 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       aboutLanguages: coerceLanguages(d.about_languages),
       aboutSoftware: coerceLogos(d.about_software),
       aboutCertifications: coerceLogos(d.about_certifications),
+      i18nOverrides: coerceI18nOverrides(d.i18n_overrides),
+      themeOverrides: coerceThemeOverrides(d.theme_overrides),
     };
   },
 );
@@ -308,6 +340,21 @@ const updateSchema = z.object({
   aboutLanguages: z.array(languageSchema).max(20).default([]),
   aboutSoftware: z.array(logoSchema).max(40).default([]),
   aboutCertifications: z.array(logoSchema).max(40).default([]),
+  i18nOverrides: z
+    .record(
+      z.string().min(1).max(120),
+      z.object({
+        it: z.string().max(2000).optional(),
+        en: z.string().max(2000).optional(),
+      }),
+    )
+    .default({}),
+  themeOverrides: z
+    .record(
+      z.string().regex(/^--[a-z0-9-]+$/i).max(60),
+      z.string().trim().min(1).max(200),
+    )
+    .default({}),
 });
 
 export const updateSiteSettings = createServerFn({ method: "POST" })
@@ -366,8 +413,57 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       about_languages: data.aboutLanguages,
       about_software: data.aboutSoftware,
       about_certifications: data.aboutCertifications,
+      i18n_overrides: data.i18nOverrides,
+      theme_overrides: data.themeOverrides,
     };
 
+    if (existing) {
+      const { error } = await supabaseAdmin
+        .from("site_settings")
+        .update(payload)
+        .eq("id", existing.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin
+        .from("site_settings")
+        .insert({ singleton: true, ...payload });
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
+const overridesSchema = z.object({
+  i18nOverrides: z
+    .record(
+      z.string().min(1).max(120),
+      z.object({
+        it: z.string().max(2000).optional(),
+        en: z.string().max(2000).optional(),
+      }),
+    )
+    .default({}),
+  themeOverrides: z
+    .record(
+      z.string().regex(/^--[a-z0-9-]+$/i).max(60),
+      z.string().trim().min(1).max(200),
+    )
+    .default({}),
+});
+
+export const updateSiteOverrides = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => overridesSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { data: existing } = await supabaseAdmin
+      .from("site_settings")
+      .select("id")
+      .eq("singleton", true)
+      .maybeSingle();
+    const payload = {
+      i18n_overrides: data.i18nOverrides,
+      theme_overrides: data.themeOverrides,
+    };
     if (existing) {
       const { error } = await supabaseAdmin
         .from("site_settings")

@@ -174,6 +174,7 @@ export type Database = {
           home_market_enabled: boolean
           home_market_image_url: string | null
           home_market_label: string
+          i18n_overrides: Json
           id: string
           linkedin_url: string
           market_doc_id: string
@@ -185,6 +186,7 @@ export type Database = {
           news_countdown_color: string
           portrait_url: string | null
           singleton: boolean
+          theme_overrides: Json
           updated_at: string
         }
         Insert: {
@@ -226,6 +228,7 @@ export type Database = {
           home_market_enabled?: boolean
           home_market_image_url?: string | null
           home_market_label?: string
+          i18n_overrides?: Json
           id?: string
           linkedin_url?: string
           market_doc_id?: string
@@ -237,6 +240,7 @@ export type Database = {
           news_countdown_color?: string
           portrait_url?: string | null
           singleton?: boolean
+          theme_overrides?: Json
           updated_at?: string
         }
         Update: {
@@ -278,6 +282,7 @@ export type Database = {
           home_market_enabled?: boolean
           home_market_image_url?: string | null
           home_market_label?: string
+          i18n_overrides?: Json
           id?: string
           linkedin_url?: string
           market_doc_id?: string
@@ -289,6 +294,7 @@ export type Database = {
           news_countdown_color?: string
           portrait_url?: string | null
           singleton?: boolean
+          theme_overrides?: Json
           updated_at?: string
         }
         Relationships: []

@@ -129,14 +129,26 @@ const dict = {
 
 type Key = keyof (typeof dict)["it"];
 
+export const I18N_KEYS = Object.keys(dict.it) as Key[];
+
+export function getDefaultString(lang: "it" | "en", key: string): string | null {
+  const entry = (dict[lang] as Record<string, unknown>)[key];
+  return typeof entry === "string" ? entry : null;
+}
+
+import { useSiteSettings } from "@/hooks/use-site-settings";
+
 export function useT() {
   const { lang } = useLanguage();
+  const { i18nOverrides } = useSiteSettings();
   return function t<K extends Key>(
     key: K,
     ...args: (typeof dict)["it"][K] extends (...a: infer A) => string ? A : []
   ): string {
     const entry = dict[lang][key] as unknown;
     if (typeof entry === "function") return (entry as (...a: unknown[]) => string)(...args);
+    const override = i18nOverrides?.[key as string]?.[lang];
+    if (typeof override === "string" && override.length > 0) return override;
     return entry as string;
   };
 }
