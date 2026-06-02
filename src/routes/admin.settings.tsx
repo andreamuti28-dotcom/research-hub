@@ -41,6 +41,7 @@ export const Route = createFileRoute("/admin/settings")({
 type FormState = {
   name: string;
   heroTitle: string;
+  heroVideoUrl: string | null;
   heroIntro: string;
   linkedinUrl: string;
   contactEmail: string;
@@ -148,6 +149,7 @@ function AdminSettingsPage() {
       setForm({
         name: s.name,
         heroTitle: s.heroTitle,
+        heroVideoUrl: s.heroVideoUrl,
         heroIntro: s.heroIntro,
         linkedinUrl: s.linkedinUrl,
         contactEmail: s.contactEmail,
