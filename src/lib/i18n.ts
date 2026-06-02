@@ -136,7 +136,6 @@ export function getDefaultString(lang: "it" | "en", key: string): string | null 
   return typeof entry === "string" ? entry : null;
 }
 
-import { useSiteSettings } from "@/hooks/use-site-settings";
 
 export function useT() {
   const { lang } = useLanguage();
