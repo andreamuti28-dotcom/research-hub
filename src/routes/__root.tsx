@@ -11,6 +11,7 @@ import {
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 
 import appCss from "../styles.css?url";
