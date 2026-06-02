@@ -59,7 +59,7 @@ function AdminMarketSync() {
   });
 
   const [docId, setDocId] = useState("");
-  const [schedule, setSchedule] = useState<MarketSyncStatus["marketSyncSchedule"]>("weekdays_7am");
+  const [schedule, setSchedule] = useState<MarketSyncStatus["marketSyncSchedule"]>("daily_7am");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
