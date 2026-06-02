@@ -10,7 +10,6 @@ const InputSchema = z.object({
   target: z.enum(["it", "en"]),
 });
 
-
 async function translateChunk(texts: string[], target: "it" | "en", apiKey: string) {
   const source = target === "en" ? "Italian" : "English";
   const targetName = target === "en" ? "English" : "Italian";
@@ -55,7 +54,12 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
   }
   const out = [...texts];
   for (const item of parsed.translations ?? []) {
-    if (typeof item.i === "number" && item.i >= 0 && item.i < out.length && typeof item.text === "string") {
+    if (
+      typeof item.i === "number" &&
+      item.i >= 0 &&
+      item.i < out.length &&
+      typeof item.text === "string"
+    ) {
       const cleaned = item.text
         .replace(/\s*\[\[END\]\]\s*/g, "")
         .replace(/^\s*-{3,}\s*|\s*-{3,}\s*$/g, "")
