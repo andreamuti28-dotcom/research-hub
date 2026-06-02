@@ -576,6 +576,75 @@ function AdminSettingsPage() {
           )}
         </section>
 
+        {/* Video hero (home) */}
+        <section className="border border-surface-dark-muted p-6 space-y-4">
+          <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+            Video principale (home)
+          </h2>
+          <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+            Sostituisce il titolo nella home. Il video parte in autoplay, muto, in loop. Nessun limite di peso — formati consigliati: MP4 / WebM.
+          </p>
+          {form.heroVideoUrl ? (
+            <div className="border border-surface-dark-muted bg-black/40 overflow-hidden">
+              <video
+                key={form.heroVideoUrl}
+                src={form.heroVideoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                className="block w-full max-h-80 object-contain bg-black"
+              />
+            </div>
+          ) : (
+            <div className="border border-dashed border-surface-dark-muted p-8 text-center font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/50">
+              Nessun video caricato
+            </div>
+          )}
+          <input
+            ref={heroVideoInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleHeroVideoFile(f);
+              e.target.value = "";
+            }}
+          />
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => heroVideoInputRef.current?.click()}
+              disabled={heroVideoBusy}
+              className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+            >
+              {heroVideoBusy
+                ? "Caricamento…"
+                : form.heroVideoUrl
+                ? "Sostituisci video"
+                : "Carica video"}
+            </button>
+            {form.heroVideoUrl && (
+              <button
+                type="button"
+                onClick={() => setForm((f) => (f ? { ...f, heroVideoUrl: null } : f))}
+                className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/30 text-surface-dark-foreground/70 px-4 py-2 hover:border-red-500 hover:text-red-500 transition-colors"
+              >
+                Rimuovi
+              </button>
+            )}
+          </div>
+          {heroVideoError && (
+            <p className="font-mono text-[11px] text-red-400">{heroVideoError}</p>
+          )}
+          {heroVideoBusy && (
+            <p className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/50">
+              Upload in corso… non chiudere la pagina.
+            </p>
+          )}
+        </section>
 
         {/* Identità */}
         <section className="border border-surface-dark-muted p-6 space-y-5">
@@ -594,7 +663,7 @@ function AdminSettingsPage() {
             />
           </Field>
 
-          <Field label="Titolo principale (hero)">
+          <Field label="Titolo di fallback (mostrato solo se non è impostato un video)">
             <textarea
               value={form.heroTitle}
               onChange={(e) => setForm({ ...form, heroTitle: e.target.value })}
@@ -603,6 +672,7 @@ function AdminSettingsPage() {
               maxLength={500}
             />
           </Field>
+
 
           <Field label="Bio / introduzione">
             <textarea
