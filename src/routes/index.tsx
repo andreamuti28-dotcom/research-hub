@@ -282,7 +282,7 @@ function Index() {
                         {reportTitle}
                       </h3>
                       <time className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                        {new Date(latestReport.reportDate).toLocaleDateString("it-IT", {
+                        {new Date(latestReport.reportDate).toLocaleDateString(dateLocale, {
                           day: "2-digit",
                           month: "long",
                           year: "numeric",
@@ -309,13 +309,13 @@ function Index() {
                         to="/archivio"
                         className="font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 hover:text-primary hover:border-primary transition-all"
                       >
-                        Archivio report →
+                        {t("home.reportArchive")}
                       </Link>
                     </div>
                   </article>
                 ) : (
                   <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
-                    Nessun report disponibile.
+                    {t("home.noReport")}
                   </div>
                 )}
                 {marketDisclaimer && marketDisclaimer.trim() && (
