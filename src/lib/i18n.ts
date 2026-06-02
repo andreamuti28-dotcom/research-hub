@@ -25,6 +25,11 @@ const dict = {
     "home.seeArchive": "Vedi tutto l'archivio →",
     "home.empty": "Nessun paper pubblicato. Accedi all'area riservata per iniziare.",
     "home.linkedin": "LinkedIn Profile",
+    "home.ctaReadPapers": "Leggi i paper →",
+    "home.ctaMarkets": "Analisi mercati",
+    "home.ctaLinkedin": "LinkedIn ↗",
+    "home.reportArchive": "Archivio report →",
+    "home.noReport": "Nessun report disponibile.",
     "archive.kicker": "Archivio completo",
     "archive.title": "Ricerca Pubblicata",
     "archive.intro": (n: number) =>
