@@ -356,6 +356,37 @@ function AdminSettingsPage() {
     }
   };
 
+  const handleHeroVideoFile = async (file: File) => {
+    setHeroVideoError(null);
+    setHeroVideoBusy(true);
+    setHeroVideoProgress(0);
+    try {
+      if (!file.type.startsWith("video/")) {
+        throw new Error("Formato non supportato: carica un file video.");
+      }
+      const ext = (file.name.split(".").pop() || "mp4")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "") || "mp4";
+      const path = `hero-video/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage
+        .from("site-assets")
+        .upload(path, file, {
+          contentType: file.type || "video/mp4",
+          upsert: false,
+          cacheControl: "3600",
+        });
+      if (error) throw new Error(error.message);
+      const { data: pub } = supabase.storage.from("site-assets").getPublicUrl(path);
+      const publicUrl = `${pub.publicUrl}?v=${Date.now()}`;
+      setForm((f) => (f ? { ...f, heroVideoUrl: publicUrl } : f));
+      setHeroVideoProgress(100);
+    } catch (e) {
+      setHeroVideoError(e instanceof Error ? e.message : "Upload video fallito");
+    } finally {
+      setHeroVideoBusy(false);
+    }
+  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
