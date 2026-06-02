@@ -4,6 +4,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { translateBatch } from "@/lib/translate.functions";
 
 const SOURCE = "it" as const;
+const CLIENT_TRANSLATION_CHUNK_SIZE = 50;
 
 function hash(s: string): string {
   let h = 5381;
@@ -50,10 +51,9 @@ export function useTranslated(texts: string[]): string[] {
     queryFn: async () => {
       const cached = readCache(key);
       if (cached && cached.length === texts.length) return cached;
-      const CHUNK = 200;
       const chunks: string[][] = [];
-      for (let i = 0; i < texts.length; i += CHUNK) {
-        chunks.push(texts.slice(i, i + CHUNK));
+      for (let i = 0; i < texts.length; i += CLIENT_TRANSLATION_CHUNK_SIZE) {
+        chunks.push(texts.slice(i, i + CLIENT_TRANSLATION_CHUNK_SIZE));
       }
       const results = await Promise.all(
         chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
@@ -87,10 +87,9 @@ export function useTranslatedAlways(texts: string[]): string[] {
     queryFn: async () => {
       const cached = readCache(key);
       if (cached && cached.length === texts.length) return cached;
-      const CHUNK = 200;
       const chunks: string[][] = [];
-      for (let i = 0; i < texts.length; i += CHUNK) {
-        chunks.push(texts.slice(i, i + CHUNK));
+      for (let i = 0; i < texts.length; i += CLIENT_TRANSLATION_CHUNK_SIZE) {
+        chunks.push(texts.slice(i, i + CLIENT_TRANSLATION_CHUNK_SIZE));
       }
       const results = await Promise.all(
         chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
