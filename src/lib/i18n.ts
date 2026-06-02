@@ -87,6 +87,11 @@ const dict = {
     "home.seeArchive": "See full archive →",
     "home.empty": "No papers published yet. Sign in to the members area to begin.",
     "home.linkedin": "LinkedIn Profile",
+    "home.ctaReadPapers": "Read the papers →",
+    "home.ctaMarkets": "Market analysis",
+    "home.ctaLinkedin": "LinkedIn ↗",
+    "home.reportArchive": "Report archive →",
+    "home.noReport": "No report available.",
     "archive.kicker": "Full archive",
     "archive.title": "Published Research",
     "archive.intro": (n: number) =>
