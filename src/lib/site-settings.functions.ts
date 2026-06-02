@@ -340,6 +340,21 @@ const updateSchema = z.object({
   aboutLanguages: z.array(languageSchema).max(20).default([]),
   aboutSoftware: z.array(logoSchema).max(40).default([]),
   aboutCertifications: z.array(logoSchema).max(40).default([]),
+  i18nOverrides: z
+    .record(
+      z.string().min(1).max(120),
+      z.object({
+        it: z.string().max(2000).optional(),
+        en: z.string().max(2000).optional(),
+      }),
+    )
+    .default({}),
+  themeOverrides: z
+    .record(
+      z.string().regex(/^--[a-z0-9-]+$/i).max(60),
+      z.string().trim().min(1).max(200),
+    )
+    .default({}),
 });
 
 export const updateSiteSettings = createServerFn({ method: "POST" })
