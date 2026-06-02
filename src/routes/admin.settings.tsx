@@ -102,6 +102,10 @@ function AdminSettingsPage() {
   const marketImageInputRef = useRef<HTMLInputElement>(null);
   const [marketImageBusy, setMarketImageBusy] = useState(false);
   const [marketImageError, setMarketImageError] = useState<string | null>(null);
+  const heroVideoInputRef = useRef<HTMLInputElement>(null);
+  const [heroVideoBusy, setHeroVideoBusy] = useState(false);
+  const [heroVideoProgress, setHeroVideoProgress] = useState(0);
+  const [heroVideoError, setHeroVideoError] = useState<string | null>(null);
 
   const [sessionReady, setSessionReady] = useState(false);
   useEffect(() => {
