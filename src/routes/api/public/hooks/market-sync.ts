@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { syncMarketReportFromGoogleDocInternal } from "@/lib/market-reports.functions";
 
-type Schedule = "manual" | "hourly" | "daily" | "weekly" | "weekdays_7am";
+type Schedule = "manual" | "hourly" | "daily" | "weekly" | "weekdays_7am" | "daily_7am";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
