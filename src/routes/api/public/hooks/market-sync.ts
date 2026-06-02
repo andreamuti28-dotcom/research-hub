@@ -63,21 +63,24 @@ export const Route = createFileRoute("/api/public/hooks/market-sync")({
     handlers: {
       OPTIONS: async () => new Response(null, { status: 204, headers: corsHeaders }),
       POST: async ({ request }) => {
-        // Require shared secret to prevent abuse of Google Docs API quota.
-        const secret = process.env.MARKET_REPORTS_WEBHOOK_SECRET;
-        if (!secret) return json({ error: "Server misconfigured" }, 500);
-        const auth = request.headers.get("authorization") ?? "";
-        const provided = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-        if (!provided || provided !== secret) {
-          return json({ error: "Unauthorized" }, 401);
-        }
-
         let force = false;
         try {
           const body = (await request.json().catch(() => ({}))) as { force?: boolean };
           force = Boolean(body?.force);
         } catch {
           /* ignore */
+        }
+
+        // Only `force=true` requires the shared secret (admin trigger).
+        // Scheduled cron calls run without secret and are rate-limited by isDue().
+        if (force) {
+          const secret = process.env.MARKET_REPORTS_WEBHOOK_SECRET;
+          if (!secret) return json({ error: "Server misconfigured" }, 500);
+          const auth = request.headers.get("authorization") ?? "";
+          const provided = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+          if (!provided || provided !== secret) {
+            return json({ error: "Unauthorized" }, 401);
+          }
         }
 
 
