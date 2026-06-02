@@ -72,6 +72,8 @@ function Index() {
   const { data: latestReport } = useQuery(latestMarketReportQuery);
   const queryClient = useQueryClient();
   const t = useT();
+  const { lang } = useLanguage();
+  const dateLocale = lang === "en" ? "en-GB" : "it-IT";
   const [
     heroTitle,
     heroIntro,
