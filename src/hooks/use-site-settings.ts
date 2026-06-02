@@ -52,6 +52,8 @@ const DEFAULTS: SiteSettings = {
   aboutLanguages: [],
   aboutSoftware: [],
   aboutCertifications: [],
+  i18nOverrides: {},
+  themeOverrides: {},
 };
 
 export function useSiteSettings(): SiteSettings {
