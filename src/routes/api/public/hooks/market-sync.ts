@@ -29,24 +29,32 @@ function isDue(schedule: Schedule, lastSyncAt: string | null): boolean {
       return !lastSyncAt || now.getTime() - new Date(lastSyncAt).getTime() >= 24 * 60 * 60 * 1000 - 60_000;
     case "weekly":
       return !lastSyncAt || now.getTime() - new Date(lastSyncAt).getTime() >= 7 * 24 * 60 * 60 * 1000 - 60_000;
-    case "weekdays_7am": {
-      // Run only Tue-Sat in Europe/Rome timezone, and only once per day.
+    case "weekdays_7am":
+    case "daily_7am": {
+      // Run once per day in Europe/Rome timezone (after 07:00 local).
+      // weekdays_7am skips Sun/Mon; daily_7am runs every day.
       const fmt = new Intl.DateTimeFormat("en-GB", {
         timeZone: "Europe/Rome",
         weekday: "short",
         year: "numeric",
         month: "2-digit",
         day: "2-digit",
+        hour: "2-digit",
+        hour12: false,
       });
       const parts = fmt.formatToParts(now);
       const wd = parts.find((p) => p.type === "weekday")?.value ?? "";
+      const hour = parseInt(parts.find((p) => p.type === "hour")?.value ?? "0", 10);
       const todayKey = `${parts.find((p) => p.type === "year")?.value}-${parts.find((p) => p.type === "month")?.value}-${parts.find((p) => p.type === "day")?.value}`;
-      if (!["Tue", "Wed", "Thu", "Fri", "Sat"].includes(wd)) return false;
+      if (schedule === "weekdays_7am" && !["Tue", "Wed", "Thu", "Fri", "Sat"].includes(wd)) return false;
+      if (hour < 7) return false;
       if (!lastSyncAt) return true;
       const lastParts = fmt.formatToParts(new Date(lastSyncAt));
       const lastKey = `${lastParts.find((p) => p.type === "year")?.value}-${lastParts.find((p) => p.type === "month")?.value}-${lastParts.find((p) => p.type === "day")?.value}`;
       return lastKey !== todayKey;
     }
+    default:
+      return false;
   }
 }
 
