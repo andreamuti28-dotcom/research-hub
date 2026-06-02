@@ -32,7 +32,8 @@ export const Route = createFileRoute("/admin/market-sync")({
 
 const SCHEDULES = [
   { value: "manual", label: "Solo manuale" },
-  { value: "weekdays_7am", label: "Ogni giorno feriale (Mar–Sab) alle 7:00" },
+  { value: "daily_7am", label: "Ogni giorno alle 07:00 (Europe/Rome)" },
+  { value: "weekdays_7am", label: "Ogni giorno feriale (Mar–Sab) alle 07:00" },
   { value: "hourly", label: "Ogni ora" },
   { value: "daily", label: "Ogni giorno" },
   { value: "weekly", label: "Ogni settimana" },
@@ -58,7 +59,7 @@ function AdminMarketSync() {
   });
 
   const [docId, setDocId] = useState("");
-  const [schedule, setSchedule] = useState<MarketSyncStatus["marketSyncSchedule"]>("weekdays_7am");
+  const [schedule, setSchedule] = useState<MarketSyncStatus["marketSyncSchedule"]>("daily_7am");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");

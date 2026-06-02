@@ -25,6 +25,11 @@ const dict = {
     "home.seeArchive": "Vedi tutto l'archivio →",
     "home.empty": "Nessun paper pubblicato. Accedi all'area riservata per iniziare.",
     "home.linkedin": "LinkedIn Profile",
+    "home.ctaReadPapers": "Leggi i paper →",
+    "home.ctaMarkets": "Analisi mercati",
+    "home.ctaLinkedin": "LinkedIn ↗",
+    "home.reportArchive": "Archivio report →",
+    "home.noReport": "Nessun report disponibile.",
     "archive.kicker": "Archivio completo",
     "archive.title": "Ricerca Pubblicata",
     "archive.intro": (n: number) =>
@@ -82,6 +87,11 @@ const dict = {
     "home.seeArchive": "See full archive →",
     "home.empty": "No papers published yet. Sign in to the members area to begin.",
     "home.linkedin": "LinkedIn Profile",
+    "home.ctaReadPapers": "Read the papers →",
+    "home.ctaMarkets": "Market analysis",
+    "home.ctaLinkedin": "LinkedIn ↗",
+    "home.reportArchive": "Report archive →",
+    "home.noReport": "No report available.",
     "archive.kicker": "Full archive",
     "archive.title": "Published Research",
     "archive.intro": (n: number) =>

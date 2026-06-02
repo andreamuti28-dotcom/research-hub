@@ -13,6 +13,7 @@ import { recordSiteVisit } from "@/lib/site-visits.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
+import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
 
@@ -71,6 +72,8 @@ function Index() {
   const { data: latestReport } = useQuery(latestMarketReportQuery);
   const queryClient = useQueryClient();
   const t = useT();
+  const { lang } = useLanguage();
+  const dateLocale = lang === "en" ? "en-GB" : "it-IT";
   const [
     heroTitle,
     heroIntro,
@@ -171,7 +174,7 @@ function Index() {
                 to="/archivio"
                 className="inline-flex items-center px-4 py-2.5 bg-foreground text-background font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors"
               >
-                Leggi i paper →
+                {t("home.ctaReadPapers")}
               </Link>
               {settings.homeMarketEnabled && (
                 <button
@@ -186,7 +189,7 @@ function Index() {
                   }}
                   className="inline-flex items-center px-4 py-2.5 border border-foreground text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors"
                 >
-                  Analisi mercati
+                  {t("home.ctaMarkets")}
                 </button>
               )}
               <a
@@ -195,7 +198,7 @@ function Index() {
                 rel="noreferrer noopener"
                 className="inline-flex items-center px-4 py-2.5 border border-border text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors"
               >
-                LinkedIn ↗
+                {t("home.ctaLinkedin")}
               </a>
             </div>
           </div>
@@ -279,7 +282,7 @@ function Index() {
                         {reportTitle}
                       </h3>
                       <time className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                        {new Date(latestReport.reportDate).toLocaleDateString("it-IT", {
+                        {new Date(latestReport.reportDate).toLocaleDateString(dateLocale, {
                           day: "2-digit",
                           month: "long",
                           year: "numeric",
@@ -306,13 +309,13 @@ function Index() {
                         to="/archivio"
                         className="font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 hover:text-primary hover:border-primary transition-all"
                       >
-                        Archivio report →
+                        {t("home.reportArchive")}
                       </Link>
                     </div>
                   </article>
                 ) : (
                   <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
-                    Nessun report disponibile.
+                    {t("home.noReport")}
                   </div>
                 )}
                 {marketDisclaimer && marketDisclaimer.trim() && (

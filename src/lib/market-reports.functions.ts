@@ -68,7 +68,7 @@ export const syncMarketReportFromGoogleDoc = createServerFn({ method: "POST" })
     return syncMarketReportFromGoogleDocInternal({ documentId: data.documentId });
   });
 
-export const SCHEDULE_VALUES = ["manual", "hourly", "daily", "weekly", "weekdays_7am"] as const;
+export const SCHEDULE_VALUES = ["manual", "hourly", "daily", "weekly", "weekdays_7am", "daily_7am"] as const;
 export type MarketSchedule = (typeof SCHEDULE_VALUES)[number];
 
 const marketSyncConfigSchema = z.object({
@@ -110,12 +110,12 @@ export const getMarketSyncStatus = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     const d = (data ?? {}) as Record<string, unknown>;
-    const sched = (d.market_sync_schedule as string) || "weekdays_7am";
+    const sched = (d.market_sync_schedule as string) || "daily_7am";
     return {
       marketDocId: (d.market_doc_id as string) || "1vqcD0XRhjqMPyX2JsB99Sk_zlCU_xaJU9Obve_lV3q8",
       marketSyncSchedule: (SCHEDULE_VALUES.includes(sched as MarketSchedule)
         ? sched
-        : "weekdays_7am") as MarketSchedule,
+        : "daily_7am") as MarketSchedule,
       lastSyncAt: (d.market_last_sync_at as string | null) ?? null,
       lastSyncFile: (d.market_last_sync_file as string | null) ?? null,
     };
