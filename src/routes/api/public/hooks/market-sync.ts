@@ -91,7 +91,7 @@ export const Route = createFileRoute("/api/public/hooks/market-sync")({
           .maybeSingle();
         if (error) return json({ error: error.message }, 500);
         const d = (data ?? {}) as Record<string, unknown>;
-        const schedule = ((d.market_sync_schedule as string) || "weekdays_7am") as Schedule;
+        const schedule = ((d.market_sync_schedule as string) || "daily_7am") as Schedule;
         const lastSyncAt = (d.market_last_sync_at as string | null) ?? null;
 
         if (!force && !isDue(schedule, lastSyncAt)) {
