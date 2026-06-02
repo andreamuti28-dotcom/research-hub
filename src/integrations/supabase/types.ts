@@ -169,6 +169,7 @@ export type Database = {
           header_bg: string
           hero_intro: string
           hero_title: string
+          hero_video_url: string | null
           home_featured_label: string
           home_market_disclaimer: string
           home_market_enabled: boolean
@@ -223,6 +224,7 @@ export type Database = {
           header_bg?: string
           hero_intro?: string
           hero_title?: string
+          hero_video_url?: string | null
           home_featured_label?: string
           home_market_disclaimer?: string
           home_market_enabled?: boolean
@@ -277,6 +279,7 @@ export type Database = {
           header_bg?: string
           hero_intro?: string
           hero_title?: string
+          hero_video_url?: string | null
           home_featured_label?: string
           home_market_disclaimer?: string
           home_market_enabled?: boolean

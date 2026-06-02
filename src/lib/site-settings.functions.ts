@@ -28,6 +28,7 @@ export type HobbyItem = { name: string; icon: string };
 export type SiteSettings = {
   name: string;
   heroTitle: string;
+  heroVideoUrl: string | null;
   heroIntro: string;
   linkedinUrl: string;
   contactEmail: string;
@@ -76,6 +77,7 @@ const DEFAULTS: SiteSettings = {
   name: "Andrea Muti",
   heroTitle:
     "Esplorando l'intersezione tra Etica Digitale e Infrastrutture.",
+  heroVideoUrl: null,
   heroIntro:
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
   linkedinUrl: "https://www.linkedin.com",
@@ -222,6 +224,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
     return {
       name: str(d.name, DEFAULTS.name),
       heroTitle: str(d.hero_title, DEFAULTS.heroTitle),
+      heroVideoUrl: (d.hero_video_url as string | null) ?? null,
       heroIntro: str(d.hero_intro, DEFAULTS.heroIntro),
       linkedinUrl: str(d.linkedin_url, DEFAULTS.linkedinUrl),
       contactEmail: typeof d.contact_email === "string" ? d.contact_email : "",
@@ -298,6 +301,7 @@ const hexColor = z
 const updateSchema = z.object({
   name: z.string().trim().min(1).max(120),
   heroTitle: z.string().trim().min(1).max(500),
+  heroVideoUrl: z.string().trim().url().max(2000).nullable().optional(),
   heroIntro: z.string().trim().min(1).max(2000),
   linkedinUrl: z.string().trim().url().max(500),
   contactEmail: z.union([z.string().trim().email().max(254), z.literal("")]).default(""),
@@ -371,6 +375,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
     const payload = {
       name: data.name,
       hero_title: data.heroTitle,
+      hero_video_url: data.heroVideoUrl ?? null,
       hero_intro: data.heroIntro,
       linkedin_url: data.linkedinUrl,
       contact_email: data.contactEmail || null,

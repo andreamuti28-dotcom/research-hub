@@ -10,6 +10,7 @@ export const siteSettingsQuery = {
 const DEFAULTS: SiteSettings = {
   name: "Andrea Muti",
   heroTitle: "Esplorando l'intersezione tra Etica Digitale e Infrastrutture.",
+  heroVideoUrl: null,
   heroIntro:
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
   linkedinUrl: "https://www.linkedin.com",

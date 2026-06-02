@@ -41,6 +41,7 @@ export const Route = createFileRoute("/admin/settings")({
 type FormState = {
   name: string;
   heroTitle: string;
+  heroVideoUrl: string | null;
   heroIntro: string;
   linkedinUrl: string;
   contactEmail: string;
@@ -101,6 +102,10 @@ function AdminSettingsPage() {
   const marketImageInputRef = useRef<HTMLInputElement>(null);
   const [marketImageBusy, setMarketImageBusy] = useState(false);
   const [marketImageError, setMarketImageError] = useState<string | null>(null);
+  const heroVideoInputRef = useRef<HTMLInputElement>(null);
+  const [heroVideoBusy, setHeroVideoBusy] = useState(false);
+  const [heroVideoProgress, setHeroVideoProgress] = useState(0);
+  const [heroVideoError, setHeroVideoError] = useState<string | null>(null);
 
   const [sessionReady, setSessionReady] = useState(false);
   useEffect(() => {
@@ -148,6 +153,7 @@ function AdminSettingsPage() {
       setForm({
         name: s.name,
         heroTitle: s.heroTitle,
+        heroVideoUrl: s.heroVideoUrl,
         heroIntro: s.heroIntro,
         linkedinUrl: s.linkedinUrl,
         contactEmail: s.contactEmail,
@@ -350,6 +356,37 @@ function AdminSettingsPage() {
     }
   };
 
+  const handleHeroVideoFile = async (file: File) => {
+    setHeroVideoError(null);
+    setHeroVideoBusy(true);
+    setHeroVideoProgress(0);
+    try {
+      if (!file.type.startsWith("video/")) {
+        throw new Error("Formato non supportato: carica un file video.");
+      }
+      const ext = (file.name.split(".").pop() || "mp4")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "") || "mp4";
+      const path = `hero-video/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+      const { error } = await supabase.storage
+        .from("site-assets")
+        .upload(path, file, {
+          contentType: file.type || "video/mp4",
+          upsert: false,
+          cacheControl: "3600",
+        });
+      if (error) throw new Error(error.message);
+      const { data: pub } = supabase.storage.from("site-assets").getPublicUrl(path);
+      const publicUrl = `${pub.publicUrl}?v=${Date.now()}`;
+      setForm((f) => (f ? { ...f, heroVideoUrl: publicUrl } : f));
+      setHeroVideoProgress(100);
+    } catch (e) {
+      setHeroVideoError(e instanceof Error ? e.message : "Upload video fallito");
+    } finally {
+      setHeroVideoBusy(false);
+    }
+  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -539,6 +576,75 @@ function AdminSettingsPage() {
           )}
         </section>
 
+        {/* Video hero (home) */}
+        <section className="border border-surface-dark-muted p-6 space-y-4">
+          <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+            Video principale (home)
+          </h2>
+          <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+            Sostituisce il titolo nella home. Il video parte in autoplay, muto, in loop. Nessun limite di peso — formati consigliati: MP4 / WebM.
+          </p>
+          {form.heroVideoUrl ? (
+            <div className="border border-surface-dark-muted bg-black/40 overflow-hidden">
+              <video
+                key={form.heroVideoUrl}
+                src={form.heroVideoUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+                className="block w-full max-h-80 object-contain bg-black"
+              />
+            </div>
+          ) : (
+            <div className="border border-dashed border-surface-dark-muted p-8 text-center font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/50">
+              Nessun video caricato
+            </div>
+          )}
+          <input
+            ref={heroVideoInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) handleHeroVideoFile(f);
+              e.target.value = "";
+            }}
+          />
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => heroVideoInputRef.current?.click()}
+              disabled={heroVideoBusy}
+              className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+            >
+              {heroVideoBusy
+                ? "Caricamento…"
+                : form.heroVideoUrl
+                ? "Sostituisci video"
+                : "Carica video"}
+            </button>
+            {form.heroVideoUrl && (
+              <button
+                type="button"
+                onClick={() => setForm((f) => (f ? { ...f, heroVideoUrl: null } : f))}
+                className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/30 text-surface-dark-foreground/70 px-4 py-2 hover:border-red-500 hover:text-red-500 transition-colors"
+              >
+                Rimuovi
+              </button>
+            )}
+          </div>
+          {heroVideoError && (
+            <p className="font-mono text-[11px] text-red-400">{heroVideoError}</p>
+          )}
+          {heroVideoBusy && (
+            <p className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/50">
+              Upload in corso… non chiudere la pagina.
+            </p>
+          )}
+        </section>
 
         {/* Identità */}
         <section className="border border-surface-dark-muted p-6 space-y-5">
@@ -557,7 +663,7 @@ function AdminSettingsPage() {
             />
           </Field>
 
-          <Field label="Titolo principale (hero)">
+          <Field label="Titolo di fallback (mostrato solo se non è impostato un video)">
             <textarea
               value={form.heroTitle}
               onChange={(e) => setForm({ ...form, heroTitle: e.target.value })}
@@ -566,6 +672,7 @@ function AdminSettingsPage() {
               maxLength={500}
             />
           </Field>
+
 
           <Field label="Bio / introduzione">
             <textarea
