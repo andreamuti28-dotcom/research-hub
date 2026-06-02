@@ -13,6 +13,8 @@ import { recordSiteVisit } from "@/lib/site-visits.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
+import { useServerFn } from "@tanstack/react-start";
+import { formatMarketReportLayout } from "@/lib/format-layout.functions";
 import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
@@ -81,7 +83,7 @@ function Index() {
     marketLabel,
     featuredLabel,
     reportTitle,
-    reportContent,
+    reportContentTranslated,
   ] = useTranslated([
     settings.heroTitle,
     settings.heroIntro,
@@ -91,6 +93,19 @@ function Index() {
     latestReport?.title ?? "",
     latestReport?.content ?? "",
   ]);
+  // Always use the EN-style markdown layout, even when viewing in IT.
+  // In IT we re-format the raw Google Doc text without translating it.
+  const formatFn = useServerFn(formatMarketReportLayout);
+  const rawContent = latestReport?.content ?? "";
+  const { data: formattedIt } = useQuery({
+    queryKey: ["market-report-format-it", latestReport?.id ?? "none"],
+    queryFn: () => formatFn({ data: { text: rawContent } }),
+    enabled: lang === "it" && rawContent.trim().length > 0,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+  const reportContent =
+    lang === "it" ? formattedIt?.text ?? rawContent : reportContentTranslated;
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
 
