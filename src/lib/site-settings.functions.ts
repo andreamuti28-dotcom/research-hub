@@ -118,7 +118,35 @@ const DEFAULTS: SiteSettings = {
   aboutLanguages: [],
   aboutSoftware: [],
   aboutCertifications: [],
+  i18nOverrides: {},
+  themeOverrides: {},
 };
+
+function coerceI18nOverrides(v: unknown): Record<string, { it?: string; en?: string }> {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, { it?: string; en?: string }> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    if (!val || typeof val !== "object") continue;
+    const o = val as Record<string, unknown>;
+    const it = typeof o.it === "string" ? o.it : undefined;
+    const en = typeof o.en === "string" ? o.en : undefined;
+    if (it === undefined && en === undefined) continue;
+    out[k] = { ...(it !== undefined ? { it } : {}), ...(en !== undefined ? { en } : {}) };
+  }
+  return out;
+}
+
+function coerceThemeOverrides(v: unknown): Record<string, string> {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, string> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    if (typeof val !== "string") continue;
+    if (!/^--[a-z0-9-]+$/i.test(k)) continue;
+    if (val.length > 200) continue;
+    out[k] = val;
+  }
+  return out;
+}
 
 
 function coerceLanguages(v: unknown): LanguageItem[] {
