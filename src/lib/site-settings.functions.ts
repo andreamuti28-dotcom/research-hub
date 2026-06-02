@@ -413,6 +413,8 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       about_languages: data.aboutLanguages,
       about_software: data.aboutSoftware,
       about_certifications: data.aboutCertifications,
+      i18n_overrides: data.i18nOverrides,
+      theme_overrides: data.themeOverrides,
     };
 
     if (existing) {
