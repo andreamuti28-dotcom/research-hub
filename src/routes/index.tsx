@@ -174,7 +174,7 @@ function Index() {
                 to="/archivio"
                 className="inline-flex items-center px-4 py-2.5 bg-foreground text-background font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors"
               >
-                Leggi i paper →
+                {t("home.ctaReadPapers")}
               </Link>
               {settings.homeMarketEnabled && (
                 <button
@@ -189,7 +189,7 @@ function Index() {
                   }}
                   className="inline-flex items-center px-4 py-2.5 border border-foreground text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors"
                 >
-                  Analisi mercati
+                  {t("home.ctaMarkets")}
                 </button>
               )}
               <a
@@ -198,7 +198,7 @@ function Index() {
                 rel="noreferrer noopener"
                 className="inline-flex items-center px-4 py-2.5 border border-border text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors"
               >
-                LinkedIn ↗
+                {t("home.ctaLinkedin")}
               </a>
             </div>
           </div>
