@@ -432,6 +432,53 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+const overridesSchema = z.object({
+  i18nOverrides: z
+    .record(
+      z.string().min(1).max(120),
+      z.object({
+        it: z.string().max(2000).optional(),
+        en: z.string().max(2000).optional(),
+      }),
+    )
+    .default({}),
+  themeOverrides: z
+    .record(
+      z.string().regex(/^--[a-z0-9-]+$/i).max(60),
+      z.string().trim().min(1).max(200),
+    )
+    .default({}),
+});
+
+export const updateSiteOverrides = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => overridesSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.userId);
+    const { data: existing } = await supabaseAdmin
+      .from("site_settings")
+      .select("id")
+      .eq("singleton", true)
+      .maybeSingle();
+    const payload = {
+      i18n_overrides: data.i18nOverrides,
+      theme_overrides: data.themeOverrides,
+    };
+    if (existing) {
+      const { error } = await supabaseAdmin
+        .from("site_settings")
+        .update(payload)
+        .eq("id", existing.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin
+        .from("site_settings")
+        .insert({ singleton: true, ...payload });
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
 const uploadPortraitSchema = z.object({
   fileName: z.string().trim().min(1).max(255),
   mimeType: z.literal("image/jpeg"),
