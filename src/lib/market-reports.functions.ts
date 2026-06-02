@@ -68,7 +68,7 @@ export const syncMarketReportFromGoogleDoc = createServerFn({ method: "POST" })
     return syncMarketReportFromGoogleDocInternal({ documentId: data.documentId });
   });
 
-export const SCHEDULE_VALUES = ["manual", "hourly", "daily", "weekly", "weekdays_7am"] as const;
+export const SCHEDULE_VALUES = ["manual", "hourly", "daily", "weekly", "weekdays_7am", "daily_7am"] as const;
 export type MarketSchedule = (typeof SCHEDULE_VALUES)[number];
 
 const marketSyncConfigSchema = z.object({
