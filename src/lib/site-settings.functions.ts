@@ -265,6 +265,8 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       aboutLanguages: coerceLanguages(d.about_languages),
       aboutSoftware: coerceLogos(d.about_software),
       aboutCertifications: coerceLogos(d.about_certifications),
+      i18nOverrides: coerceI18nOverrides(d.i18n_overrides),
+      themeOverrides: coerceThemeOverrides(d.theme_overrides),
     };
   },
 );
