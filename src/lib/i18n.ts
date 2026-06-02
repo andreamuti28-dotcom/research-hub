@@ -1,4 +1,5 @@
 import { useLanguage } from "@/hooks/use-language";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const dict = {
   it: {
