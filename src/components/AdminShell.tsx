@@ -54,6 +54,7 @@ export function AdminShell({
             <Link to="/admin/market-sync" className="hover:text-background" activeProps={{ className: "text-background" }}>Mercati</Link>
             <Link to="/admin/users" className="hover:text-background" activeProps={{ className: "text-background" }}>Utenti</Link>
             <Link to="/admin/keys" className="hover:text-background" activeProps={{ className: "text-background" }}>Chiavi</Link>
+            <Link to="/admin/content" className="hover:text-background" activeProps={{ className: "text-background" }}>Contenuti</Link>
             <Link to="/admin/settings" className="hover:text-background" activeProps={{ className: "text-background" }}>Profilo</Link>
             <Link to="/" target="_blank" className="hover:text-background ml-auto">↗ Pubblico</Link>
           </div>
