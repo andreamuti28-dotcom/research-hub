@@ -94,14 +94,19 @@ async function syncFromSource(): Promise<void> {
 }
 
 export const getLatestNews = createServerFn({ method: "GET" }).handler(async () => {
-  await syncFromSource();
-  const { data, error } = await supabaseAdmin
-    .from("news_archive")
-    .select("url,title,source,snippet,image,published_at,first_seen_at")
-    .order("published_at", { ascending: false })
-    .limit(MAX_DISPLAYED);
-  if (error) return { items: [] as NewsItem[], error: error.message };
-  return { items: (data ?? []) as NewsItem[], error: null };
+  try {
+    await syncFromSource();
+    const { data, error } = await supabaseAdmin
+      .from("news_archive")
+      .select("url,title,source,snippet,image,published_at,first_seen_at")
+      .order("published_at", { ascending: false })
+      .limit(MAX_DISPLAYED);
+    if (error) return { items: [] as NewsItem[], error: error.message };
+    return { items: (data ?? []) as NewsItem[], error: null };
+  } catch (e) {
+    console.error("[news] getLatestNews error", e);
+    return { items: [] as NewsItem[], error: "GET_NEWS_FAILED" };
+  }
 });
 
 export interface ArchivedNewsItem {
