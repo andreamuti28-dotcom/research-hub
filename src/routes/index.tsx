@@ -35,26 +35,26 @@ const latestMarketReportQuery = {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Andrea Muti — Ricerca autonoma su finanza e mercati" },
+      { title: "Andrea Muti - Finanza" },
       {
         name: "description",
         content:
-          "Andrea Muti — finanza quantitativa, mercati e investimenti. Paper, analisi e idee concrete per chi vuole capire davvero i numeri.",
+          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
-      { property: "og:title", content: "Andrea Muti — Ricerca autonoma su finanza e mercati" },
+      { property: "og:title", content: "Andrea Muti - Finanza" },
       {
         property: "og:description",
         content:
-          "Andrea Muti — finanza quantitativa, mercati e investimenti. Paper, analisi e idee concrete per chi vuole capire davvero i numeri.",
+          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
       { property: "og:url", content: "https://www.andreamuti.com/" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Andrea Muti — Ricerca autonoma su finanza e mercati" },
+      { name: "twitter:title", content: "Andrea Muti - Finanza" },
       {
         name: "twitter:description",
         content:
-          "Finanza quantitativa, mercati e investimenti. Paper e analisi indipendenti.",
+          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
