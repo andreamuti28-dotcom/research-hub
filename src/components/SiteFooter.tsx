@@ -38,9 +38,6 @@ export function SiteFooter() {
           >
             LinkedIn
           </a>
-          <Link to="/admin" className="hover:text-foreground transition-colors">
-            Admin
-          </Link>
         </div>
       </div>
     </footer>
