@@ -115,19 +115,31 @@ function PaperDetail() {
     void supabase.rpc("increment_paper_views", { _slug: paper.slug });
   }, [paper.slug]);
 
-  const [tTitle, tAbstract, tContent] = useTranslated([
-    paper.title,
-    paper.abstract,
-    paper.content,
-  ]);
+  const [tTitle, tAbstract] = useTranslated([paper.title, paper.abstract]);
 
-  const { blocks, toc } = useMemo(
-    () => parseContent(tContent),
-    [tContent],
+  const { blocks: rawBlocks, toc: rawToc } = useMemo(
+    () => parseContent(paper.content),
+    [paper.content],
+  );
+  const blockTexts = useMemo(() => rawBlocks.map((b) => b.text), [rawBlocks]);
+  const tBlockTexts = useTranslated(blockTexts);
+  const blocks = useMemo(
+    () => rawBlocks.map((b, i) => ({ ...b, text: tBlockTexts[i] ?? b.text })),
+    [rawBlocks, tBlockTexts],
+  );
+  const toc = useMemo(
+    () =>
+      rawToc.map((entry, i) => {
+        const idx = rawBlocks.findIndex(
+          (b) => b.type === "h2" && b.id === entry.id,
+        );
+        return { id: entry.id, text: idx >= 0 ? (tBlockTexts[idx] ?? entry.text) : entry.text };
+      }),
+    [rawToc, rawBlocks, tBlockTexts],
   );
   const readingMinutes = useMemo(
-    () => estimateReadingMinutes(tContent),
-    [tContent],
+    () => estimateReadingMinutes(paper.content),
+    [paper.content],
   );
 
   return (
