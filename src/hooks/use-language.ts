@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 export type Lang = "it" | "en";
-const STORAGE_KEY = "lang";
+const STORAGE_KEY = "lang_v2";
 const EVENT = "langchange";
 
 function read(): Lang {
@@ -30,7 +30,8 @@ export function useLanguage() {
 
 export const langBootstrapScript = `
 (function(){try{
-  var l = localStorage.getItem('lang') === 'it' ? 'it' : 'en';
+  try { localStorage.removeItem('lang'); } catch(_){}
+  var l = localStorage.getItem('lang_v2') === 'it' ? 'it' : 'en';
   document.documentElement.lang = l;
 }catch(e){}})();
 `;
