@@ -1,26 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 
 export type Lang = "it" | "en";
-const STORAGE_KEY = "lang_v2";
 const EVENT = "langchange";
 
-function read(): Lang {
-  if (typeof window === "undefined") return "en";
-  return window.localStorage.getItem(STORAGE_KEY) === "it" ? "it" : "en";
-}
+// Language is intentionally NOT persisted: the site must always open in
+// English. The flag switches to Italian only for the current visit.
+let current: Lang = "en";
 
 export function useLanguage() {
   const [lang, setLang] = useState<Lang>("en");
 
   useEffect(() => {
-    setLang(read());
-    const h = () => setLang(read());
+    setLang(current);
+    const h = () => setLang(current);
     window.addEventListener(EVENT, h);
     return () => window.removeEventListener(EVENT, h);
   }, []);
 
   const change = useCallback((next: Lang) => {
-    window.localStorage.setItem(STORAGE_KEY, next);
+    current = next;
     document.documentElement.lang = next;
     window.dispatchEvent(new Event(EVENT));
   }, []);
@@ -30,8 +28,7 @@ export function useLanguage() {
 
 export const langBootstrapScript = `
 (function(){try{
-  try { localStorage.removeItem('lang'); } catch(_){}
-  var l = localStorage.getItem('lang_v2') === 'it' ? 'it' : 'en';
-  document.documentElement.lang = l;
+  try { localStorage.removeItem('lang'); localStorage.removeItem('lang_v2'); } catch(_){}
+  document.documentElement.lang = 'en';
 }catch(e){}})();
 `;
