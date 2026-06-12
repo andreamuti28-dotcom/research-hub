@@ -5,12 +5,12 @@ const STORAGE_KEY = "lang";
 const EVENT = "langchange";
 
 function read(): Lang {
-  if (typeof window === "undefined") return "it";
-  return window.localStorage.getItem(STORAGE_KEY) === "en" ? "en" : "it";
+  if (typeof window === "undefined") return "en";
+  return window.localStorage.getItem(STORAGE_KEY) === "it" ? "it" : "en";
 }
 
 export function useLanguage() {
-  const [lang, setLang] = useState<Lang>("it");
+  const [lang, setLang] = useState<Lang>("en");
 
   useEffect(() => {
     setLang(read());
@@ -30,7 +30,7 @@ export function useLanguage() {
 
 export const langBootstrapScript = `
 (function(){try{
-  var l = localStorage.getItem('lang') === 'en' ? 'en' : 'it';
+  var l = localStorage.getItem('lang') === 'it' ? 'it' : 'en';
   document.documentElement.lang = l;
 }catch(e){}})();
 `;
