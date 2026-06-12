@@ -4,11 +4,9 @@ import { useT } from "@/lib/i18n";
 let pdfjsPromise: Promise<typeof import("pdfjs-dist")> | null = null;
 async function loadPdfjs() {
   if (!pdfjsPromise) {
-    pdfjsPromise = import("pdfjs-dist").then(async (mod) => {
-      const workerUrl = (
-        await import("pdfjs-dist/build/pdf.worker.min.mjs?url")
-      ).default;
-      mod.GlobalWorkerOptions.workerSrc = workerUrl;
+    pdfjsPromise = import("pdfjs-dist").then((mod) => {
+      const version = mod.version;
+      mod.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
       return mod;
     });
   }
