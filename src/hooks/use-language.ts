@@ -30,7 +30,7 @@ export function useLanguage() {
 
 export const langBootstrapScript = `
 (function(){try{
-  var l = localStorage.getItem('lang') === 'en' ? 'en' : 'it';
+  var l = localStorage.getItem('lang') === 'it' ? 'it' : 'en';
   document.documentElement.lang = l;
 }catch(e){}})();
 `;
