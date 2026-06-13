@@ -1,29 +1,36 @@
-import { useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 export type Lang = "it" | "en";
-const EVENT = "langchange";
+type LanguageContextValue = {
+  lang: Lang;
+  setLang: (next: Lang) => void;
+};
 
-// Language is intentionally NOT persisted: the site must always open in
-// English. The flag switches to Italian only for the current visit.
-let current: Lang = "en";
+const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-export function useLanguage() {
-  const [lang, setLang] = useState<Lang>("en");
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  // Intentionally not persisted: every load/refresh starts in English.
+  const [lang, setLangState] = useState<Lang>("en");
 
   useEffect(() => {
-    setLang(current);
-    const h = () => setLang(current);
-    window.addEventListener(EVENT, h);
-    return () => window.removeEventListener(EVENT, h);
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  const setLang = useCallback((next: Lang) => {
+    setLangState(next);
   }, []);
 
-  const change = useCallback((next: Lang) => {
-    current = next;
-    document.documentElement.lang = next;
-    window.dispatchEvent(new Event(EVENT));
-  }, []);
+  const value = useMemo(() => ({ lang, setLang }), [lang, setLang]);
 
-  return { lang, setLang: change };
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    return { lang: "en" as const, setLang: () => {} };
+  }
+  return context;
 }
 
 export const langBootstrapScript = `
