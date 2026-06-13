@@ -367,7 +367,7 @@ export function useT() {
   ): string {
     const override = i18nOverrides?.[key as string]?.[lang];
     if (typeof override === "string" && override.length > 0) return override;
-    const entry = i18n[lang][key] as unknown;
+    const entry = (i18n[lang] as Record<Key, unknown>)[key];
     if (typeof entry === "function") return (entry as (...a: unknown[]) => string)(...args);
     return entry as string;
   };
