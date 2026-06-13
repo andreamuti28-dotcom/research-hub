@@ -190,10 +190,10 @@ function Archivio() {
 
         <div className="flex gap-2 mb-8 border-b border-border">
           <TabBtn active={tab === "papers"} onClick={() => setTab("papers")}>
-            Paper
+            {t("archive.tab.papers")}
           </TabBtn>
           <TabBtn active={tab === "market"} onClick={() => setTab("market")}>
-            Report dei mercati finanziari
+            {t("archive.tab.market")}
           </TabBtn>
         </div>
 
@@ -274,14 +274,14 @@ function Archivio() {
         ) : (
           <>
             <p className="max-w-[60ch] text-base text-muted-foreground leading-relaxed text-justify mb-6">
-              Archivio dei report sui mercati finanziari ricevuti dal sistema automatico.
+              {t("archive.marketIntro")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
               <input
                 type="text"
                 value={mrQuery}
                 onChange={(e) => setMrQuery(e.target.value)}
-                placeholder="Cerca per titolo, contenuto o data…"
+                placeholder={t("archive.marketSearchPlaceholder")}
                 className="bg-background border border-border px-4 py-2.5 text-sm font-display focus:outline-none focus:ring-1 focus:ring-primary flex-1"
               />
               <input
@@ -298,18 +298,18 @@ function Archivio() {
                   }}
                   className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground border border-border transition-colors"
                 >
-                  Reset
+                  {t("archive.reset")}
                 </button>
               )}
             </div>
 
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-              {filteredMr.length} {filteredMr.length === 1 ? "report" : "report"}
+              {t("archive.marketResults", filteredMr.length)}
             </div>
 
             {filteredMr.length === 0 ? (
               <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                Nessun report trovato.
+                {t("archive.marketEmpty")}
               </div>
             ) : (
               <div className="space-y-4">
@@ -365,6 +365,7 @@ function MarketReportCard({
   };
 }) {
   const [open, setOpen] = useState(false);
+  const t = useT();
   const [tTitle, tContent] = useTranslated([report.title, report.content]);
   return (
     <article className="border border-border bg-background">
@@ -380,12 +381,12 @@ function MarketReportCard({
             </h3>
             {report.isCurrent && (
               <span className="font-mono text-[9px] uppercase tracking-widest bg-primary text-primary-foreground px-1.5 py-0.5">
-                Live
+                {t("common.live")}
               </span>
             )}
           </div>
           <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-            {new Date(report.reportDate).toLocaleDateString("it-IT", {
+            {new Date(report.reportDate).toLocaleDateString(t("common.monthLocale"), {
               day: "2-digit",
               month: "long",
               year: "numeric",

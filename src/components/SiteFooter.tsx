@@ -20,14 +20,14 @@ export function SiteFooter() {
             Cookie
           </Link>
           <Link to="/termini" className="hover:text-foreground transition-colors">
-            Termini
+            {t("common.terms")}
           </Link>
           {contactEmail ? (
             <a
               href={`mailto:${contactEmail}`}
               className="hover:text-foreground transition-colors"
             >
-              Contatti
+              {t("common.contact")}
             </a>
           ) : null}
           <a
@@ -36,7 +36,7 @@ export function SiteFooter() {
             rel="noreferrer noopener"
             className="hover:text-foreground transition-colors"
           >
-            LinkedIn
+            {t("common.linkedin")}
           </a>
         </div>
       </div>
