@@ -251,7 +251,17 @@ export const i18n = {
     "paper.pdfRenderError": "Errore durante il caricamento del PDF.",
     "paper.notFound": "Paper non trovato",
     "paper.backToArchive": "Torna all'archivio",
-    "langToggle.label": (next: string) => `Lingua: passa a ${next}`,
+    "langToggle.label": (current: string, next: string) => `Lingua: ${current}. Passa a ${next}`,
+    "theme.light": "Chiaro",
+    "theme.dark": "Scuro",
+    "theme.label": (current: string, next: string) => `Tema: ${current}. Clicca per passare a ${next}`,
+    "theme.title": (current: string, next: string) => `Tema: ${current} → ${next}`,
+    "pagination.label": "paginazione",
+    "pagination.previousLabel": "Vai alla pagina precedente",
+    "pagination.previous": "Precedente",
+    "pagination.nextLabel": "Vai alla pagina successiva",
+    "pagination.next": "Successiva",
+    "pagination.more": "Altre pagine",
     "news.title": "News Finanziarie",
     "news.live": "Live",
     "news.error": "Impossibile caricare le news.",
@@ -259,76 +269,14 @@ export const i18n = {
     "news.empty": "Nessuna news disponibile.",
     "news.readSource": "Leggi la fonte ↗",
   },
-  en: {
-    "nav.archive": "Archive",
-    "nav.about": "About",
-    "nav.home": "Home",
-    "about.kicker": "About me",
-    "about.languages": "Languages",
-    "about.software": "Software",
-    "about.hobbies": "Hobbies",
-    "nav.userArea": "Members Area",
-    "nav.userShort": "User",
-    "footer.research": "Independent Research",
-    "paper.readOnline": "Read Online",
-    "paper.pdf": "PDF",
-    "paper.languageLabel": "Language",
-    "lang.it": "Italian",
-    "lang.en": "English",
-    "lang.both": "Italian and English",
-    "home.latestKicker": "Recent publications",
-    "home.latestTitle": "Latest Papers",
-    "home.featuredKicker": "Featured",
-    "home.featuredTitle": "Featured Papers",
-    "home.seeArchive": "See full archive →",
-    "home.empty": "No papers published yet. Sign in to the members area to begin.",
-    "home.linkedin": "LinkedIn Profile",
-    "home.ctaReadPapers": "Read the papers →",
-    "home.ctaMarkets": "Market analysis",
-    "home.ctaLinkedin": "LinkedIn ↗",
-    "home.reportArchive": "Report archive →",
-    "home.noReport": "No report available.",
-    "archive.kicker": "Full archive",
-    "archive.title": "Published Research",
-    "archive.intro": (n: number) =>
-      `${n} indexed papers. Search full text, filter by tag or year, and sort by relevance.`,
-    "archive.searchPlaceholder": "Search by title, abstract, content or tag…",
-    "archive.allTags": "All tags",
-    "archive.allYears": "All years",
-    "archive.sort.recent": "Most recent",
-    "archive.sort.oldest": "Oldest",
-    "archive.sort.views": "Most viewed",
-    "archive.sort.title": "Title (A→Z)",
-    "archive.reset": "Reset",
-    "archive.results": (n: number) => `${n} ${n === 1 ? "result" : "results"}`,
-    "archive.empty": "No papers found.",
-    "paper.back": "← Archive",
-    "paper.readingMin": (n: number) => `${n} min read`,
-    "paper.views": (n: number) => `${n} views`,
-    "paper.toc": "Contents",
-    "paper.pdfHeading": "PDF Reader",
-    "paper.pdfLoading": "Loading PDF…",
-    "paper.pdfUnavailable": (s: number) => `PDF not available (HTTP ${s}).`,
-    "paper.pdfLoadError": "Could not load the PDF.",
-    "paper.pdfRenderError": "Error while loading the PDF.",
-    "paper.notFound": "Paper not found",
-    "paper.backToArchive": "Back to archive",
-    "langToggle.label": (next: string) => `Language: switch to ${next}`,
-    "news.title": "Financial News",
-    "news.live": "Live",
-    "news.error": "Could not load the news.",
-    "news.retry": "Retry",
-    "news.empty": "No news available.",
-    "news.readSource": "Read source ↗",
-  },
 } as const;
 
-type Key = keyof (typeof dict)["it"];
+type Key = keyof (typeof i18n)["en"];
 
-export const I18N_KEYS = Object.keys(dict.it) as Key[];
+export const I18N_KEYS = Object.keys(i18n.en) as Key[];
 
 export function getDefaultString(lang: "it" | "en", key: string): string | null {
-  const entry = (dict[lang] as Record<string, unknown>)[key];
+  const entry = (i18n[lang] as Record<string, unknown>)[key];
   return typeof entry === "string" ? entry : null;
 }
 
@@ -338,12 +286,12 @@ export function useT() {
   const { i18nOverrides } = useSiteSettings();
   return function t<K extends Key>(
     key: K,
-    ...args: (typeof dict)["it"][K] extends (...a: infer A) => string ? A : []
+    ...args: (typeof i18n)["en"][K] extends (...a: infer A) => string ? A : []
   ): string {
-    const entry = dict[lang][key] as unknown;
-    if (typeof entry === "function") return (entry as (...a: unknown[]) => string)(...args);
     const override = i18nOverrides?.[key as string]?.[lang];
     if (typeof override === "string" && override.length > 0) return override;
+    const entry = i18n[lang][key] as unknown;
+    if (typeof entry === "function") return (entry as (...a: unknown[]) => string)(...args);
     return entry as string;
   };
 }
