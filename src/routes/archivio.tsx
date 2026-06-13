@@ -381,13 +381,12 @@ function MarketReportCard({
             </h3>
             {report.isCurrent && (
               <span className="font-mono text-[9px] uppercase tracking-widest bg-primary text-primary-foreground px-1.5 py-0.5">
-                Live
                 {t("common.live")}
               </span>
             )}
           </div>
           <div className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-            {new Date(report.reportDate).toLocaleDateString("it-IT", {
+            {new Date(report.reportDate).toLocaleDateString(t("common.monthLocale"), {
               day: "2-digit",
               month: "long",
               year: "numeric",
