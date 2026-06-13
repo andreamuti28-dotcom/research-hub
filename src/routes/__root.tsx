@@ -9,7 +9,7 @@ import {
 } from "@tanstack/react-router";
 
 import { themeBootstrapScript } from "@/hooks/use-theme";
-import { langBootstrapScript } from "@/hooks/use-language";
+import { LanguageProvider, langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
@@ -155,9 +155,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeOverridesStyle />
-      <Outlet />
-      <CookieConsent />
+      <LanguageProvider>
+        <ThemeOverridesStyle />
+        <Outlet />
+        <CookieConsent />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
