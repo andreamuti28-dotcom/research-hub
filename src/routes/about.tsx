@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { SiteSettings, LanguageItem } from "@/lib/site-settings.functions";
+import { useT } from "@/lib/i18n";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -49,6 +50,7 @@ const EMOJI_FONT =
 
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
+  const t = useT();
   const baseLabels = [
     settings.aboutBio,
     settings.aboutRole,
@@ -100,7 +102,7 @@ function AboutPage() {
             <div className="flex flex-col items-center md:items-start gap-4">
               <img
                 src={portraitSrc}
-                alt={`Ritratto di ${settings.name}`}
+                alt={t("about.portraitAlt", settings.name)}
                 className="w-64 h-64 md:w-72 md:h-72 rounded-full object-cover bg-surface"
                 style={{
                   objectPosition: `${settings.aboutPortraitPosX}% ${settings.aboutPortraitPosY}%`,
@@ -111,7 +113,7 @@ function AboutPage() {
                   href={settings.linkedinUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label="LinkedIn"
+                  aria-label={t("common.linkedin")}
                   className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-foreground text-background hover:bg-primary transition-colors shadow-sm"
                 >
                   <svg
@@ -124,7 +126,7 @@ function AboutPage() {
                     <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z" />
                   </svg>
                   <span className="font-display text-[11px] font-bold uppercase tracking-widest">
-                    LinkedIn
+                    {t("common.linkedin")}
                   </span>
                 </a>
               )}
@@ -170,7 +172,7 @@ function AboutPage() {
                   </TooltipItem>
                 ))}
                 {settings.aboutEducation.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">—</li>
+                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
                 )}
               </ul>
             </PanelColumn>
@@ -183,7 +185,7 @@ function AboutPage() {
                   </TooltipItem>
                 ))}
                 {settings.aboutLanguages.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">—</li>
+                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
                 )}
               </ul>
             </PanelColumn>
@@ -196,7 +198,7 @@ function AboutPage() {
                   </TooltipItem>
                 ))}
                 {settings.aboutSoftware.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">—</li>
+                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
                 )}
               </ul>
             </PanelColumn>
@@ -209,7 +211,7 @@ function AboutPage() {
                   </TooltipItem>
                 ))}
                 {settings.aboutCertifications.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">—</li>
+                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
                 )}
               </ul>
             </PanelColumn>
