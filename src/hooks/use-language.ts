@@ -6,11 +6,27 @@ type LanguageContextValue = {
   setLang: (next: Lang) => void;
 };
 
+const STORAGE_KEY = "lang";
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
+function readStoredLang(): Lang {
+  if (typeof window === "undefined") return "en";
+  try {
+    const v = window.localStorage.getItem(STORAGE_KEY);
+    if (v === "it" || v === "en") return v;
+  } catch (_) {}
+  return "en";
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Intentionally not persisted: every load/refresh starts in English.
+  // SSR/first render: English (avoids hydration mismatch). Then sync to localStorage.
   const [lang, setLangState] = useState<Lang>("en");
+
+  useEffect(() => {
+    const stored = readStoredLang();
+    if (stored !== lang) setLangState(stored);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -18,6 +34,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, next);
+    } catch (_) {}
   }, []);
 
   const value = useMemo(() => ({ lang, setLang }), [lang, setLang]);
@@ -35,7 +54,9 @@ export function useLanguage() {
 
 export const langBootstrapScript = `
 (function(){try{
-  try { localStorage.removeItem('lang'); localStorage.removeItem('lang_v2'); } catch(_){}
-  document.documentElement.lang = 'en';
+  var v = null;
+  try { v = localStorage.getItem('lang'); } catch(_){}
+  if (v !== 'it' && v !== 'en') v = 'en';
+  document.documentElement.lang = v;
 }catch(e){}})();
 `;
