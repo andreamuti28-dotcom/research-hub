@@ -11,8 +11,8 @@ const InputSchema = z.object({
 });
 
 async function translateChunk(texts: string[], target: "it" | "en", apiKey: string) {
-  const source = target === "en" ? "Italian" : "English";
   const targetName = target === "en" ? "English" : "Italian";
+
 
   const numbered = texts.map((t, i) => `[[${i}]]\n${t}`).join("\n\n[[END]]\n\n");
 
@@ -27,7 +27,7 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
       messages: [
         {
           role: "system",
-          content: `You are a professional translator. Translate from ${source} to ${targetName}. Preserve markdown, LaTeX math ($...$ and $$...$$), line breaks, and tone. If a text is already in ${targetName}, keep it as-is. Return ONLY a JSON object: {"translations":[{"i":0,"text":"..."}, ...]} with one entry per input in order.`,
+          content: `You are a professional translator. Detect the source language of each input automatically and translate it to ${targetName}. Preserve markdown, LaTeX math ($...$ and $$...$$), line breaks, and tone. If a text is already entirely in ${targetName}, keep it as-is. Always output natural, fluent ${targetName}. Return ONLY a JSON object: {"translations":[{"i":0,"text":"..."}, ...]} with one entry per input in order.`,
         },
         {
           role: "user",
