@@ -151,11 +151,15 @@
 /* Market report markdown rendering */
 .market-report-prose {
   font-family: var(--font-serif);
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size: 1.0625rem;
+  line-height: 1.75;
   color: var(--color-foreground);
+  max-width: 70ch;
+  margin-left: auto;
+  margin-right: auto;
 }
-.market-report-prose > * + * { margin-top: 1em; }
+.market-report-prose > :first-child { margin-top: 0; }
+.market-report-prose > * + * { margin-top: 1.1em; }
 .market-report-prose h1,
 .market-report-prose h2,
 .market-report-prose h3,
@@ -166,11 +170,11 @@
   line-height: 1.25;
   color: var(--color-foreground);
 }
-.market-report-prose h1 { font-size: 1.6rem; margin-top: 1.4em; }
-.market-report-prose h2 { font-size: 1.3rem; margin-top: 1.3em; }
-.market-report-prose h3 { font-size: 1.1rem; margin-top: 1.2em; }
-.market-report-prose h4 { font-size: 1rem; margin-top: 1.1em; text-transform: uppercase; letter-spacing: 0.05em; }
-.market-report-prose p { text-wrap: pretty; }
+.market-report-prose h1 { font-size: 1.75rem; margin-top: 1.6em; }
+.market-report-prose h2 { font-size: 1.4rem; margin-top: 1.5em; }
+.market-report-prose h3 { font-size: 1.15rem; margin-top: 1.3em; }
+.market-report-prose h4 { font-size: 1rem; margin-top: 1.2em; text-transform: uppercase; letter-spacing: 0.06em; }
+.market-report-prose p { text-wrap: pretty; hyphens: auto; }
 .market-report-prose strong { font-weight: 700; color: var(--color-foreground); }
 .market-report-prose em { font-style: italic; }
 .market-report-prose a {
