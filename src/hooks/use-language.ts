@@ -9,8 +9,8 @@ type LanguageContextValue = {
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  // Always default to English on every load. No persistence, no browser detection.
-  const [lang, setLangState] = useState<Lang>("en");
+  // Always default to Italian on every load. No persistence, no browser detection.
+  const [lang, setLangState] = useState<Lang>("it");
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -28,14 +28,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (!context) {
-    return { lang: "en" as const, setLang: () => {} };
+    return { lang: "it" as const, setLang: () => {} };
   }
   return context;
 }
 
 export const langBootstrapScript = `
 (function(){try{
-  document.documentElement.lang = 'en';
+  document.documentElement.lang = 'it';
   try { localStorage.removeItem('lang'); } catch(_){}
 }catch(e){}})();
 `;
