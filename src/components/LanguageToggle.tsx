@@ -16,7 +16,7 @@ export function LanguageToggle() {
       title={t("langToggle.label", currentLabel, nextLabel)}
       className="inline-flex items-center justify-center w-8 h-8 rounded-xs border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
     >
-      <Flag country={lang === "it" ? "it" : "gb"} className="w-5 h-auto" />
+      <Flag country={next === "it" ? "it" : "gb"} className="w-5 h-auto" />
     </button>
   );
 }
