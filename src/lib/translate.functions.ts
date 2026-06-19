@@ -40,6 +40,12 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
 
   if (!res.ok) {
     const txt = await res.text();
+    // Graceful degradation: on credit/rate-limit failures, return originals
+    // so the UI stays usable instead of crashing the route.
+    if (res.status === 402 || res.status === 429) {
+      console.warn(`Translation skipped (${res.status}): ${txt.slice(0, 200)}`);
+      return texts;
+    }
     throw new Error(`Translation failed: ${res.status} ${txt.slice(0, 200)}`);
   }
   const json = (await res.json()) as {
@@ -81,6 +87,13 @@ export const translateBatch = createServerFn({ method: "POST" })
     for (let i = 0; i < texts.length; i += SERVER_CHUNK_SIZE) {
       chunks.push(texts.slice(i, i + SERVER_CHUNK_SIZE));
     }
-    const results = await Promise.all(chunks.map((c) => translateChunk(c, target, apiKey)));
+    const results = await Promise.all(
+      chunks.map((c) =>
+        translateChunk(c, target, apiKey).catch((err) => {
+          console.error("Translation chunk failed:", err);
+          return c;
+        }),
+      ),
+    );
     return { translations: results.flat() };
   });
