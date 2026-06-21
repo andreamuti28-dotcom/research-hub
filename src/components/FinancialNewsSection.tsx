@@ -109,10 +109,7 @@ export function FinancialNewsSection() {
         {open && (
           <div className="pb-10 md:pb-14 animate-fade-up">
             {/* 5s countdown bar */}
-            <div
-              className="h-1 w-full bg-muted overflow-hidden mb-6"
-              aria-hidden
-            >
+            <div className="h-1 w-full bg-muted overflow-hidden mb-6" aria-hidden>
               <div
                 className="h-full transition-[width] ease-linear"
                 style={{
@@ -122,7 +119,7 @@ export function FinancialNewsSection() {
               />
             </div>
 
-            {(isLoading || (isFetching && items.length === 0)) ? (
+            {isLoading || (isFetching && items.length === 0) ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i} className="border border-border bg-surface animate-pulse">
@@ -187,7 +184,10 @@ export function FinancialNewsSection() {
                           <time className="shrink-0 tabular-nums" dateTime={item.first_seen_at}>
                             {seen.toLocaleDateString("it-IT", { day: "2-digit", month: "short" })}
                             {" · "}
-                            {seen.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                            {seen.toLocaleTimeString("it-IT", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </time>
                         </div>
                         <h3 className="font-display font-bold tracking-tight leading-snug text-base group-hover:text-primary transition-colors line-clamp-3">
