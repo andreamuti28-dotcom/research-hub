@@ -113,16 +113,17 @@ function Index() {
     staleTime: Infinity,
     gcTime: Infinity,
   });
-  const reportContent =
-    lang === "it" ? formattedIt?.text ?? rawContent : reportContentTranslated;
+  const reportContent = lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
   const localizedHeroIntro =
     lang === "en" && settings.heroIntro.trim() === HERO_INTRO_IT ? HERO_INTRO_EN : heroIntro;
   const localizedFeaturedLabel =
-    lang === "en" && settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
+    lang === "en" &&
+    settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
       ? HOME_FEATURED_LABEL_EN
       : featuredLabel;
   const localizedMarketLabel =
-    lang === "en" && settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
+    lang === "en" &&
+    settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
       ? HOME_MARKET_LABEL_EN
       : marketLabel;
   const [marketOpen, setMarketOpen] = useState(false);
