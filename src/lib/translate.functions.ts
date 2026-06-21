@@ -73,7 +73,7 @@ const InputSchema = z.object({
   target: z.enum(["it", "en"]),
 });
 
-async function translateChunk(
+async function translateWithAi(
   texts: string[],
   target: "it" | "en",
   apiKey: string,
@@ -143,6 +143,19 @@ async function translateChunk(
     }
   }
   return { translations: out };
+}
+
+async function translateChunk(
+  texts: string[],
+  target: "it" | "en",
+  apiKey: string,
+): Promise<TranslateResult> {
+  try {
+    return await translateWithFallback(texts, target);
+  } catch (err) {
+    console.warn("Primary translation fallback failed, trying AI:", err);
+    return translateWithAi(texts, target, apiKey);
+  }
 }
 
 export const translateBatch = createServerFn({ method: "POST" })
