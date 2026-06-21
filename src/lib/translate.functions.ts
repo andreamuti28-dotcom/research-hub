@@ -22,7 +22,9 @@ function splitForFallback(text: string): string[] {
       current = "";
     }
     if (piece.length > FALLBACK_CHUNK_CHARS) {
-      for (let i = 0; i < piece.length; i += FALLBACK_CHUNK_CHARS) chunks.push(piece.slice(i, i + FALLBACK_CHUNK_CHARS));
+      for (let i = 0; i < piece.length; i += FALLBACK_CHUNK_CHARS) {
+        chunks.push(piece.slice(i, i + FALLBACK_CHUNK_CHARS));
+      }
     } else {
       current += piece;
     }
@@ -31,17 +33,27 @@ function splitForFallback(text: string): string[] {
   return chunks;
 }
 
-async function translateWithFallback(texts: string[], target: "it" | "en"): Promise<TranslateResult> {
+async function translateWithFallback(
+  texts: string[],
+  target: "it" | "en",
+): Promise<TranslateResult> {
   const translations = await Promise.all(
     texts.map(async (text) => {
       if (!text.trim()) return text;
       const chunks = splitForFallback(text);
       const translatedChunks = await Promise.all(
         chunks.map(async (chunk) => {
-          const params = new URLSearchParams({ client: "gtx", sl: "auto", tl: target, dt: "t", q: chunk });
-          const res = await fetch(`https://translate.googleapis.com/translate_a/single?${params.toString()}`, {
-            headers: { Accept: "application/json" },
+          const params = new URLSearchParams({
+            client: "gtx",
+            sl: "auto",
+            tl: target,
+            dt: "t",
+            q: chunk,
           });
+          const res = await fetch(
+            `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
+            { headers: { Accept: "application/json" } },
+          );
           if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
           const json = (await res.json()) as unknown;
           if (!Array.isArray(json) || !Array.isArray(json[0])) return chunk;
@@ -61,9 +73,12 @@ const InputSchema = z.object({
   target: z.enum(["it", "en"]),
 });
 
-async function translateChunk(texts: string[], target: "it" | "en", apiKey: string): Promise<TranslateResult> {
+async function translateChunk(
+  texts: string[],
+  target: "it" | "en",
+  apiKey: string,
+): Promise<TranslateResult> {
   const targetName = target === "en" ? "English" : "Italian";
-
 
   const numbered = texts.map((t, i) => `[[${i}]]\n${t}`).join("\n\n[[END]]\n\n");
 
