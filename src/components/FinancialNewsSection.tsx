@@ -32,7 +32,7 @@ export function FinancialNewsSection() {
     refetchOnReconnect: true,
   });
 
-  const items: NewsItem[] = data?.items ?? [];
+  const items: NewsItem[] = useMemo(() => data?.items ?? [], [data?.items]);
   const t = useT();
   // Translate news titles + snippets in order; cache keyed by content.
   const translatable = useMemo(() => {
