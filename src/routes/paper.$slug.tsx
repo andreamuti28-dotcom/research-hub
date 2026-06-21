@@ -7,15 +7,10 @@ import { PdfCanvasViewer } from "@/components/PdfCanvasViewer";
 import { formatDateShort } from "@/data/papers";
 import { getPublishedPaperBySlug } from "@/lib/papers.functions";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  parseContent,
-  renderMathHtml,
-  estimateReadingMinutes,
-} from "@/lib/paper-reading";
+import { parseContent, renderMathHtml, estimateReadingMinutes } from "@/lib/paper-reading";
 import { useT } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
-
 
 export const Route = createFileRoute("/paper/$slug")({
   loader: async ({ params }) => {
@@ -58,7 +53,11 @@ export const Route = createFileRoute("/paper/$slug")({
             headline: paper.title,
             description: paper.abstract,
             datePublished: paper.publishedDate,
-            author: { "@type": "Person", name: "Andrea Muti", url: "https://www.andreamuti.com/about" },
+            author: {
+              "@type": "Person",
+              name: "Andrea Muti",
+              url: "https://www.andreamuti.com/about",
+            },
             mainEntityOfPage: { "@type": "WebPage", "@id": url },
             inLanguage: paper.language ?? "it",
           }),
@@ -69,8 +68,18 @@ export const Route = createFileRoute("/paper/$slug")({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: "https://www.andreamuti.com/" },
-              { "@type": "ListItem", position: 2, name: "Archivio", item: "https://www.andreamuti.com/archivio" },
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://www.andreamuti.com/",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Archivio",
+                item: "https://www.andreamuti.com/archivio",
+              },
               { "@type": "ListItem", position: 3, name: paper.title, item: url },
             ],
           }),
@@ -130,17 +139,12 @@ function PaperDetail() {
   const toc = useMemo(
     () =>
       rawToc.map((entry, i) => {
-        const idx = rawBlocks.findIndex(
-          (b) => b.type === "h2" && b.id === entry.id,
-        );
+        const idx = rawBlocks.findIndex((b) => b.type === "h2" && b.id === entry.id);
         return { id: entry.id, text: idx >= 0 ? (tBlockTexts[idx] ?? entry.text) : entry.text };
       }),
     [rawToc, rawBlocks, tBlockTexts],
   );
-  const readingMinutes = useMemo(
-    () => estimateReadingMinutes(paper.content),
-    [paper.content],
-  );
+  const readingMinutes = useMemo(() => estimateReadingMinutes(paper.content), [paper.content]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -215,9 +219,7 @@ function PaperDetail() {
           )}
         </div>
 
-        {paper.pdfUrl && (
-          <PdfPreview url={paper.pdfUrl} title={paper.title} t={t} />
-        )}
+        {paper.pdfUrl && <PdfPreview url={paper.pdfUrl} title={paper.title} t={t} />}
       </article>
 
       <div className="flex-1" />
@@ -226,15 +228,7 @@ function PaperDetail() {
   );
 }
 
-
-function PdfPreview({
-  url,
-  t,
-}: {
-  url: string;
-  title: string;
-  t: ReturnType<typeof useT>;
-}) {
+function PdfPreview({ url, t }: { url: string; title: string; t: ReturnType<typeof useT> }) {
   return (
     <section id="pdf-reader" className="mt-16 pt-10 border-t border-border scroll-mt-24">
       <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
@@ -244,4 +238,3 @@ function PdfPreview({
     </section>
   );
 }
-

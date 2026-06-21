@@ -4,15 +4,81 @@ import { z } from "zod";
 const MAX_TRANSLATION_TEXTS = 300;
 const MAX_TEXT_CHARS = 50000;
 const SERVER_CHUNK_SIZE = 30;
+const FALLBACK_CHUNK_CHARS = 3500;
+
+type TranslateResult = {
+  translations: string[];
+  fallback?: boolean;
+};
+
+function splitForFallback(text: string): string[] {
+  if (text.length <= FALLBACK_CHUNK_CHARS) return [text];
+  const pieces = text.split(/(\n\n+)/);
+  const chunks: string[] = [];
+  let current = "";
+  for (const piece of pieces) {
+    if (current && current.length + piece.length > FALLBACK_CHUNK_CHARS) {
+      chunks.push(current);
+      current = "";
+    }
+    if (piece.length > FALLBACK_CHUNK_CHARS) {
+      for (let i = 0; i < piece.length; i += FALLBACK_CHUNK_CHARS) {
+        chunks.push(piece.slice(i, i + FALLBACK_CHUNK_CHARS));
+      }
+    } else {
+      current += piece;
+    }
+  }
+  if (current) chunks.push(current);
+  return chunks;
+}
+
+async function translateWithFallback(
+  texts: string[],
+  target: "it" | "en",
+): Promise<TranslateResult> {
+  const translations = await Promise.all(
+    texts.map(async (text) => {
+      if (!text.trim()) return text;
+      const chunks = splitForFallback(text);
+      const translatedChunks = await Promise.all(
+        chunks.map(async (chunk) => {
+          const params = new URLSearchParams({
+            client: "gtx",
+            sl: "auto",
+            tl: target,
+            dt: "t",
+            q: chunk,
+          });
+          const res = await fetch(
+            `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
+            { headers: { Accept: "application/json" } },
+          );
+          if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
+          const json = (await res.json()) as unknown;
+          if (!Array.isArray(json) || !Array.isArray(json[0])) return chunk;
+          return json[0]
+            .map((part) => (Array.isArray(part) && typeof part[0] === "string" ? part[0] : ""))
+            .join("");
+        }),
+      );
+      return translatedChunks.join("");
+    }),
+  );
+  return { translations, fallback: false };
+}
 
 const InputSchema = z.object({
   texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
   target: z.enum(["it", "en"]),
 });
 
-async function translateChunk(texts: string[], target: "it" | "en", apiKey: string) {
+async function translateWithAi(
+  texts: string[],
+  target: "it" | "en",
+  apiKey: string,
+): Promise<TranslateResult> {
   const targetName = target === "en" ? "English" : "Italian";
-
 
   const numbered = texts.map((t, i) => `[[${i}]]\n${t}`).join("\n\n[[END]]\n\n");
 
@@ -44,7 +110,10 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
     // so the UI stays usable instead of crashing the route.
     if (res.status === 402 || res.status === 429) {
       console.warn(`Translation skipped (${res.status}): ${txt.slice(0, 200)}`);
-      return texts;
+      return translateWithFallback(texts, target).catch((err) => {
+        console.error("Fallback translation failed:", err);
+        return { translations: texts, fallback: true };
+      });
     }
     throw new Error(`Translation failed: ${res.status} ${txt.slice(0, 200)}`);
   }
@@ -73,7 +142,20 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
       out[item.i] = cleaned;
     }
   }
-  return out;
+  return { translations: out };
+}
+
+async function translateChunk(
+  texts: string[],
+  target: "it" | "en",
+  apiKey: string,
+): Promise<TranslateResult> {
+  try {
+    return await translateWithFallback(texts, target);
+  } catch (err) {
+    console.warn("Primary translation fallback failed, trying AI:", err);
+    return translateWithAi(texts, target, apiKey);
+  }
 }
 
 export const translateBatch = createServerFn({ method: "POST" })
@@ -91,9 +173,12 @@ export const translateBatch = createServerFn({ method: "POST" })
       chunks.map((c) =>
         translateChunk(c, target, apiKey).catch((err) => {
           console.error("Translation chunk failed:", err);
-          return c;
+          return { translations: c, fallback: true } satisfies TranslateResult;
         }),
       ),
     );
-    return { translations: results.flat() };
+    return {
+      translations: results.flatMap((r) => r.translations),
+      fallback: results.some((r) => r.fallback),
+    };
   });

@@ -19,6 +19,15 @@ import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
 
+const HERO_INTRO_IT =
+  "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica";
+const HERO_INTRO_EN =
+  "Quantitative Finance student. I publish technical analysis on risk management, derivatives, crypto, financial markets and geopolitics";
+const HOME_FEATURED_LABEL_IT = "Pubblicazioni in evidenza";
+const HOME_FEATURED_LABEL_EN = "Featured publications";
+const HOME_MARKET_LABEL_IT = "Analisi dei Mercati Finanziari";
+const HOME_MARKET_LABEL_EN = "Financial Market Analysis";
+
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
   queryFn: () => listPublishedPapers(),
@@ -104,28 +113,31 @@ function Index() {
     staleTime: Infinity,
     gcTime: Infinity,
   });
-  const reportContent =
-    lang === "it" ? formattedIt?.text ?? rawContent : reportContentTranslated;
+  const reportContent = lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
+  const localizedHeroIntro =
+    lang === "en" && settings.heroIntro.trim() === HERO_INTRO_IT ? HERO_INTRO_EN : heroIntro;
+  const localizedFeaturedLabel =
+    lang === "en" &&
+    settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
+      ? HOME_FEATURED_LABEL_EN
+      : featuredLabel;
+  const localizedMarketLabel =
+    lang === "en" &&
+    settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
+      ? HOME_MARKET_LABEL_EN
+      : marketLabel;
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
 
   useEffect(() => {
     const channel = supabase
       .channel("home-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "market_reports" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["market-reports"] });
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "papers" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["papers"] });
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "market_reports" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["market-reports"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "papers" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["papers"] });
+      })
       .subscribe();
     // Poll every 30s so scheduled publish_at transitions surface without reload.
     const interval = window.setInterval(() => {
@@ -159,7 +171,6 @@ function Index() {
       /* ignore */
     }
   }, [consent]);
-
 
   const featured = settings.featuredPaperIds
     .map((id) => papers.find((p) => p.id === id))
@@ -197,7 +208,7 @@ function Index() {
           </div>
           <div className="md:col-span-5 md:pt-2">
             <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
-              <p className="whitespace-pre-line">{heroIntro}</p>
+              <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3 md:pl-6">
               <Link
@@ -249,7 +260,7 @@ function Index() {
                   {t("home.featuredKicker")}
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {featuredLabel || t("home.featuredTitle")}
+                  {localizedFeaturedLabel || t("home.featuredTitle")}
                 </h2>
               </div>
               <span
@@ -257,7 +268,16 @@ function Index() {
                 style={{ transform: featuredOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                 aria-hidden
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </span>
@@ -290,7 +310,7 @@ function Index() {
                   Live
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {marketLabel}
+                  {localizedMarketLabel}
                 </h2>
               </div>
               <span
@@ -298,7 +318,16 @@ function Index() {
                 style={{ transform: marketOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                 aria-hidden
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </span>
@@ -330,9 +359,7 @@ function Index() {
                       </div>
                     )}
                     <div className="market-report-prose text-foreground">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {reportContent}
-                      </ReactMarkdown>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{reportContent}</ReactMarkdown>
                     </div>
                     <div className="mt-6">
                       <Link
@@ -360,9 +387,6 @@ function Index() {
       )}
 
       <FinancialNewsSection />
-
-
-
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">

@@ -5,6 +5,12 @@ import { translateBatch } from "@/lib/translate.functions";
 
 const SOURCE = "it" as const;
 const CLIENT_TRANSLATION_CHUNK_SIZE = 50;
+const TRANSLATION_QUERY_VERSION = "v4";
+
+type TranslationResult = {
+  translations: string[];
+  fallback?: boolean;
+};
 
 function hash(s: string): string {
   let h = 5381;
@@ -13,27 +19,12 @@ function hash(s: string): string {
 }
 
 function cacheKey(target: string, texts: string[]) {
-  return `tr:${target}:${hash(texts.join("\u0001"))}`;
+  return `tr:${TRANSLATION_QUERY_VERSION}:${target}:${hash(texts.join("\u0001"))}`;
 }
 
-function readCache(key: string): string[] | null {
-  if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return null;
-    return JSON.parse(raw) as string[];
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(key: string, value: string[]) {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    /* quota */
-  }
+function unwrapTranslations(results: TranslationResult[], fallbackMessage: string) {
+  if (results.some((r) => r.fallback)) throw new Error(fallbackMessage);
+  return results.flatMap((r) => r.translations);
 }
 
 /**
@@ -49,8 +40,6 @@ export function useTranslated(texts: string[]): string[] {
   const { data } = useQuery({
     queryKey: ["translate", key],
     queryFn: async () => {
-      const cached = readCache(key);
-      if (cached && cached.length === texts.length) return cached;
       const chunks: string[][] = [];
       for (let i = 0; i < texts.length; i += CLIENT_TRANSLATION_CHUNK_SIZE) {
         chunks.push(texts.slice(i, i + CLIENT_TRANSLATION_CHUNK_SIZE));
@@ -58,9 +47,7 @@ export function useTranslated(texts: string[]): string[] {
       const results = await Promise.all(
         chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
       );
-      const out = results.flatMap((r) => r.translations);
-      writeCache(key, out);
-      return out;
+      return unwrapTranslations(results, "Translation temporarily unavailable");
     },
     enabled: needsTranslation,
     staleTime: Infinity,
@@ -85,8 +72,6 @@ export function useTranslatedAlways(texts: string[]): string[] {
   const { data } = useQuery({
     queryKey: ["translate-auto", key],
     queryFn: async () => {
-      const cached = readCache(key);
-      if (cached && cached.length === texts.length) return cached;
       const chunks: string[][] = [];
       for (let i = 0; i < texts.length; i += CLIENT_TRANSLATION_CHUNK_SIZE) {
         chunks.push(texts.slice(i, i + CLIENT_TRANSLATION_CHUNK_SIZE));
@@ -94,9 +79,7 @@ export function useTranslatedAlways(texts: string[]): string[] {
       const results = await Promise.all(
         chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
       );
-      const out = results.flatMap((r) => r.translations);
-      writeCache(key, out);
-      return out;
+      return unwrapTranslations(results, "Automatic translation temporarily unavailable");
     },
     enabled: hasContent,
     staleTime: Infinity,
