@@ -19,6 +19,15 @@ import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
 
+const HERO_INTRO_IT =
+  "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica";
+const HERO_INTRO_EN =
+  "Quantitative Finance student. I publish technical analysis on risk management, derivatives, crypto, financial markets and geopolitics";
+const HOME_FEATURED_LABEL_IT = "Pubblicazioni in evidenza";
+const HOME_FEATURED_LABEL_EN = "Featured publications";
+const HOME_MARKET_LABEL_IT = "Analisi dei Mercati Finanziari";
+const HOME_MARKET_LABEL_EN = "Financial Market Analysis";
+
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
   queryFn: () => listPublishedPapers(),
@@ -106,6 +115,16 @@ function Index() {
   });
   const reportContent =
     lang === "it" ? formattedIt?.text ?? rawContent : reportContentTranslated;
+  const localizedHeroIntro =
+    lang === "en" && settings.heroIntro.trim() === HERO_INTRO_IT ? HERO_INTRO_EN : heroIntro;
+  const localizedFeaturedLabel =
+    lang === "en" && settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
+      ? HOME_FEATURED_LABEL_EN
+      : featuredLabel;
+  const localizedMarketLabel =
+    lang === "en" && settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
+      ? HOME_MARKET_LABEL_EN
+      : marketLabel;
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
 
@@ -197,7 +216,7 @@ function Index() {
           </div>
           <div className="md:col-span-5 md:pt-2">
             <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
-              <p className="whitespace-pre-line">{heroIntro}</p>
+              <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3 md:pl-6">
               <Link
@@ -249,7 +268,7 @@ function Index() {
                   {t("home.featuredKicker")}
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {featuredLabel || t("home.featuredTitle")}
+                  {localizedFeaturedLabel || t("home.featuredTitle")}
                 </h2>
               </div>
               <span
@@ -290,7 +309,7 @@ function Index() {
                   Live
                 </span>
                 <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {marketLabel}
+                  {localizedMarketLabel}
                 </h2>
               </div>
               <span
