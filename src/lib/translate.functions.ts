@@ -5,12 +5,17 @@ const MAX_TRANSLATION_TEXTS = 300;
 const MAX_TEXT_CHARS = 50000;
 const SERVER_CHUNK_SIZE = 30;
 
+type TranslateResult = {
+  translations: string[];
+  fallback?: boolean;
+};
+
 const InputSchema = z.object({
   texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
   target: z.enum(["it", "en"]),
 });
 
-async function translateChunk(texts: string[], target: "it" | "en", apiKey: string) {
+async function translateChunk(texts: string[], target: "it" | "en", apiKey: string): Promise<TranslateResult> {
   const targetName = target === "en" ? "English" : "Italian";
 
 
@@ -44,7 +49,7 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
     // so the UI stays usable instead of crashing the route.
     if (res.status === 402 || res.status === 429) {
       console.warn(`Translation skipped (${res.status}): ${txt.slice(0, 200)}`);
-      return texts;
+      return { translations: texts, fallback: true };
     }
     throw new Error(`Translation failed: ${res.status} ${txt.slice(0, 200)}`);
   }
@@ -73,7 +78,7 @@ async function translateChunk(texts: string[], target: "it" | "en", apiKey: stri
       out[item.i] = cleaned;
     }
   }
-  return out;
+  return { translations: out };
 }
 
 export const translateBatch = createServerFn({ method: "POST" })
@@ -91,9 +96,12 @@ export const translateBatch = createServerFn({ method: "POST" })
       chunks.map((c) =>
         translateChunk(c, target, apiKey).catch((err) => {
           console.error("Translation chunk failed:", err);
-          return c;
+          return { translations: c, fallback: true } satisfies TranslateResult;
         }),
       ),
     );
-    return { translations: results.flat() };
+    return {
+      translations: results.flatMap((r) => r.translations),
+      fallback: results.some((r) => r.fallback),
+    };
   });
