@@ -132,20 +132,12 @@ function Index() {
   useEffect(() => {
     const channel = supabase
       .channel("home-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "market_reports" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["market-reports"] });
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "papers" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["papers"] });
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "market_reports" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["market-reports"] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "papers" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["papers"] });
+      })
       .subscribe();
     // Poll every 30s so scheduled publish_at transitions surface without reload.
     const interval = window.setInterval(() => {
@@ -179,7 +171,6 @@ function Index() {
       /* ignore */
     }
   }, [consent]);
-
 
   const featured = settings.featuredPaperIds
     .map((id) => papers.find((p) => p.id === id))
@@ -277,7 +268,16 @@ function Index() {
                 style={{ transform: featuredOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                 aria-hidden
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </span>
@@ -318,7 +318,16 @@ function Index() {
                 style={{ transform: marketOpen ? "rotate(180deg)" : "rotate(0deg)" }}
                 aria-hidden
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </span>
@@ -350,9 +359,7 @@ function Index() {
                       </div>
                     )}
                     <div className="market-report-prose text-foreground">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {reportContent}
-                      </ReactMarkdown>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{reportContent}</ReactMarkdown>
                     </div>
                     <div className="mt-6">
                       <Link
@@ -380,9 +387,6 @@ function Index() {
       )}
 
       <FinancialNewsSection />
-
-
-
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
