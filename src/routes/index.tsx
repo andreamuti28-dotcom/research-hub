@@ -15,6 +15,7 @@ import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { useServerFn } from "@tanstack/react-start";
 import { formatMarketReportLayout } from "@/lib/format-layout.functions";
+import { formatReportLocal } from "@/lib/format-report-local";
 import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
@@ -113,7 +114,9 @@ function Index() {
     staleTime: Infinity,
     gcTime: Infinity,
   });
-  const reportContent = lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
+  const reportContentRaw =
+    lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
+  const reportContent = formatReportLocal(reportContentRaw);
   const localizedHeroIntro =
     lang === "en" && settings.heroIntro.trim() === HERO_INTRO_IT ? HERO_INTRO_EN : heroIntro;
   const localizedFeaturedLabel =
