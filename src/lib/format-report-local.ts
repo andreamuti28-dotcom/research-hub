@@ -1,23 +1,47 @@
 /**
- * Deterministic, client-side formatter that turns a "wall of text" coming
- * from Google Docs into structured Markdown. Used as a fallback when the
- * AI-based formatter / translator does not produce Markdown structure
- * (e.g. AI credits exhausted, plain-text response, etc.).
- *
- * Rules:
- *  - If the text already contains Markdown structure (#, **, lists, tables),
- *    it is returned as-is.
- *  - Otherwise the text is split into blocks (blank-line separated). Short
- *    blocks that look like titles are promoted to "## " / "### " headings.
- *  - Lines beginning with bullet markers (•, ·, –, —, -, *, "1.") are
- *    normalized to "- " markdown bullets.
- *  - Long blocks are wrapped as paragraphs with blank lines between them.
+ * Deterministic, client-side formatter that turns a "wall of text" (often
+ * produced by a translation pipeline that strips newlines) into structured
+ * Markdown. Heuristics:
+ *  - insert a space when sentence punctuation runs into the next sentence
+ *  - promote ALL-CAPS runs of 2+ words to `## headings`
+ *  - promote short "Word(s):" labels (S&P 500:, Nasdaq:, Euro Stoxx 50 (FEZ):)
+ *    to `### subheadings`
+ *  - split into paragraphs at sentence boundaries
  */
+
+// Common financial / market subheading prefixes — used to split a wall of
+// text when the upstream pipeline strips whitespace between sections.
+const TICKER_PREFIXES = [
+  "S&P",
+  "Nasdaq",
+  "NASDAQ",
+  "Dow",
+  "Russell",
+  "DAX",
+  "FTSE",
+  "CAC",
+  "Nikkei",
+  "Hang Seng",
+  "Euro Stoxx",
+  "Bitcoin",
+  "Ethereum",
+  "BTC",
+  "ETH",
+  "Oro",
+  "Gold",
+  "EUR/USD",
+  "USD/JPY",
+  "GBP/USD",
+  "Brent",
+  "WTI",
+  "VIX",
+];
+
 export function formatReportLocal(input: string): string {
-  const text = (input ?? "").replace(/\r\n/g, "\n").trim();
+  let text = (input ?? "").replace(/\r\n/g, "\n").trim();
   if (!text) return "";
 
-  // If clearly markdown already, don't touch it.
+  // If clearly markdown already, leave it alone.
   const hasMd =
     /(^|\n)#{1,6}\s/.test(text) ||
     /\*\*[^*\n]+\*\*/.test(text) ||
@@ -26,83 +50,60 @@ export function formatReportLocal(input: string): string {
     /\|.+\|/.test(text);
   if (hasMd) return text;
 
-  // Split into blocks on 1+ blank lines OR on single line breaks when the
-  // text comes as one giant paragraph.
-  const rawBlocks = text.split(/\n\s*\n+/);
-  const blocks: string[] = rawBlocks.length > 1 ? rawBlocks : splitMonolith(text);
+  // 1) Insert a space after .!? when followed directly by an uppercase letter
+  //    ("significativi.ANALISI" -> "significativi. ANALISI").
+  text = text.replace(/([.!?])([A-ZÀ-Ý])/g, "$1 $2");
 
-  const out: string[] = [];
-  for (const blockRaw of blocks) {
-    const block = blockRaw.trim();
-    if (!block) continue;
+  // 2) Insert a paragraph break before known ticker / instrument labels that
+  //    are stuck to the previous word.
+  //    "MERCATIS&P 500:" -> "MERCATI\n\nS&P 500:"
+  //    "forza.Nasdaq:"   -> "forza.\n\nNasdaq:"
+  for (const prefix of TICKER_PREFIXES) {
+    const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Match the prefix only when it is followed (within a short distance) by ":".
+    const re = new RegExp(
+      `(\\S)\\s*(${escaped}(?:\\s[\\w&/().\\-]+){0,4}\\s*:)`,
+      "g",
+    );
+    text = text.replace(re, (_m, prev: string, label: string) => {
+      // Avoid breaking when prev is itself punctuation that already separates.
+      const sep = /[\s\n]/.test(prev) ? prev : prev;
+      return `${sep}\n\n### ${label.trim()}\n\n`;
+    });
+  }
 
-    const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+  // 3) Promote ALL-CAPS runs (2+ pure-letter uppercase words, ≥3 letters each,
+  //    with optional Italian/English connectors) to `## headings`.
+  text = text.replace(
+    /\b([A-ZÀ-Ý]{3,}(?:\s+(?:DI|DEI|DEL|DELLA|DELLE|DA|IN|SU|PER|AL|ALLA|E|ED|A|OF|THE|AND|OR|TO|FOR|ON|AT)\s+[A-ZÀ-Ý]{3,}|\s+[A-ZÀ-Ý]{3,})+)\b/g,
+    (_m, heading: string) => `\n\n## ${heading.trim()}\n\n`,
+  );
 
-    // Bullet list block: most lines start with a bullet marker.
-    const bulletLines = lines.filter((l) => /^[•·–—\-*]\s+/.test(l) || /^\d+[.)]\s+/.test(l));
-    if (bulletLines.length >= 2 && bulletLines.length >= lines.length - 1) {
-      const items = lines.map((l) =>
-        l.replace(/^[•·–—\-*]\s+/, "- ").replace(/^(\d+)[.)]\s+/, "$1. "),
-      );
-      out.push(items.join("\n"));
-      continue;
-    }
-
-    // Single short line → heading.
-    if (lines.length === 1) {
-      const line = lines[0];
-      if (isHeading(line)) {
-        const level = line === line.toUpperCase() && line.length <= 80 ? 2 : 3;
-        out.push(`${"#".repeat(level)} ${cleanHeading(line)}`);
-        continue;
+  // 4) Split long paragraphs at sentence boundaries — using split() so we
+  //    never drop characters. A sentence boundary is .!? followed by a space
+  //    and an uppercase letter (decimal numbers like "1.15" are preserved).
+  text = text
+    .split(/\n{2,}/)
+    .map((block) => {
+      const b = block.trim();
+      if (!b || b.startsWith("#")) return b;
+      const parts = b.split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"'(])/g);
+      if (parts.length <= 2) return b;
+      const groups: string[] = [];
+      for (let i = 0; i < parts.length; i += 2) {
+        groups.push(parts.slice(i, i + 2).join(" "));
       }
-    }
+      return groups.join("\n\n");
+    })
+    .join("\n\n");
 
-    // Otherwise treat as a paragraph (preserve internal line breaks as spaces).
-    out.push(lines.join(" "));
-  }
+  // 5) Cleanup: collapse extra whitespace and blank lines.
+  text = text
+    .split("\n")
+    .map((l) => l.replace(/[ \t]+/g, " ").trim())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
-  return out.join("\n\n");
-}
-
-function isHeading(line: string): boolean {
-  if (line.length > 90) return false;
-  if (/[.!?:;,]$/.test(line)) return false;
-  // ALL CAPS short line
-  if (line === line.toUpperCase() && /[A-ZÀ-Ý]/.test(line)) return true;
-  // Title Case-ish: starts with capital, ≤ 10 words, no trailing punctuation
-  const words = line.split(/\s+/);
-  if (words.length <= 10 && /^[A-ZÀ-Ý0-9]/.test(line)) return true;
-  return false;
-}
-
-function cleanHeading(line: string): string {
-  return line.replace(/^[#>\-*•·–—\s]+/, "").trim();
-}
-
-/**
- * Split a single very long block of text into smaller blocks by detecting
- * candidate heading sentences (short, capitalized, no terminal punctuation)
- * that appear inline.
- */
-function splitMonolith(text: string): string[] {
-  // Break on sentence boundaries first, then re-group.
-  const sentences = text
-    .split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý0-9])/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  const blocks: string[] = [];
-  let buf: string[] = [];
-  for (const s of sentences) {
-    const looksLikeHeading = s.length <= 70 && !/[.!?:;,]$/.test(s) && /^[A-ZÀ-Ý0-9]/.test(s);
-    if (looksLikeHeading && buf.length) {
-      blocks.push(buf.join(" "));
-      buf = [s];
-    } else {
-      buf.push(s);
-    }
-  }
-  if (buf.length) blocks.push(buf.join(" "));
-  return blocks;
+  return text;
 }
