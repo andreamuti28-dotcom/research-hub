@@ -1,23 +1,14 @@
 /**
  * Deterministic, client-side formatter that turns a "wall of text" coming
- * from Google Docs into structured Markdown. Used as a fallback when the
- * AI-based formatter / translator does not produce Markdown structure
- * (e.g. AI credits exhausted, plain-text response, etc.).
- *
- * Rules:
- *  - If the text already contains Markdown structure (#, **, lists, tables),
- *    it is returned as-is.
- *  - Otherwise the text is split into blocks (blank-line separated). Short
- *    blocks that look like titles are promoted to "## " / "### " headings.
- *  - Lines beginning with bullet markers (•, ·, –, —, -, *, "1.") are
- *    normalized to "- " markdown bullets.
- *  - Long blocks are wrapped as paragraphs with blank lines between them.
+ * from Google Docs (often with missing whitespace between sentences and
+ * sections) into structured Markdown. Used as a fallback when the AI-based
+ * formatter / translator does not produce Markdown structure.
  */
 export function formatReportLocal(input: string): string {
-  const text = (input ?? "").replace(/\r\n/g, "\n").trim();
+  let text = (input ?? "").replace(/\r\n/g, "\n").trim();
   if (!text) return "";
 
-  // If clearly markdown already, don't touch it.
+  // If clearly markdown already, leave it alone.
   const hasMd =
     /(^|\n)#{1,6}\s/.test(text) ||
     /\*\*[^*\n]+\*\*/.test(text) ||
@@ -26,83 +17,67 @@ export function formatReportLocal(input: string): string {
     /\|.+\|/.test(text);
   if (hasMd) return text;
 
-  // Split into blocks on 1+ blank lines OR on single line breaks when the
-  // text comes as one giant paragraph.
-  const rawBlocks = text.split(/\n\s*\n+/);
-  const blocks: string[] = rawBlocks.length > 1 ? rawBlocks : splitMonolith(text);
+  // ---- Whitespace normalization ----------------------------------------
+  // Insert a space after .!?:; when directly followed by an uppercase letter
+  // ("significativi.ANALISI" -> "significativi. ANALISI").
+  text = text.replace(/([.!?:;])([A-ZÀ-ÝÈÉÌÒÙ])/g, "$1 $2");
+  // Insert a space between a lowercase/digit and an immediately-following
+  // ALL-CAPS run of >=2 chars ("forzaNASDAQ" -> "forza NASDAQ").
+  text = text.replace(/([a-zà-ÿ0-9])([A-ZÀ-Ý]{2,})/g, "$1 $2");
 
-  const out: string[] = [];
-  for (const blockRaw of blocks) {
-    const block = blockRaw.trim();
-    if (!block) continue;
+  // ---- Detect inline ALL-CAPS section headings -------------------------
+  // e.g. "ANALISI TECNICA DEI MERCATI", "MACRO E POLITICA MONETARIA".
+  // Headings end as soon as a non-uppercase letter / digit token appears.
+  // We require >=2 consecutive uppercase words (>=3 letters each, articles
+  // like "DI/DEI/E" allowed in between).
+  text = text.replace(
+    /(?:^|(?<=[\s.]))((?:[A-ZÀ-Ý][A-ZÀ-Ý&/'.\-]{2,}(?:\s+(?:[A-ZÀ-Ý][A-ZÀ-Ý&/'.\-]{1,}|DI|DEI|DEL|DELLA|DELLE|E|ED|DA|IN|SU|PER|AL|ALLA|A|IL|LA|LO|GLI|LE|UN|UNA|OF|THE|AND|OR|TO|FOR|IN|ON|OF|AT)){1,8}))/g,
+    (match, heading: string) => `\n\n## ${heading.trim()}\n\n`,
+  );
 
-    const lines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+  // ---- Detect inline "Term:" subheadings (S&P 500:, Nasdaq:, Euro Stoxx 50 (FEZ):) ----
+  // A subheading is a short capitalized phrase ending in ":" that introduces
+  // a new sub-topic. Split before it when it appears mid-paragraph.
+  text = text.replace(
+    /(\S)\s+((?:[A-ZÀ-Ý][\w&/.'-]*(?:\s+[\w&/.'()-]+){0,5}):)\s+/g,
+    (match, prev: string, heading: string) => {
+      // Skip when the "heading" is actually a sentence continuation
+      // (long phrases with internal lowercase wording stay as paragraph).
+      if (heading.length > 60) return match;
+      return `${prev}\n\n### ${heading}\n\n`;
+    },
+  );
 
-    // Bullet list block: most lines start with a bullet marker.
-    const bulletLines = lines.filter((l) => /^[•·–—\-*]\s+/.test(l) || /^\d+[.)]\s+/.test(l));
-    if (bulletLines.length >= 2 && bulletLines.length >= lines.length - 1) {
-      const items = lines.map((l) =>
-        l.replace(/^[•·–—\-*]\s+/, "- ").replace(/^(\d+)[.)]\s+/, "$1. "),
-      );
-      out.push(items.join("\n"));
-      continue;
-    }
+  // ---- Final cleanup ---------------------------------------------------
+  // Collapse 3+ blank lines, trim each line, remove leading/trailing blanks.
+  text = text
+    .split("\n")
+    .map((l) => l.replace(/[ \t]+/g, " ").trimEnd())
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 
-    // Single short line → heading.
+  // Promote remaining standalone short lines to ### headings if they look
+  // like titles (capitalized, no trailing punctuation, <=8 words).
+  const blocks = text.split(/\n{2,}/);
+  const out = blocks.map((b) => {
+    const trimmed = b.trim();
+    if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("-")) return trimmed;
+    const lines = trimmed.split("\n");
     if (lines.length === 1) {
       const line = lines[0];
-      if (isHeading(line)) {
-        const level = line === line.toUpperCase() && line.length <= 80 ? 2 : 3;
-        out.push(`${"#".repeat(level)} ${cleanHeading(line)}`);
-        continue;
+      const words = line.split(/\s+/);
+      if (
+        words.length <= 8 &&
+        line.length <= 80 &&
+        /^[A-ZÀ-Ý0-9]/.test(line) &&
+        !/[.!?,;]$/.test(line)
+      ) {
+        return `### ${line}`;
       }
     }
+    return trimmed;
+  });
 
-    // Otherwise treat as a paragraph (preserve internal line breaks as spaces).
-    out.push(lines.join(" "));
-  }
-
-  return out.join("\n\n");
-}
-
-function isHeading(line: string): boolean {
-  if (line.length > 90) return false;
-  if (/[.!?:;,]$/.test(line)) return false;
-  // ALL CAPS short line
-  if (line === line.toUpperCase() && /[A-ZÀ-Ý]/.test(line)) return true;
-  // Title Case-ish: starts with capital, ≤ 10 words, no trailing punctuation
-  const words = line.split(/\s+/);
-  if (words.length <= 10 && /^[A-ZÀ-Ý0-9]/.test(line)) return true;
-  return false;
-}
-
-function cleanHeading(line: string): string {
-  return line.replace(/^[#>\-*•·–—\s]+/, "").trim();
-}
-
-/**
- * Split a single very long block of text into smaller blocks by detecting
- * candidate heading sentences (short, capitalized, no terminal punctuation)
- * that appear inline.
- */
-function splitMonolith(text: string): string[] {
-  // Break on sentence boundaries first, then re-group.
-  const sentences = text
-    .split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý0-9])/g)
-    .map((s) => s.trim())
-    .filter(Boolean);
-
-  const blocks: string[] = [];
-  let buf: string[] = [];
-  for (const s of sentences) {
-    const looksLikeHeading = s.length <= 70 && !/[.!?:;,]$/.test(s) && /^[A-ZÀ-Ý0-9]/.test(s);
-    if (looksLikeHeading && buf.length) {
-      blocks.push(buf.join(" "));
-      buf = [s];
-    } else {
-      buf.push(s);
-    }
-  }
-  if (buf.length) blocks.push(buf.join(" "));
-  return blocks;
+  return out.filter(Boolean).join("\n\n");
 }
