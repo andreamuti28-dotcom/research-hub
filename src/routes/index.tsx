@@ -15,6 +15,7 @@ import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
 import { useServerFn } from "@tanstack/react-start";
 import { formatMarketReportLayout } from "@/lib/format-layout.functions";
+import { formatReportLocal } from "@/lib/format-report-local";
 import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
