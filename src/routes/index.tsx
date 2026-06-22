@@ -114,7 +114,9 @@ function Index() {
     staleTime: Infinity,
     gcTime: Infinity,
   });
-  const reportContent = lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
+  const reportContentRaw =
+    lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
+  const reportContent = formatReportLocal(reportContentRaw);
   const localizedHeroIntro =
     lang === "en" && settings.heroIntro.trim() === HERO_INTRO_IT ? HERO_INTRO_EN : heroIntro;
   const localizedFeaturedLabel =
