@@ -1,9 +1,42 @@
 /**
- * Deterministic, client-side formatter that turns a "wall of text" coming
- * from Google Docs (often with missing whitespace between sentences and
- * sections) into structured Markdown. Used as a fallback when the AI-based
- * formatter / translator does not produce Markdown structure.
+ * Deterministic, client-side formatter that turns a "wall of text" (often
+ * produced by a translation pipeline that strips newlines) into structured
+ * Markdown. Heuristics:
+ *  - insert a space when sentence punctuation runs into the next sentence
+ *  - promote ALL-CAPS runs of 2+ words to `## headings`
+ *  - promote short "Word(s):" labels (S&P 500:, Nasdaq:, Euro Stoxx 50 (FEZ):)
+ *    to `### subheadings`
+ *  - split into paragraphs at sentence boundaries
  */
+
+// Common financial / market subheading prefixes — used to split a wall of
+// text when the upstream pipeline strips whitespace between sections.
+const TICKER_PREFIXES = [
+  "S&P",
+  "Nasdaq",
+  "NASDAQ",
+  "Dow",
+  "Russell",
+  "DAX",
+  "FTSE",
+  "CAC",
+  "Nikkei",
+  "Hang Seng",
+  "Euro Stoxx",
+  "Bitcoin",
+  "Ethereum",
+  "BTC",
+  "ETH",
+  "Oro",
+  "Gold",
+  "EUR/USD",
+  "USD/JPY",
+  "GBP/USD",
+  "Brent",
+  "WTI",
+  "VIX",
+];
+
 export function formatReportLocal(input: string): string {
   let text = (input ?? "").replace(/\r\n/g, "\n").trim();
   if (!text) return "";
@@ -17,67 +50,60 @@ export function formatReportLocal(input: string): string {
     /\|.+\|/.test(text);
   if (hasMd) return text;
 
-  // ---- Whitespace normalization ----------------------------------------
-  // Insert a space after .!?:; when directly followed by an uppercase letter
-  // ("significativi.ANALISI" -> "significativi. ANALISI").
-  text = text.replace(/([.!?:;])([A-ZÀ-ÝÈÉÌÒÙ])/g, "$1 $2");
-  // Insert a space between a lowercase/digit and an immediately-following
-  // ALL-CAPS run of >=2 chars ("forzaNASDAQ" -> "forza NASDAQ").
-  text = text.replace(/([a-zà-ÿ0-9])([A-ZÀ-Ý]{2,})/g, "$1 $2");
+  // 1) Insert a space after .!? when followed directly by an uppercase letter
+  //    ("significativi.ANALISI" -> "significativi. ANALISI").
+  text = text.replace(/([.!?])([A-ZÀ-Ý])/g, "$1 $2");
 
-  // ---- Detect inline ALL-CAPS section headings -------------------------
-  // e.g. "ANALISI TECNICA DEI MERCATI", "MACRO E POLITICA MONETARIA".
-  // Headings end as soon as a non-uppercase letter / digit token appears.
-  // We require >=2 consecutive uppercase words (>=3 letters each, articles
-  // like "DI/DEI/E" allowed in between).
+  // 2) Insert a paragraph break before known ticker / instrument labels that
+  //    are stuck to the previous word.
+  //    "MERCATIS&P 500:" -> "MERCATI\n\nS&P 500:"
+  //    "forza.Nasdaq:"   -> "forza.\n\nNasdaq:"
+  for (const prefix of TICKER_PREFIXES) {
+    const escaped = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Match the prefix only when it is followed (within a short distance) by ":".
+    const re = new RegExp(
+      `(\\S)\\s*(${escaped}(?:\\s[\\w&/().\\-]+){0,4}\\s*:)`,
+      "g",
+    );
+    text = text.replace(re, (_m, prev: string, label: string) => {
+      // Avoid breaking when prev is itself punctuation that already separates.
+      const sep = /[\s\n]/.test(prev) ? prev : prev;
+      return `${sep}\n\n### ${label.trim()}\n\n`;
+    });
+  }
+
+  // 3) Promote ALL-CAPS runs (2+ pure-letter uppercase words, ≥3 letters each,
+  //    with optional Italian/English connectors) to `## headings`.
   text = text.replace(
-    /(?:^|(?<=[\s.]))((?:[A-ZÀ-Ý][A-ZÀ-Ý&/'.\-]{2,}(?:\s+(?:[A-ZÀ-Ý][A-ZÀ-Ý&/'.\-]{1,}|DI|DEI|DEL|DELLA|DELLE|E|ED|DA|IN|SU|PER|AL|ALLA|A|IL|LA|LO|GLI|LE|UN|UNA|OF|THE|AND|OR|TO|FOR|IN|ON|OF|AT)){1,8}))/g,
-    (match, heading: string) => `\n\n## ${heading.trim()}\n\n`,
+    /\b([A-ZÀ-Ý]{3,}(?:\s+(?:DI|DEI|DEL|DELLA|DELLE|DA|IN|SU|PER|AL|ALLA|E|ED|A|OF|THE|AND|OR|TO|FOR|ON|AT)\s+[A-ZÀ-Ý]{3,}|\s+[A-ZÀ-Ý]{3,})+)\b/g,
+    (_m, heading: string) => `\n\n## ${heading.trim()}\n\n`,
   );
 
-  // ---- Detect inline "Term:" subheadings (S&P 500:, Nasdaq:, Euro Stoxx 50 (FEZ):) ----
-  // A subheading is a short capitalized phrase ending in ":" that introduces
-  // a new sub-topic. Split before it when it appears mid-paragraph.
-  text = text.replace(
-    /(\S)\s+((?:[A-ZÀ-Ý][\w&/.'-]*(?:\s+[\w&/.'()-]+){0,5}):)\s+/g,
-    (match, prev: string, heading: string) => {
-      // Skip when the "heading" is actually a sentence continuation
-      // (long phrases with internal lowercase wording stay as paragraph).
-      if (heading.length > 60) return match;
-      return `${prev}\n\n### ${heading}\n\n`;
-    },
-  );
+  // 4) Split remaining long paragraphs at sentence boundaries when they
+  //    exceed ~3 sentences, to avoid one giant wall of text.
+  text = text
+    .split(/\n{2,}/)
+    .map((block) => {
+      const b = block.trim();
+      if (!b || b.startsWith("#")) return b;
+      const sentences = b.match(/[^.!?]+[.!?]+(?:\s|$)/g);
+      if (!sentences || sentences.length <= 2) return b;
+      // Group every 2 sentences as a paragraph.
+      const groups: string[] = [];
+      for (let i = 0; i < sentences.length; i += 2) {
+        groups.push(sentences.slice(i, i + 2).join(" ").trim());
+      }
+      return groups.join("\n\n");
+    })
+    .join("\n\n");
 
-  // ---- Final cleanup ---------------------------------------------------
-  // Collapse 3+ blank lines, trim each line, remove leading/trailing blanks.
+  // 5) Cleanup: collapse extra whitespace and blank lines.
   text = text
     .split("\n")
-    .map((l) => l.replace(/[ \t]+/g, " ").trimEnd())
+    .map((l) => l.replace(/[ \t]+/g, " ").trim())
     .join("\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
-  // Promote remaining standalone short lines to ### headings if they look
-  // like titles (capitalized, no trailing punctuation, <=8 words).
-  const blocks = text.split(/\n{2,}/);
-  const out = blocks.map((b) => {
-    const trimmed = b.trim();
-    if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("-")) return trimmed;
-    const lines = trimmed.split("\n");
-    if (lines.length === 1) {
-      const line = lines[0];
-      const words = line.split(/\s+/);
-      if (
-        words.length <= 8 &&
-        line.length <= 80 &&
-        /^[A-ZÀ-Ý0-9]/.test(line) &&
-        !/[.!?,;]$/.test(line)
-      ) {
-        return `### ${line}`;
-      }
-    }
-    return trimmed;
-  });
-
-  return out.filter(Boolean).join("\n\n");
+  return text;
 }
