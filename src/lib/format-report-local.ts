@@ -79,19 +79,19 @@ export function formatReportLocal(input: string): string {
     (_m, heading: string) => `\n\n## ${heading.trim()}\n\n`,
   );
 
-  // 4) Split remaining long paragraphs at sentence boundaries when they
-  //    exceed ~3 sentences, to avoid one giant wall of text.
+  // 4) Split long paragraphs at sentence boundaries — using split() so we
+  //    never drop characters. A sentence boundary is .!? followed by a space
+  //    and an uppercase letter (decimal numbers like "1.15" are preserved).
   text = text
     .split(/\n{2,}/)
     .map((block) => {
       const b = block.trim();
       if (!b || b.startsWith("#")) return b;
-      const sentences = b.match(/[^.!?]+[.!?]+(?:\s|$)/g);
-      if (!sentences || sentences.length <= 2) return b;
-      // Group every 2 sentences as a paragraph.
+      const parts = b.split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"'(])/g);
+      if (parts.length <= 2) return b;
       const groups: string[] = [];
-      for (let i = 0; i < sentences.length; i += 2) {
-        groups.push(sentences.slice(i, i + 2).join(" ").trim());
+      for (let i = 0; i < parts.length; i += 2) {
+        groups.push(parts.slice(i, i + 2).join(" "));
       }
       return groups.join("\n\n");
     })
