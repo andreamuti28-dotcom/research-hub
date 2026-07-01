@@ -21,9 +21,10 @@ import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
 
 const HERO_INTRO_IT =
-  "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica";
+  "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.";
 const HERO_INTRO_EN =
-  "Quantitative Finance student. I publish technical analysis on risk management, derivatives, crypto, financial markets and geopolitics";
+  "Economics and Finance student. I publish technical analysis on risk management, derivatives, crypto, financial markets and geopolitics.";
+const HERO_TITLE_FIXED = "Andrea Muti - Finanza";
 const HOME_FEATURED_LABEL_IT = "Pubblicazioni in evidenza";
 const HOME_FEATURED_LABEL_EN = "Featured publications";
 const HOME_MARKET_LABEL_IT = "Analisi dei Mercati Finanziari";
