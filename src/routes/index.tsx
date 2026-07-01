@@ -204,8 +204,8 @@ function Index() {
                 />
               </div>
             ) : (
-              <div className="aspect-video w-full border border-dashed border-border bg-surface flex items-center justify-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center px-6">
-                {heroTitle}
+              <div className="aspect-video w-full border border-dashed border-border bg-surface flex items-center justify-center font-display font-bold uppercase tracking-widest text-foreground text-center px-6">
+                {HERO_TITLE_FIXED}
               </div>
             )}
           </div>
