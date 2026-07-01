@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Paper, PaperLanguage } from "@/data/papers";
 
 const SELECT_COLS =
-  "id, slug, title, abstract, content, tags, pdf_url, published_date, is_published, views, downloads, language";
+  "id, slug, title, abstract, content, tags, pdf_url, published_date, publish_at, is_published, views, downloads, language";
 
 function mapPaper(row: {
   id: string;
