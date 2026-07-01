@@ -50,13 +50,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
       { property: "og:title", content: "Andrea Muti - Finanza" },
       {
         property: "og:description",
         content:
-          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
       { property: "og:url", content: "https://www.andreamuti.com/" },
       { property: "og:type", content: "website" },
@@ -65,7 +65,7 @@ export const Route = createFileRoute("/")({
       {
         name: "twitter:description",
         content:
-          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
