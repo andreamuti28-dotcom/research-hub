@@ -21,9 +21,10 @@ import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
 
 const HERO_INTRO_IT =
-  "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica";
+  "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.";
 const HERO_INTRO_EN =
-  "Quantitative Finance student. I publish technical analysis on risk management, derivatives, crypto, financial markets and geopolitics";
+  "Economics and Finance student. I publish technical analysis on risk management, derivatives, crypto, financial markets and geopolitics.";
+const HERO_TITLE_FIXED = "Andrea Muti - Finanza";
 const HOME_FEATURED_LABEL_IT = "Pubblicazioni in evidenza";
 const HOME_FEATURED_LABEL_EN = "Featured publications";
 const HOME_MARKET_LABEL_IT = "Analisi dei Mercati Finanziari";
@@ -49,13 +50,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
       { property: "og:title", content: "Andrea Muti - Finanza" },
       {
         property: "og:description",
         content:
-          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
       { property: "og:url", content: "https://www.andreamuti.com/" },
       { property: "og:type", content: "website" },
@@ -64,7 +65,7 @@ export const Route = createFileRoute("/")({
       {
         name: "twitter:description",
         content:
-          "Studente di Finanza quantitativa. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
@@ -117,8 +118,7 @@ function Index() {
   const reportContentRaw =
     lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
   const reportContent = formatReportLocal(reportContentRaw);
-  const localizedHeroIntro =
-    lang === "en" && settings.heroIntro.trim() === HERO_INTRO_IT ? HERO_INTRO_EN : heroIntro;
+  const localizedHeroIntro = lang === "en" ? HERO_INTRO_EN : HERO_INTRO_IT;
   const localizedFeaturedLabel =
     lang === "en" &&
     settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
@@ -204,8 +204,8 @@ function Index() {
                 />
               </div>
             ) : (
-              <div className="aspect-video w-full border border-dashed border-border bg-surface flex items-center justify-center font-mono text-[10px] uppercase tracking-widest text-muted-foreground text-center px-6">
-                {heroTitle}
+              <div className="aspect-video w-full border border-dashed border-border bg-surface flex items-center justify-center font-display font-bold uppercase tracking-widest text-foreground text-center px-6">
+                {HERO_TITLE_FIXED}
               </div>
             )}
           </div>
@@ -213,10 +213,10 @@ function Index() {
             <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
               <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
-            <div className="mt-8 flex flex-wrap gap-3 md:pl-6">
+            <div className="mt-8 flex flex-nowrap items-stretch gap-2 sm:gap-3 md:pl-6">
               <Link
                 to="/archivio"
-                className="inline-flex items-center px-4 py-2.5 bg-foreground text-background font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 bg-foreground text-background font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors whitespace-nowrap"
               >
                 {t("home.ctaReadPapers")}
               </Link>
@@ -231,7 +231,7 @@ function Index() {
                         ?.scrollIntoView({ behavior: "smooth", block: "start" }),
                     );
                   }}
-                  className="inline-flex items-center px-4 py-2.5 border border-foreground text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-foreground text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors whitespace-nowrap"
                 >
                   {t("home.ctaMarkets")}
                 </button>
@@ -240,7 +240,7 @@ function Index() {
                 href={settings.linkedinUrl}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="inline-flex items-center px-4 py-2.5 border border-border text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-border text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors whitespace-nowrap"
               >
                 {t("home.ctaLinkedin")}
               </a>

@@ -4,7 +4,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Paper, PaperLanguage } from "@/data/papers";
 
 const SELECT_COLS =
-  "id, slug, title, abstract, content, tags, pdf_url, published_date, is_published, views, downloads, language";
+  "id, slug, title, abstract, content, tags, pdf_url, published_date, publish_at, is_published, views, downloads, language";
 
 function mapPaper(row: {
   id: string;
@@ -42,12 +42,15 @@ export const listPublishedPapers = createServerFn({ method: "GET" }).handler(
     const { data, error } = await supabaseAdmin
       .from("papers")
       .select(SELECT_COLS)
-      .or(`is_published.eq.true,and(publish_at.not.is.null,publish_at.lte.${nowIso})`)
-      .order("published_date", { ascending: false })
-      .order("id", { ascending: true });
+      .or(`is_published.eq.true,and(publish_at.not.is.null,publish_at.lte.${nowIso})`);
 
     if (error) throw new Error(error.message);
-    return (data ?? []).map(mapPaper).map((p) => ({ ...p, isPublished: true }));
+    const rows = (data ?? []) as Array<Parameters<typeof mapPaper>[0] & { publish_at: string | null }>;
+    // Order by the effective public-visibility date (publish_at when set, else published_date), newest first.
+    const effective = (r: { publish_at: string | null; published_date: string }) =>
+      new Date(r.publish_at ?? r.published_date).getTime();
+    rows.sort((a, b) => effective(b) - effective(a));
+    return rows.map(mapPaper).map((p) => ({ ...p, isPublished: true }));
   },
 );
 
