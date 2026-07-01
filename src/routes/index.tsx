@@ -118,8 +118,7 @@ function Index() {
   const reportContentRaw =
     lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
   const reportContent = formatReportLocal(reportContentRaw);
-  const localizedHeroIntro =
-    lang === "en" && settings.heroIntro.trim() === HERO_INTRO_IT ? HERO_INTRO_EN : heroIntro;
+  const localizedHeroIntro = lang === "en" ? HERO_INTRO_EN : HERO_INTRO_IT;
   const localizedFeaturedLabel =
     lang === "en" &&
     settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
