@@ -87,6 +87,20 @@ function Index() {
   const t = useT();
   const { lang } = useLanguage();
   const dateLocale = lang === "en" ? "en-GB" : "it-IT";
+  // Always format the raw Italian Google Doc into markdown first, regardless
+  // of the current UI language. This way EN translation receives already-
+  // structured markdown (headings, lists, blank lines) instead of a wall of
+  // uppercase text.
+  const formatFn = useServerFn(formatMarketReportLayout);
+  const rawContent = latestReport?.content ?? "";
+  const { data: formattedIt } = useQuery({
+    queryKey: ["market-report-format-it", latestReport?.id ?? "none"],
+    queryFn: () => formatFn({ data: { text: rawContent } }),
+    enabled: rawContent.trim().length > 0,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+  const formattedItText = formattedIt?.text ?? rawContent;
   const [
     heroTitle,
     heroIntro,
@@ -102,21 +116,9 @@ function Index() {
     settings.homeMarketLabel,
     settings.homeFeaturedLabel,
     latestReport?.title ?? "",
-    latestReport?.content ?? "",
+    formattedItText,
   ]);
-  // Always use the EN-style markdown layout, even when viewing in IT.
-  // In IT we re-format the raw Google Doc text without translating it.
-  const formatFn = useServerFn(formatMarketReportLayout);
-  const rawContent = latestReport?.content ?? "";
-  const { data: formattedIt } = useQuery({
-    queryKey: ["market-report-format-it", latestReport?.id ?? "none"],
-    queryFn: () => formatFn({ data: { text: rawContent } }),
-    enabled: lang === "it" && rawContent.trim().length > 0,
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
-  const reportContentRaw =
-    lang === "it" ? (formattedIt?.text ?? rawContent) : reportContentTranslated;
+  const reportContentRaw = lang === "it" ? formattedItText : reportContentTranslated;
   const reportContent = formatReportLocal(reportContentRaw);
   const localizedHeroIntro = lang === "en" ? HERO_INTRO_EN : HERO_INTRO_IT;
   const localizedFeaturedLabel =
