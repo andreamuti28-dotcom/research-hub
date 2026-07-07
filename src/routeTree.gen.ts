@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TerminiRouteImport } from './routes/termini'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as MutuoRouteImport } from './routes/mutuo'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as ArchivioRouteImport } from './routes/archivio'
 import { Route as AboutRouteImport } from './routes/about'
@@ -43,6 +44,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MutuoRoute = MutuoRouteImport.update({
+  id: '/mutuo',
+  path: '/mutuo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiePolicyRoute = CookiePolicyRouteImport.update({
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
@@ -159,6 +166,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
@@ -182,6 +190,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archivio'
     | '/cookie-policy'
+    | '/mutuo'
     | '/privacy'
     | '/sitemap.xml'
     | '/termini'
@@ -228,6 +238,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archivio'
     | '/cookie-policy'
+    | '/mutuo'
     | '/privacy'
     | '/sitemap.xml'
     | '/termini'
@@ -250,6 +261,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/archivio'
     | '/cookie-policy'
+    | '/mutuo'
     | '/privacy'
     | '/sitemap.xml'
     | '/termini'
@@ -273,6 +285,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ArchivioRoute: typeof ArchivioRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
+  MutuoRoute: typeof MutuoRoute
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TerminiRoute: typeof TerminiRoute
@@ -312,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mutuo': {
+      id: '/mutuo'
+      path: '/mutuo'
+      fullPath: '/mutuo'
+      preLoaderRoute: typeof MutuoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookie-policy': {
@@ -441,6 +461,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ArchivioRoute: ArchivioRoute,
   CookiePolicyRoute: CookiePolicyRoute,
+  MutuoRoute: MutuoRoute,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TerminiRoute: TerminiRoute,
