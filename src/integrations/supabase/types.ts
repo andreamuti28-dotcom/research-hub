@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      dashboards: {
+        Row: {
+          component_key: string
+          created_at: string
+          description: string | null
+          description_en: string | null
+          id: string
+          is_published: boolean
+          sort_order: number
+          title: string
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          component_key: string
+          created_at?: string
+          description?: string | null
+          description_en?: string | null
+          id?: string
+          is_published?: boolean
+          sort_order?: number
+          title: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          component_key?: string
+          created_at?: string
+          description?: string | null
+          description_en?: string | null
+          id?: string
+          is_published?: boolean
+          sort_order?: number
+          title?: string
+          title_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       market_reports: {
         Row: {
           content: string
