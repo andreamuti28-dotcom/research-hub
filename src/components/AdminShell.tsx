@@ -29,6 +29,7 @@ export function AdminShell({
             <Link to="/admin/new" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
             <Link to="/admin/news" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>News</Link>
             <Link to="/admin/market-sync" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Mercati</Link>
+            <Link to="/admin/dashboards" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Dashboard</Link>
             <Link to="/admin/users" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Utenti</Link>
             <Link to="/admin/keys" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Chiavi</Link>
             <Link to="/admin/content" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Contenuti</Link>
@@ -52,6 +53,7 @@ export function AdminShell({
             <Link to="/admin/new" className="hover:text-background" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
             <Link to="/admin/news" className="hover:text-background" activeProps={{ className: "text-background" }}>News</Link>
             <Link to="/admin/market-sync" className="hover:text-background" activeProps={{ className: "text-background" }}>Mercati</Link>
+            <Link to="/admin/dashboards" className="hover:text-background" activeProps={{ className: "text-background" }}>Dashboard</Link>
             <Link to="/admin/users" className="hover:text-background" activeProps={{ className: "text-background" }}>Utenti</Link>
             <Link to="/admin/keys" className="hover:text-background" activeProps={{ className: "text-background" }}>Chiavi</Link>
             <Link to="/admin/content" className="hover:text-background" activeProps={{ className: "text-background" }}>Contenuti</Link>

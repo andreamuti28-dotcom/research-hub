@@ -26,6 +26,7 @@ import { Route as AdminNewRouteImport } from './routes/admin.new'
 import { Route as AdminMarketSyncRouteImport } from './routes/admin.market-sync'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminKeysRouteImport } from './routes/admin.keys'
+import { Route as AdminDashboardsRouteImport } from './routes/admin.dashboards'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
@@ -116,6 +117,11 @@ const AdminKeysRoute = AdminKeysRouteImport.update({
   path: '/admin/keys',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDashboardsRoute = AdminDashboardsRouteImport.update({
+  id: '/admin/dashboards',
+  path: '/admin/dashboards',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminContentRoute = AdminContentRouteImport.update({
   id: '/admin/content',
   path: '/admin/content',
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/admin/content': typeof AdminContentRoute
+  '/admin/dashboards': typeof AdminDashboardsRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/market-sync': typeof AdminMarketSyncRoute
@@ -171,6 +178,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/admin/content': typeof AdminContentRoute
+  '/admin/dashboards': typeof AdminDashboardsRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/market-sync': typeof AdminMarketSyncRoute
@@ -195,6 +203,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/termini': typeof TerminiRoute
   '/admin/content': typeof AdminContentRoute
+  '/admin/dashboards': typeof AdminDashboardsRoute
   '/admin/keys': typeof AdminKeysRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/market-sync': typeof AdminMarketSyncRoute
@@ -220,6 +229,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termini'
     | '/admin/content'
+    | '/admin/dashboards'
     | '/admin/keys'
     | '/admin/login'
     | '/admin/market-sync'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termini'
     | '/admin/content'
+    | '/admin/dashboards'
     | '/admin/keys'
     | '/admin/login'
     | '/admin/market-sync'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/termini'
     | '/admin/content'
+    | '/admin/dashboards'
     | '/admin/keys'
     | '/admin/login'
     | '/admin/market-sync'
@@ -290,6 +302,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TerminiRoute: typeof TerminiRoute
   AdminContentRoute: typeof AdminContentRoute
+  AdminDashboardsRoute: typeof AdminDashboardsRoute
   AdminKeysRoute: typeof AdminKeysRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMarketSyncRoute: typeof AdminMarketSyncRoute
@@ -425,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKeysRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/dashboards': {
+      id: '/admin/dashboards'
+      path: '/admin/dashboards'
+      fullPath: '/admin/dashboards'
+      preLoaderRoute: typeof AdminDashboardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/content': {
       id: '/admin/content'
       path: '/admin/content'
@@ -466,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TerminiRoute: TerminiRoute,
   AdminContentRoute: AdminContentRoute,
+  AdminDashboardsRoute: AdminDashboardsRoute,
   AdminKeysRoute: AdminKeysRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMarketSyncRoute: AdminMarketSyncRoute,
