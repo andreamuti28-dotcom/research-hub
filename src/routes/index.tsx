@@ -143,6 +143,11 @@ function Index() {
       : marketLabel;
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
+  const [dashboardsOpen, setDashboardsOpen] = useState(false);
+  const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
+  const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
+  const dashboardsOpenLabel = lang === "en" ? "Open dashboard" : "Apri dashboard";
+  const visibleDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
 
   useEffect(() => {
     const channel = supabase
