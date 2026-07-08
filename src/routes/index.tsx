@@ -10,6 +10,8 @@ import { listPublishedPapers } from "@/lib/papers.functions";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
 import { getLatestMarketReport } from "@/lib/market-reports.functions";
 import { recordSiteVisit } from "@/lib/site-visits.functions";
+import { listPublishedDashboards } from "@/lib/dashboards.functions";
+import { dashboardPath } from "@/lib/dashboard-registry";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
@@ -41,6 +43,12 @@ const latestMarketReportQuery = {
   queryKey: ["market-reports", "latest"] as const,
   queryFn: () => getLatestMarketReport(),
   staleTime: 0,
+};
+
+const dashboardsQuery = {
+  queryKey: ["dashboards", "published"] as const,
+  queryFn: () => listPublishedDashboards(),
+  staleTime: 60_000,
 };
 
 export const Route = createFileRoute("/")({
@@ -75,6 +83,7 @@ export const Route = createFileRoute("/")({
       context.queryClient.ensureQueryData(papersQuery),
       context.queryClient.ensureQueryData(siteSettingsQuery),
       context.queryClient.ensureQueryData(latestMarketReportQuery),
+      context.queryClient.ensureQueryData(dashboardsQuery),
     ]),
   component: Index,
 });
@@ -83,6 +92,7 @@ function Index() {
   const { data: papers } = useSuspenseQuery(papersQuery);
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
   const { data: latestReport } = useQuery(latestMarketReportQuery);
+  const { data: dashboards = [] } = useQuery(dashboardsQuery);
   const queryClient = useQueryClient();
   const t = useT();
   const { lang } = useLanguage();
@@ -133,6 +143,11 @@ function Index() {
       : marketLabel;
   const [marketOpen, setMarketOpen] = useState(false);
   const [featuredOpen, setFeaturedOpen] = useState(false);
+  const [dashboardsOpen, setDashboardsOpen] = useState(false);
+  const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
+  const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
+  const dashboardsOpenLabel = lang === "en" ? "Open dashboard" : "Apri dashboard";
+  const visibleDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
 
   useEffect(() => {
     const channel = supabase
@@ -299,6 +314,84 @@ function Index() {
           </div>
         </section>
       )}
+
+      {visibleDashboards.length > 0 && (
+        <section className="border-t border-border bg-background">
+          <div className="max-w-6xl mx-auto px-6">
+            <button
+              type="button"
+              onClick={() => setDashboardsOpen((v) => !v)}
+              aria-expanded={dashboardsOpen}
+              className="group w-full flex items-center justify-between gap-6 py-7 md:py-9 text-left transition-colors"
+            >
+              <div className="flex items-center gap-4 min-w-0">
+                <span className="inline-flex items-center font-mono text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-amber-400 text-black shrink-0">
+                  {dashboardsBadge}
+                </span>
+                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
+                  {dashboardsLabel}
+                </h2>
+              </div>
+              <span
+                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all group-hover:border-primary group-hover:text-primary shrink-0"
+                style={{ transform: dashboardsOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+                aria-hidden
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-4 h-4"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
+            </button>
+            {dashboardsOpen && (
+              <div className="pb-10 md:pb-14 animate-fade-up">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {visibleDashboards.map((d) => {
+                    const path = dashboardPath(d.component_key)!;
+                    const title = lang === "en" && d.title_en ? d.title_en : d.title;
+                    const desc =
+                      lang === "en" && d.description_en ? d.description_en : d.description;
+                    return (
+                      <Link
+                        key={d.id}
+                        to={path}
+                        className="group block border border-border bg-surface p-6 hover:border-primary transition-colors"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="inline-flex items-center font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-400 text-black">
+                            {dashboardsBadge}
+                          </span>
+                        </div>
+                        <h3 className="font-display text-lg font-bold tracking-tight mb-2 group-hover:text-primary transition-colors">
+                          {title}
+                        </h3>
+                        {desc && (
+                          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                            {desc}
+                          </p>
+                        )}
+                        <span className="font-display text-[11px] font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 group-hover:text-primary group-hover:border-primary transition-all">
+                          {dashboardsOpenLabel} →
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+
 
       {settings.homeMarketEnabled && (
         <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
