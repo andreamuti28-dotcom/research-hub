@@ -10,6 +10,8 @@ import { listPublishedPapers } from "@/lib/papers.functions";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
 import { getLatestMarketReport } from "@/lib/market-reports.functions";
 import { recordSiteVisit } from "@/lib/site-visits.functions";
+import { listPublishedDashboards } from "@/lib/dashboards.functions";
+import { dashboardPath } from "@/lib/dashboard-registry";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
@@ -41,6 +43,12 @@ const latestMarketReportQuery = {
   queryKey: ["market-reports", "latest"] as const,
   queryFn: () => getLatestMarketReport(),
   staleTime: 0,
+};
+
+const dashboardsQuery = {
+  queryKey: ["dashboards", "published"] as const,
+  queryFn: () => listPublishedDashboards(),
+  staleTime: 60_000,
 };
 
 export const Route = createFileRoute("/")({
