@@ -83,6 +83,7 @@ export const Route = createFileRoute("/")({
       context.queryClient.ensureQueryData(papersQuery),
       context.queryClient.ensureQueryData(siteSettingsQuery),
       context.queryClient.ensureQueryData(latestMarketReportQuery),
+      context.queryClient.ensureQueryData(dashboardsQuery),
     ]),
   component: Index,
 });
@@ -91,6 +92,7 @@ function Index() {
   const { data: papers } = useSuspenseQuery(papersQuery);
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
   const { data: latestReport } = useQuery(latestMarketReportQuery);
+  const { data: dashboards = [] } = useQuery(dashboardsQuery);
   const queryClient = useQueryClient();
   const t = useT();
   const { lang } = useLanguage();
