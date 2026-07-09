@@ -159,15 +159,33 @@ function AboutPage() {
               <ul className="space-y-5">
                 {trEducation.map((e, i) => (
                   <TooltipItem key={i} description={e.description} settings={settings}>
-                    <div>
-                      <div className="font-display text-sm font-bold leading-snug">
-                        {e.name}
-                      </div>
-                      {e.detail && (
-                        <div className="font-mono text-[11px] opacity-80 mt-1 leading-relaxed">
-                          {e.detail}
+                    <div className="flex items-start gap-3">
+                      {e.logoUrl && (
+                        <div
+                          className="about-logo shrink-0 aspect-square flex items-center justify-center overflow-hidden mt-0.5"
+                          style={{
+                            maxWidth: `${settings.aboutLogoMaxWidth}px`,
+                            width: `${settings.aboutLogoMaxWidth}px`,
+                          }}
+                        >
+                          <img
+                            src={e.logoUrl}
+                            alt={e.name}
+                            className="w-full h-full object-contain"
+                            loading="lazy"
+                          />
                         </div>
                       )}
+                      <div className="min-w-0">
+                        <div className="font-display text-sm font-bold leading-snug">
+                          {e.name}
+                        </div>
+                        {e.detail && (
+                          <div className="font-mono text-[11px] opacity-80 mt-1 leading-relaxed">
+                            {e.detail}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </TooltipItem>
                 ))}
