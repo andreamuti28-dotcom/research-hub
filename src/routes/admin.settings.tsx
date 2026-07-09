@@ -1170,10 +1170,54 @@ function ColorField({ value, onChange }: { value: string; onChange: (v: string) 
 function EducationEditor({
   items,
   onChange,
+  uploadLogo,
 }: {
   items: EducationItem[];
   onChange: (next: EducationItem[]) => void;
+  uploadLogo: (args: {
+    data: {
+      fileName: string;
+      mimeType: "image/png" | "image/jpeg" | "image/webp" | "image/svg+xml";
+      folder: "software" | "certifications" | "languages" | "education";
+      base64: string;
+    };
+  }) => Promise<{ publicUrl: string }>;
 }) {
+  const [busy, setBusy] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  const handleFile = async (idx: number, file: File) => {
+    setErr(null);
+    setBusy(idx);
+    try {
+      const mime = file.type;
+      if (
+        mime !== "image/png" &&
+        mime !== "image/jpeg" &&
+        mime !== "image/webp" &&
+        mime !== "image/svg+xml"
+      ) {
+        throw new Error("Formato non supportato (PNG, JPG, WEBP, SVG).");
+      }
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Impossibile leggere il file."));
+        reader.readAsDataURL(file);
+      });
+      const { publicUrl } = await uploadLogo({
+        data: { fileName: file.name, mimeType: mime, folder: "education", base64 },
+      });
+      const next = [...items];
+      next[idx] = { ...next[idx], logoUrl: publicUrl };
+      onChange(next);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Upload fallito");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">
@@ -1182,7 +1226,20 @@ function EducationEditor({
       <div className="space-y-4">
         {items.map((it, i) => (
           <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-start">
+            <div className="grid grid-cols-[64px_1fr_1fr_auto_auto] gap-2 items-center">
+              <div className="w-16 h-16 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
+                {it.logoUrl ? (
+                  <img
+                    src={it.logoUrl}
+                    alt={it.name}
+                    className="w-full h-full object-contain p-1.5"
+                  />
+                ) : (
+                  <span className="font-mono text-[9px] uppercase tracking-widest text-neutral-400">
+                    no logo
+                  </span>
+                )}
+              </div>
               <input
                 type="text"
                 value={it.name}
@@ -1207,6 +1264,19 @@ function EducationEditor({
                 className={inputCls}
                 maxLength={300}
               />
+              <label className="px-3 py-3 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold cursor-pointer hover:border-background hover:text-background">
+                {busy === i ? "Carico…" : it.logoUrl ? "Sostituisci" : "Logo"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleFile(i, f);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
               <button
                 type="button"
                 onClick={() => onChange(items.filter((_, idx) => idx !== i))}
@@ -1229,10 +1299,11 @@ function EducationEditor({
           </div>
         ))}
       </div>
+      {err && <div className="font-mono text-[11px] text-destructive">{err}</div>}
       <button
         type="button"
         onClick={() =>
-          onChange([...items, { name: "", detail: "", description: "" }])
+          onChange([...items, { name: "", detail: "", description: "", logoUrl: null }])
         }
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
