@@ -1068,7 +1068,9 @@ function AdminSettingsPage() {
           <EducationEditor
             items={form.aboutEducation}
             onChange={(items) => setForm({ ...form, aboutEducation: items })}
+            uploadLogo={uploadLogo}
           />
+
 
           <LanguageEditor
             items={form.aboutLanguages}
