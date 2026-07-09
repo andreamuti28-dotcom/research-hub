@@ -291,6 +291,7 @@ const educationSchema = z.object({
   name: z.string().trim().min(1).max(120),
   detail: z.string().trim().max(300).default(""),
   description: z.string().trim().max(300).default(""),
+  logoUrl: z.string().trim().url().max(1000).nullable().default(null),
 });
 
 // Accept hex with optional alpha: #RGB, #RRGGBB, #RRGGBBAA
