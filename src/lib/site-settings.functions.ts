@@ -22,7 +22,7 @@ export type LanguageItem = {
   description: string;
 };
 export type LogoItem = { name: string; logoUrl: string | null; description: string };
-export type EducationItem = { name: string; detail: string; description: string };
+export type EducationItem = { name: string; detail: string; description: string; logoUrl: string | null };
 export type HobbyItem = { name: string; icon: string };
 
 export type SiteSettings = {
@@ -194,8 +194,9 @@ function coerceEducation(v: unknown): EducationItem[] {
       const name = typeof o.name === "string" ? o.name : "";
       const detail = typeof o.detail === "string" ? o.detail : "";
       const description = typeof o.description === "string" ? o.description : "";
+      const logoUrl = typeof o.logoUrl === "string" && o.logoUrl ? o.logoUrl : null;
       if (!name) return null;
-      return { name, detail, description };
+      return { name, detail, description, logoUrl };
     })
     .filter((x): x is EducationItem => x !== null);
 }
@@ -290,6 +291,7 @@ const educationSchema = z.object({
   name: z.string().trim().min(1).max(120),
   detail: z.string().trim().max(300).default(""),
   description: z.string().trim().max(300).default(""),
+  logoUrl: z.string().trim().url().max(1000).nullable().default(null),
 });
 
 // Accept hex with optional alpha: #RGB, #RRGGBB, #RRGGBBAA
@@ -593,7 +595,7 @@ const MIME_EXT: Record<string, string> = {
 const uploadLogoSchema = z.object({
   fileName: z.string().trim().min(1).max(255),
   mimeType: z.enum(ALLOWED_LOGO_MIME),
-  folder: z.enum(["software", "certifications", "languages"]),
+  folder: z.enum(["software", "certifications", "languages", "education"]),
   base64: z.string().min(1),
 });
 
