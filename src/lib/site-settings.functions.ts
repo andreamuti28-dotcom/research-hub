@@ -22,7 +22,7 @@ export type LanguageItem = {
   description: string;
 };
 export type LogoItem = { name: string; logoUrl: string | null; description: string };
-export type EducationItem = { name: string; detail: string; description: string };
+export type EducationItem = { name: string; detail: string; description: string; logoUrl: string | null };
 export type HobbyItem = { name: string; icon: string };
 
 export type SiteSettings = {
