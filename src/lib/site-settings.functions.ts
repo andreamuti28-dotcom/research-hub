@@ -194,8 +194,9 @@ function coerceEducation(v: unknown): EducationItem[] {
       const name = typeof o.name === "string" ? o.name : "";
       const detail = typeof o.detail === "string" ? o.detail : "";
       const description = typeof o.description === "string" ? o.description : "";
+      const logoUrl = typeof o.logoUrl === "string" && o.logoUrl ? o.logoUrl : null;
       if (!name) return null;
-      return { name, detail, description };
+      return { name, detail, description, logoUrl };
     })
     .filter((x): x is EducationItem => x !== null);
 }
