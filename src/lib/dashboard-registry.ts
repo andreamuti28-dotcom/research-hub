@@ -25,6 +25,16 @@ export const DASHBOARD_REGISTRY: Record<
     defaultTitle: "Stress Test di Portafoglio",
     defaultTitleEn: "Portfolio Stress Test",
   },
+  ribilanciamento: {
+    path: "/ribilanciamento",
+    defaultTitle: "Ribilanciamento e Drift di Portafoglio",
+    defaultTitleEn: "Portfolio Rebalancing & Drift",
+  },
+  "rischio-sequenza": {
+    path: "/rischio-sequenza",
+    defaultTitle: "Rischio di Sequenza dei Rendimenti",
+    defaultTitleEn: "Sequence of Returns Risk",
+  },
 };
 
 export type DashboardKey = keyof typeof DASHBOARD_REGISTRY;
