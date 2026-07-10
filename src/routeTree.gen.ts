@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TerminiRouteImport } from './routes/termini'
 import { Route as StressTestRouteImport } from './routes/stress-test'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RischioSequenzaRouteImport } from './routes/rischio-sequenza'
+import { Route as RibilanciamentoRouteImport } from './routes/ribilanciamento'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MutuoRouteImport } from './routes/mutuo'
 import { Route as InteresseCompostoRouteImport } from './routes/interesse-composto'
@@ -48,6 +50,16 @@ const StressTestRoute = StressTestRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RischioSequenzaRoute = RischioSequenzaRouteImport.update({
+  id: '/rischio-sequenza',
+  path: '/rischio-sequenza',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RibilanciamentoRoute = RibilanciamentoRouteImport.update({
+  id: '/ribilanciamento',
+  path: '/ribilanciamento',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -171,6 +183,8 @@ export interface FileRoutesByFullPath {
   '/interesse-composto': typeof InteresseCompostoRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
+  '/ribilanciamento': typeof RibilanciamentoRoute
+  '/rischio-sequenza': typeof RischioSequenzaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
@@ -198,6 +212,8 @@ export interface FileRoutesByTo {
   '/interesse-composto': typeof InteresseCompostoRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
+  '/ribilanciamento': typeof RibilanciamentoRoute
+  '/rischio-sequenza': typeof RischioSequenzaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
@@ -226,6 +242,8 @@ export interface FileRoutesById {
   '/interesse-composto': typeof InteresseCompostoRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
+  '/ribilanciamento': typeof RibilanciamentoRoute
+  '/rischio-sequenza': typeof RischioSequenzaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
@@ -255,6 +273,8 @@ export interface FileRouteTypes {
     | '/interesse-composto'
     | '/mutuo'
     | '/privacy'
+    | '/ribilanciamento'
+    | '/rischio-sequenza'
     | '/sitemap.xml'
     | '/stress-test'
     | '/termini'
@@ -282,6 +302,8 @@ export interface FileRouteTypes {
     | '/interesse-composto'
     | '/mutuo'
     | '/privacy'
+    | '/ribilanciamento'
+    | '/rischio-sequenza'
     | '/sitemap.xml'
     | '/stress-test'
     | '/termini'
@@ -309,6 +331,8 @@ export interface FileRouteTypes {
     | '/interesse-composto'
     | '/mutuo'
     | '/privacy'
+    | '/ribilanciamento'
+    | '/rischio-sequenza'
     | '/sitemap.xml'
     | '/stress-test'
     | '/termini'
@@ -337,6 +361,8 @@ export interface RootRouteChildren {
   InteresseCompostoRoute: typeof InteresseCompostoRoute
   MutuoRoute: typeof MutuoRoute
   PrivacyRoute: typeof PrivacyRoute
+  RibilanciamentoRoute: typeof RibilanciamentoRoute
+  RischioSequenzaRoute: typeof RischioSequenzaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   StressTestRoute: typeof StressTestRoute
   TerminiRoute: typeof TerminiRoute
@@ -377,6 +403,20 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rischio-sequenza': {
+      id: '/rischio-sequenza'
+      path: '/rischio-sequenza'
+      fullPath: '/rischio-sequenza'
+      preLoaderRoute: typeof RischioSequenzaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ribilanciamento': {
+      id: '/ribilanciamento'
+      path: '/ribilanciamento'
+      fullPath: '/ribilanciamento'
+      preLoaderRoute: typeof RibilanciamentoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -545,6 +585,8 @@ const rootRouteChildren: RootRouteChildren = {
   InteresseCompostoRoute: InteresseCompostoRoute,
   MutuoRoute: MutuoRoute,
   PrivacyRoute: PrivacyRoute,
+  RibilanciamentoRoute: RibilanciamentoRoute,
+  RischioSequenzaRoute: RischioSequenzaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   StressTestRoute: StressTestRoute,
   TerminiRoute: TerminiRoute,
