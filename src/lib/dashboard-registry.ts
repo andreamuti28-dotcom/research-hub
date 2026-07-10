@@ -10,6 +10,21 @@ export const DASHBOARD_REGISTRY: Record<
     defaultTitle: "Simulazione Mutuo",
     defaultTitleEn: "Mortgage Simulation",
   },
+  "interesse-composto": {
+    path: "/interesse-composto",
+    defaultTitle: "Interesse Semplice vs Composto",
+    defaultTitleEn: "Simple vs Compound Interest",
+  },
+  "efficienza-fiscale": {
+    path: "/efficienza-fiscale",
+    defaultTitle: "Efficienza Fiscale dei Capitali",
+    defaultTitleEn: "Capital Tax Efficiency",
+  },
+  "stress-test": {
+    path: "/stress-test",
+    defaultTitle: "Stress Test di Portafoglio",
+    defaultTitleEn: "Portfolio Stress Test",
+  },
 };
 
 export type DashboardKey = keyof typeof DASHBOARD_REGISTRY;
