@@ -10,9 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TerminiRouteImport } from './routes/termini'
+import { Route as StressTestRouteImport } from './routes/stress-test'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MutuoRouteImport } from './routes/mutuo'
+import { Route as InteresseCompostoRouteImport } from './routes/interesse-composto'
+import { Route as EfficienzaFiscaleRouteImport } from './routes/efficienza-fiscale'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as ArchivioRouteImport } from './routes/archivio'
 import { Route as AboutRouteImport } from './routes/about'
@@ -37,6 +40,11 @@ const TerminiRoute = TerminiRouteImport.update({
   path: '/termini',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StressTestRoute = StressTestRouteImport.update({
+  id: '/stress-test',
+  path: '/stress-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -50,6 +58,16 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const MutuoRoute = MutuoRouteImport.update({
   id: '/mutuo',
   path: '/mutuo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InteresseCompostoRoute = InteresseCompostoRouteImport.update({
+  id: '/interesse-composto',
+  path: '/interesse-composto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EfficienzaFiscaleRoute = EfficienzaFiscaleRouteImport.update({
+  id: '/efficienza-fiscale',
+  path: '/efficienza-fiscale',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiePolicyRoute = CookiePolicyRouteImport.update({
@@ -149,9 +167,12 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
+  '/interesse-composto': typeof InteresseCompostoRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboards': typeof AdminDashboardsRoute
@@ -173,9 +194,12 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
+  '/interesse-composto': typeof InteresseCompostoRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboards': typeof AdminDashboardsRoute
@@ -198,9 +222,12 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
+  '/interesse-composto': typeof InteresseCompostoRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboards': typeof AdminDashboardsRoute
@@ -224,9 +251,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/archivio'
     | '/cookie-policy'
+    | '/efficienza-fiscale'
+    | '/interesse-composto'
     | '/mutuo'
     | '/privacy'
     | '/sitemap.xml'
+    | '/stress-test'
     | '/termini'
     | '/admin/content'
     | '/admin/dashboards'
@@ -248,9 +278,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/archivio'
     | '/cookie-policy'
+    | '/efficienza-fiscale'
+    | '/interesse-composto'
     | '/mutuo'
     | '/privacy'
     | '/sitemap.xml'
+    | '/stress-test'
     | '/termini'
     | '/admin/content'
     | '/admin/dashboards'
@@ -272,9 +305,12 @@ export interface FileRouteTypes {
     | '/about'
     | '/archivio'
     | '/cookie-policy'
+    | '/efficienza-fiscale'
+    | '/interesse-composto'
     | '/mutuo'
     | '/privacy'
     | '/sitemap.xml'
+    | '/stress-test'
     | '/termini'
     | '/admin/content'
     | '/admin/dashboards'
@@ -297,9 +333,12 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ArchivioRoute: typeof ArchivioRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
+  EfficienzaFiscaleRoute: typeof EfficienzaFiscaleRoute
+  InteresseCompostoRoute: typeof InteresseCompostoRoute
   MutuoRoute: typeof MutuoRoute
   PrivacyRoute: typeof PrivacyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StressTestRoute: typeof StressTestRoute
   TerminiRoute: typeof TerminiRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminDashboardsRoute: typeof AdminDashboardsRoute
@@ -326,6 +365,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TerminiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stress-test': {
+      id: '/stress-test'
+      path: '/stress-test'
+      fullPath: '/stress-test'
+      preLoaderRoute: typeof StressTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -345,6 +391,20 @@ declare module '@tanstack/react-router' {
       path: '/mutuo'
       fullPath: '/mutuo'
       preLoaderRoute: typeof MutuoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/interesse-composto': {
+      id: '/interesse-composto'
+      path: '/interesse-composto'
+      fullPath: '/interesse-composto'
+      preLoaderRoute: typeof InteresseCompostoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/efficienza-fiscale': {
+      id: '/efficienza-fiscale'
+      path: '/efficienza-fiscale'
+      fullPath: '/efficienza-fiscale'
+      preLoaderRoute: typeof EfficienzaFiscaleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookie-policy': {
@@ -481,9 +541,12 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ArchivioRoute: ArchivioRoute,
   CookiePolicyRoute: CookiePolicyRoute,
+  EfficienzaFiscaleRoute: EfficienzaFiscaleRoute,
+  InteresseCompostoRoute: InteresseCompostoRoute,
   MutuoRoute: MutuoRoute,
   PrivacyRoute: PrivacyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StressTestRoute: StressTestRoute,
   TerminiRoute: TerminiRoute,
   AdminContentRoute: AdminContentRoute,
   AdminDashboardsRoute: AdminDashboardsRoute,
