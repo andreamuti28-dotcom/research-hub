@@ -79,38 +79,8 @@ function AdminMarketSync() {
     onError: (e) => toast.error(e instanceof Error ? e.message : "Errore salvataggio"),
   });
 
-  const editMutation = useMutation({
-    mutationFn: () =>
-      updateFn({
-        data: {
-          id: editingId!,
-          title: editTitle,
-          content: editContent,
-          reportDate: editDate,
-        },
-      }),
-    onSuccess: () => {
-      toast.success("Report aggiornato");
-      setEditingId(null);
-      queryClient.invalidateQueries({ queryKey: ["admin", "market-archive"] });
-      queryClient.invalidateQueries({ queryKey: ["market-reports"] });
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Errore"),
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteFn({ data: { id } }),
-    onSuccess: () => {
-      toast.success("Report eliminato");
-      setPendingDelete(null);
-      queryClient.invalidateQueries({ queryKey: ["admin", "market-archive"] });
-      queryClient.invalidateQueries({ queryKey: ["market-reports"] });
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Errore"),
-  });
-
   const status = statusQuery.data;
-  const archive = archiveQuery.data ?? [];
+
 
   return (
     <AdminShell title="Sincronizzazione Mercati">
