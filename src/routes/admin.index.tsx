@@ -8,7 +8,6 @@ import {
   listAllPapers,
   deletePaper,
 } from "@/lib/admin-papers.functions";
-import { getSiteVisitsStats } from "@/lib/site-visits.functions";
 import { formatDateShort } from "@/data/papers";
 
 export const Route = createFileRoute("/admin/")({
