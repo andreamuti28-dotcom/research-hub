@@ -8,7 +8,6 @@ import {
   listAllPapers,
   deletePaper,
 } from "@/lib/admin-papers.functions";
-import { getSiteVisitsStats } from "@/lib/site-visits.functions";
 import { formatDateShort } from "@/data/papers";
 
 export const Route = createFileRoute("/admin/")({
@@ -31,7 +30,6 @@ function AdminDashboard() {
   const queryClient = useQueryClient();
   const listFn = useServerFn(listAllPapers);
   const deleteFn = useServerFn(deletePaper);
-  const visitsFn = useServerFn(getSiteVisitsStats);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
   const adminQuery = useQuery({
@@ -58,12 +56,6 @@ function AdminDashboard() {
     enabled: adminQuery.data?.isAdmin === true,
   });
 
-  const visitsQuery = useQuery({
-    queryKey: ["admin", "site-visits"],
-    queryFn: () => visitsFn(),
-    enabled: adminQuery.data?.isAdmin === true,
-    refetchInterval: 60_000,
-  });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteFn({ data: { id } }),
@@ -105,54 +97,16 @@ function AdminDashboard() {
   }
 
   const papers = papersQuery.data ?? [];
-  const totalViews = papers.reduce((s, p) => s + (p.views ?? 0), 0);
-  const totalDownloads = papers.reduce((s, p) => s + (p.downloads ?? 0), 0);
   const published = papers.filter((p) => p.is_published).length;
 
-  const topByViews = [...papers].sort((a, b) => (b.views ?? 0) - (a.views ?? 0)).slice(0, 5);
-  const topByDownloads = [...papers].sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0)).slice(0, 5);
-  const maxViews = Math.max(1, ...topByViews.map((p) => p.views ?? 0));
-  const maxDownloads = Math.max(1, ...topByDownloads.map((p) => p.downloads ?? 0));
 
   return (
-    <AdminShell title="Dashboard CMS">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
-        <StatCard label="Visualizzazioni" value={totalViews.toLocaleString("it-IT")} />
-        <StatCard label="Download PDF" value={totalDownloads.toLocaleString("it-IT")} />
+    <AdminShell title="Recap CMS">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-8 sm:mb-10">
         <StatCard label="Pubblicati" value={`${published} / ${papers.length}`} />
       </div>
 
-      <div className="mb-8 sm:mb-10">
-        <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70 mb-3">
-          Visite al sito
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <StatCard
-            label="Visite totali"
-            value={(visitsQuery.data?.total ?? 0).toLocaleString("it-IT")}
-          />
-          <StatCard
-            label="Visitatori unici"
-            value={(visitsQuery.data?.uniqueVisitors ?? 0).toLocaleString("it-IT")}
-          />
-          <StatCard
-            label="Ultimi 30 giorni"
-            value={(visitsQuery.data?.last30Days ?? 0).toLocaleString("it-IT")}
-          />
-          <StatCard
-            label="Oggi"
-            value={(visitsQuery.data?.today ?? 0).toLocaleString("it-IT")}
-          />
-        </div>
-      </div>
 
-
-      {papers.length > 0 && (totalViews > 0 || totalDownloads > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-10">
-          <RankingPanel title="Top per visualizzazioni" items={topByViews} field="views" max={maxViews} />
-          <RankingPanel title="Top per download" items={topByDownloads} field="downloads" max={maxDownloads} />
-        </div>
-      )}
 
       <div className="flex items-center justify-between gap-3 mb-4">
         <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70">
@@ -262,47 +216,3 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function RankingPanel({
-  title,
-  items,
-  field,
-  max,
-}: {
-  title: string;
-  items: Array<{ id: string; title: string; views: number; downloads: number }>;
-  field: "views" | "downloads";
-  max: number;
-}) {
-  return (
-    <div className="bg-surface-dark-muted/30 p-6 border border-surface-dark-muted">
-      <div className="text-surface-dark-foreground/50 font-mono text-[10px] uppercase tracking-widest mb-4">
-        {title}
-      </div>
-      {items.length === 0 ? (
-        <div className="font-mono text-[10px] text-surface-dark-foreground/40">
-          Nessun dato
-        </div>
-      ) : (
-        <ul className="space-y-3">
-          {items.map((p) => {
-            const value = p[field] ?? 0;
-            const pct = Math.max(2, Math.round((value / max) * 100));
-            return (
-              <li key={p.id} className="space-y-1">
-                <div className="flex items-baseline justify-between gap-3 text-xs">
-                  <span className="text-background font-serif truncate">{p.title}</span>
-                  <span className="font-mono tabular-nums text-surface-dark-foreground/80">
-                    {value.toLocaleString("it-IT")}
-                  </span>
-                </div>
-                <div className="h-1 bg-surface-dark-muted overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </div>
-  );
-}
