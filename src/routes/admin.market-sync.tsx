@@ -41,27 +41,14 @@ function AdminMarketSync() {
   const statusFn = useServerFn(getMarketSyncStatus);
   const syncFn = useServerFn(syncMarketReportFromGoogleDoc);
   const saveFn = useServerFn(updateMarketSyncConfig);
-  const listFn = useServerFn(listArchivedMarketReports);
-  const updateFn = useServerFn(updateMarketReport);
-  const deleteFn = useServerFn(deleteMarketReport);
 
   const statusQuery = useQuery({
     queryKey: ["admin", "market-sync"],
     queryFn: () => statusFn(),
   });
 
-  const archiveQuery = useQuery({
-    queryKey: ["admin", "market-archive"],
-    queryFn: () => listFn(),
-  });
-
   const [docId, setDocId] = useState("");
   const [schedule, setSchedule] = useState<MarketSyncStatus["marketSyncSchedule"]>("daily_7am");
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editContent, setEditContent] = useState("");
-  const [editDate, setEditDate] = useState("");
-  const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (statusQuery.data) {
