@@ -56,12 +56,6 @@ function AdminDashboard() {
     enabled: adminQuery.data?.isAdmin === true,
   });
 
-  const visitsQuery = useQuery({
-    queryKey: ["admin", "site-visits"],
-    queryFn: () => visitsFn(),
-    enabled: adminQuery.data?.isAdmin === true,
-    refetchInterval: 60_000,
-  });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteFn({ data: { id } }),
