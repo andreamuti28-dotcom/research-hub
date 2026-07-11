@@ -115,44 +115,12 @@ function AdminDashboard() {
   const maxDownloads = Math.max(1, ...topByDownloads.map((p) => p.downloads ?? 0));
 
   return (
-    <AdminShell title="Dashboard CMS">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
-        <StatCard label="Visualizzazioni" value={totalViews.toLocaleString("it-IT")} />
-        <StatCard label="Download PDF" value={totalDownloads.toLocaleString("it-IT")} />
+    <AdminShell title="Recap CMS">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 mb-8 sm:mb-10">
         <StatCard label="Pubblicati" value={`${published} / ${papers.length}`} />
       </div>
 
-      <div className="mb-8 sm:mb-10">
-        <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70 mb-3">
-          Visite al sito
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <StatCard
-            label="Visite totali"
-            value={(visitsQuery.data?.total ?? 0).toLocaleString("it-IT")}
-          />
-          <StatCard
-            label="Visitatori unici"
-            value={(visitsQuery.data?.uniqueVisitors ?? 0).toLocaleString("it-IT")}
-          />
-          <StatCard
-            label="Ultimi 30 giorni"
-            value={(visitsQuery.data?.last30Days ?? 0).toLocaleString("it-IT")}
-          />
-          <StatCard
-            label="Oggi"
-            value={(visitsQuery.data?.today ?? 0).toLocaleString("it-IT")}
-          />
-        </div>
-      </div>
 
-
-      {papers.length > 0 && (totalViews > 0 || totalDownloads > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-8 sm:mb-10">
-          <RankingPanel title="Top per visualizzazioni" items={topByViews} field="views" max={maxViews} />
-          <RankingPanel title="Top per download" items={topByDownloads} field="downloads" max={maxDownloads} />
-        </div>
-      )}
 
       <div className="flex items-center justify-between gap-3 mb-4">
         <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70">
