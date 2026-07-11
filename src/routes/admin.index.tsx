@@ -97,14 +97,8 @@ function AdminDashboard() {
   }
 
   const papers = papersQuery.data ?? [];
-  const totalViews = papers.reduce((s, p) => s + (p.views ?? 0), 0);
-  const totalDownloads = papers.reduce((s, p) => s + (p.downloads ?? 0), 0);
   const published = papers.filter((p) => p.is_published).length;
 
-  const topByViews = [...papers].sort((a, b) => (b.views ?? 0) - (a.views ?? 0)).slice(0, 5);
-  const topByDownloads = [...papers].sort((a, b) => (b.downloads ?? 0) - (a.downloads ?? 0)).slice(0, 5);
-  const maxViews = Math.max(1, ...topByViews.map((p) => p.views ?? 0));
-  const maxDownloads = Math.max(1, ...topByDownloads.map((p) => p.downloads ?? 0));
 
   return (
     <AdminShell title="Recap CMS">
