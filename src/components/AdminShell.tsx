@@ -49,7 +49,7 @@ export function AdminShell({
         {/* Mobile sub-nav */}
         <div className="md:hidden border-t border-surface-dark-muted bg-surface-dark/95 overflow-x-auto">
           <div className="flex gap-4 px-4 py-2 font-display text-[10px] uppercase tracking-widest whitespace-nowrap">
-            <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background" activeProps={{ className: "text-background" }}>Dashboard</Link>
+            <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background" activeProps={{ className: "text-background" }}>Recap</Link>
             <Link to="/admin/new" className="hover:text-background" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
             <Link to="/admin/news" className="hover:text-background" activeProps={{ className: "text-background" }}>News</Link>
             <Link to="/admin/market-sync" className="hover:text-background" activeProps={{ className: "text-background" }}>Mercati</Link>
