@@ -79,11 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Andrea Muti — Finance" },
+      { title: "Andrea Muti - Finanza" },
       {
         name: "description",
         content:
-          "Archivio di paper e saggi di ricerca indipendente sull'intersezione tra etica digitale, infrastrutture e cognizione.",
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
       { name: "author", content: "Andrea Muti" },
       { name: "robots", content: "index, follow, max-image-preview:large" },
@@ -93,15 +93,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:locale", content: "it_IT" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@andreamuti" },
+      { property: "og:title", content: "Andrea Muti - Finanza" },
+      { name: "twitter:title", content: "Andrea Muti - Finanza" },
+      { property: "og:description", content: "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica." },
+      { name: "twitter:description", content: "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e43f982b-82ee-42aa-8793-668b7199540a/id-preview-d483303d--34b2a20e-95a6-4f33-89b6-7087554072b8.lovable.app-1783726509069.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e43f982b-82ee-42aa-8793-668b7199540a/id-preview-d483303d--34b2a20e-95a6-4f33-89b6-7087554072b8.lovable.app-1783726509069.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/x-icon", sizes: "16x16 32x32 48x48", href: "/favicon.ico" },
-      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon.ico" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon.ico" },
       { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
-      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
     ],
     scripts: [
       {
