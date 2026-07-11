@@ -30,8 +30,8 @@ function AdminDashboard() {
   const queryClient = useQueryClient();
   const listFn = useServerFn(listAllPapers);
   const deleteFn = useServerFn(deletePaper);
-  const visitsFn = useServerFn(getSiteVisitsStats);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+  void 0;
 
   const adminQuery = useQuery({
     queryKey: ["admin", "status"],
