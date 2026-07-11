@@ -49,13 +49,93 @@ function AdminNewsPage() {
     staleTime: 60 * 1000,
   });
 
-  const groups = useMemo(() => groupByDay(q.data?.items ?? []), [q.data]);
+  const [filterDay, setFilterDay] = useState<string>("");
+  const [filterMonth, setFilterMonth] = useState<string>("");
+  const [filterYear, setFilterYear] = useState<string>("");
+
+  const items = q.data?.items ?? [];
+
+  const { years, months, days } = useMemo(() => {
+    const y = new Set<string>();
+    const m = new Set<string>();
+    const d = new Set<string>();
+    for (const it of items) {
+      const dt = new Date(it.first_seen_at);
+      const yy = String(dt.getFullYear());
+      const mm = String(dt.getMonth() + 1).padStart(2, "0");
+      const dd = String(dt.getDate()).padStart(2, "0");
+      y.add(yy);
+      if (!filterYear || yy === filterYear) m.add(mm);
+      if ((!filterYear || yy === filterYear) && (!filterMonth || mm === filterMonth)) d.add(dd);
+    }
+    return {
+      years: Array.from(y).sort((a, b) => (a < b ? 1 : -1)),
+      months: Array.from(m).sort(),
+      days: Array.from(d).sort(),
+    };
+  }, [items, filterYear, filterMonth]);
+
+  const filtered = useMemo(() => {
+    return items.filter((it) => {
+      const dt = new Date(it.first_seen_at);
+      const yy = String(dt.getFullYear());
+      const mm = String(dt.getMonth() + 1).padStart(2, "0");
+      const dd = String(dt.getDate()).padStart(2, "0");
+      if (filterYear && yy !== filterYear) return false;
+      if (filterMonth && mm !== filterMonth) return false;
+      if (filterDay && dd !== filterDay) return false;
+      return true;
+    });
+  }, [items, filterYear, filterMonth, filterDay]);
+
+  const groups = useMemo(() => groupByDay(filtered), [filtered]);
+
+  const MONTH_NAMES = [
+    "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+    "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
+  ];
+
+  const selectCls =
+    "bg-surface-dark border border-surface-dark-muted text-background font-mono text-xs px-3 py-2 focus:outline-none focus:border-primary";
 
   return (
     <AdminShell title="Archivio News Finanziarie">
-      <p className="font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/60 mb-6">
+      <p className="font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/60 mb-4">
         Tutte le news viste dal sito, raggruppate per giorno di apparizione.
       </p>
+
+      <div className="flex flex-wrap items-end gap-3 mb-6">
+        <label className="flex flex-col gap-1">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">Giorno</span>
+          <select value={filterDay} onChange={(e) => setFilterDay(e.target.value)} className={selectCls}>
+            <option value="">Tutti</option>
+            {days.map((d) => <option key={d} value={d}>{d}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">Mese</span>
+          <select value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setFilterDay(""); }} className={selectCls}>
+            <option value="">Tutti</option>
+            {months.map((m) => <option key={m} value={m}>{MONTH_NAMES[Number(m) - 1]}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60">Anno</span>
+          <select value={filterYear} onChange={(e) => { setFilterYear(e.target.value); setFilterMonth(""); setFilterDay(""); }} className={selectCls}>
+            <option value="">Tutti</option>
+            {years.map((y) => <option key={y} value={y}>{y}</option>)}
+          </select>
+        </label>
+        {(filterDay || filterMonth || filterYear) && (
+          <button
+            type="button"
+            onClick={() => { setFilterDay(""); setFilterMonth(""); setFilterYear(""); }}
+            className="px-3 py-2 border border-surface-dark-muted text-surface-dark-foreground/80 hover:text-background hover:border-background font-mono text-[10px] uppercase tracking-widest"
+          >
+            Reset filtri
+          </button>
+        )}
+      </div>
 
       {q.isLoading && (
         <div className="font-mono text-xs text-surface-dark-foreground/60">
@@ -72,6 +152,7 @@ function AdminNewsPage() {
           Nessuna news archiviata.
         </div>
       )}
+
 
       <div className="space-y-8">
         {groups.map((g) => (
