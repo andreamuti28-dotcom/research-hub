@@ -9,9 +9,6 @@ import {
   getMarketSyncStatus,
   syncMarketReportFromGoogleDoc,
   updateMarketSyncConfig,
-  listArchivedMarketReports,
-  updateMarketReport,
-  deleteMarketReport,
   type MarketSyncStatus,
 } from "@/lib/market-reports.functions";
 
