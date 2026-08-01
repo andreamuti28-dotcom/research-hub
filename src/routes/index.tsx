@@ -147,7 +147,13 @@ function Index() {
   const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
   const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
   const dashboardsOpenLabel = lang === "en" ? "Open dashboard" : "Apri dashboard";
-  const visibleDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
+  const routableDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
+  const selectedDashboards = settings.featuredDashboardIds
+    .map((id) => routableDashboards.find((d) => d.id === id))
+    .filter((d): d is (typeof routableDashboards)[number] => Boolean(d));
+  const visibleDashboards = (
+    selectedDashboards.length > 0 ? selectedDashboards : routableDashboards
+  ).slice(0, 3);
 
   useEffect(() => {
     const channel = supabase
