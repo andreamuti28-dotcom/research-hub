@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -9,10 +9,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useTranslated } from "@/hooks/use-translated";
+import { useLanguage } from "@/hooks/use-language";
+import { Link } from "@tanstack/react-router";
+import { listPublishedDashboards } from "@/lib/dashboards.functions";
+import { dashboardPath } from "@/lib/dashboard-registry";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
   queryFn: () => listPublishedPapers(),
+};
+
+const dashboardsQuery = {
+  queryKey: ["dashboards", "published"] as const,
+  queryFn: () => listPublishedDashboards(),
+  staleTime: 60_000,
 };
 
 export const Route = createFileRoute("/archivio")({
@@ -45,12 +55,16 @@ export const Route = createFileRoute("/archivio")({
 });
 
 type SortKey = "recent" | "oldest" | "title";
+type TabKey = "papers" | "dashboards";
 
 function Archivio() {
   const { data: papers } = useSuspenseQuery(papersQuery);
   const queryClient = useQueryClient();
   const t = useT();
   const settings = useSiteSettings();
+  const { lang } = useLanguage();
+  const { data: dashboards = [] } = useQuery(dashboardsQuery);
+  const [tab, setTab] = useState<TabKey>("papers");
   const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
