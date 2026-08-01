@@ -204,6 +204,7 @@ export type Database = {
           favicon_pos_x: number
           favicon_pos_y: number
           favicon_url: string | null
+          featured_dashboard_ids: string[]
           featured_paper_ids: string[]
           header_bg: string
           hero_intro: string
@@ -259,6 +260,7 @@ export type Database = {
           favicon_pos_x?: number
           favicon_pos_y?: number
           favicon_url?: string | null
+          featured_dashboard_ids?: string[]
           featured_paper_ids?: string[]
           header_bg?: string
           hero_intro?: string
@@ -314,6 +316,7 @@ export type Database = {
           favicon_pos_x?: number
           favicon_pos_y?: number
           favicon_url?: string | null
+          featured_dashboard_ids?: string[]
           featured_paper_ids?: string[]
           header_bg?: string
           hero_intro?: string

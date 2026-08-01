@@ -1,0 +1,1 @@
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS featured_dashboard_ids uuid[] NOT NULL DEFAULT '{}'::uuid[];
