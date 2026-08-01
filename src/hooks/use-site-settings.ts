@@ -17,6 +17,7 @@ const DEFAULTS: SiteSettings = {
   contactEmail: "",
   portraitUrl: null,
   featuredPaperIds: [],
+  featuredDashboardIds: [],
   homeFeaturedLabel: "Paper in Evidenza",
   homeMarketLabel: "Analisi Mercati Finanziari",
   homeMarketEnabled: true,
