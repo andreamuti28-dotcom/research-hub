@@ -144,6 +144,13 @@ function AdminSettingsPage() {
     enabled: adminQuery.data?.isAdmin === true,
   });
 
+  const listDashboardsFn = useServerFn(listPublishedDashboards);
+  const dashboardsQuery = useQuery({
+    queryKey: ["dashboards", "published"],
+    queryFn: () => listDashboardsFn(),
+    enabled: adminQuery.data?.isAdmin === true,
+  });
+
   const [form, setForm] = useState<FormState | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -745,6 +752,49 @@ function AdminSettingsPage() {
                     .map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.title}
+                      </option>
+                    ))}
+                </select>
+              </Field>
+            );
+          })}
+        </section>
+
+        {/* Featured dashboards */}
+        <section className="border border-surface-dark-muted p-6 space-y-5">
+          <div>
+            <h2 className="font-display text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+              Dashboard interattive in evidenza (homepage)
+            </h2>
+            <p className="font-mono text-[10px] text-surface-dark-foreground/50 mt-2 leading-relaxed">
+              Seleziona fino a 3 dashboard da mostrare in home. Tutte le altre restano
+              disponibili nell'archivio.
+            </p>
+          </div>
+          {[0, 1, 2].map((slot) => {
+            const value = form.featuredDashboardIds[slot] ?? "";
+            const otherSelected = form.featuredDashboardIds.filter((_, i) => i !== slot);
+            return (
+              <Field key={slot} label={`Slot ${slot + 1}`}>
+                <select
+                  value={value}
+                  onChange={(e) => {
+                    const next: string[] = [
+                      form.featuredDashboardIds[0] ?? "",
+                      form.featuredDashboardIds[1] ?? "",
+                      form.featuredDashboardIds[2] ?? "",
+                    ];
+                    next[slot] = e.target.value;
+                    setForm({ ...form, featuredDashboardIds: next });
+                  }}
+                  className={inputCls}
+                >
+                  <option value="">— Nessuna —</option>
+                  {(dashboardsQuery.data ?? [])
+                    .filter((d) => d.id === value || !otherSelected.includes(d.id))
+                    .map((d) => (
+                      <option key={d.id} value={d.id}>
+                        {d.title}
                       </option>
                     ))}
                 </select>
