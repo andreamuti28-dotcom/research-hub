@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
 import { checkAdminStatus } from "@/lib/admin-papers.functions";
 import { listPublishedPapers } from "@/lib/papers.functions";
+import { listPublishedDashboards } from "@/lib/dashboards.functions";
 import {
   getSiteSettings,
   updateSiteSettings,
@@ -47,6 +48,7 @@ type FormState = {
   contactEmail: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  featuredDashboardIds: string[];
   homeFeaturedLabel: string;
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
@@ -159,6 +161,7 @@ function AdminSettingsPage() {
         contactEmail: s.contactEmail,
         portraitUrl: s.portraitUrl,
         featuredPaperIds: s.featuredPaperIds,
+        featuredDashboardIds: s.featuredDashboardIds,
         homeFeaturedLabel: s.homeFeaturedLabel,
         homeMarketLabel: s.homeMarketLabel,
         homeMarketEnabled: s.homeMarketEnabled,
@@ -394,6 +397,7 @@ function AdminSettingsPage() {
     saveMutation.mutate({
       ...form,
       featuredPaperIds: form.featuredPaperIds.filter((id) => id && id.length > 0),
+      featuredDashboardIds: form.featuredDashboardIds.filter((id) => id && id.length > 0),
     });
   };
 

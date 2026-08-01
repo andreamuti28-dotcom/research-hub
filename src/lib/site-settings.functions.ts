@@ -34,6 +34,7 @@ export type SiteSettings = {
   contactEmail: string;
   portraitUrl: string | null;
   featuredPaperIds: string[];
+  featuredDashboardIds: string[];
   homeFeaturedLabel: string;
   homeMarketLabel: string;
   homeMarketEnabled: boolean;
@@ -84,6 +85,7 @@ const DEFAULTS: SiteSettings = {
   contactEmail: "",
   portraitUrl: null,
   featuredPaperIds: [],
+  featuredDashboardIds: [],
   homeFeaturedLabel: "Paper in Evidenza",
   homeMarketLabel: "Analisi Mercati Finanziari",
   homeMarketEnabled: true,
@@ -231,6 +233,11 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       contactEmail: typeof d.contact_email === "string" ? d.contact_email : "",
       portraitUrl: (d.portrait_url as string | null) ?? null,
       featuredPaperIds: Array.isArray(raw) ? raw.slice(0, 3) : [],
+      featuredDashboardIds: Array.isArray(
+        (d as { featured_dashboard_ids?: string[] | null }).featured_dashboard_ids,
+      )
+        ? ((d as { featured_dashboard_ids: string[] }).featured_dashboard_ids).slice(0, 3)
+        : [],
       homeFeaturedLabel: str(d.home_featured_label, DEFAULTS.homeFeaturedLabel),
       homeMarketLabel: str(d.home_market_label, DEFAULTS.homeMarketLabel),
       homeMarketEnabled:
@@ -309,6 +316,7 @@ const updateSchema = z.object({
   contactEmail: z.union([z.string().trim().email().max(254), z.literal("")]).default(""),
   portraitUrl: z.string().trim().url().max(1000).nullable().optional(),
   featuredPaperIds: z.array(z.string().uuid()).max(3).default([]),
+  featuredDashboardIds: z.array(z.string().uuid()).max(3).default([]),
   homeFeaturedLabel: z.string().trim().min(1).max(120),
   homeMarketLabel: z.string().trim().min(1).max(120),
   homeMarketEnabled: z.boolean(),
@@ -383,6 +391,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       contact_email: data.contactEmail || null,
       portrait_url: data.portraitUrl ?? null,
       featured_paper_ids: data.featuredPaperIds,
+      featured_dashboard_ids: data.featuredDashboardIds,
       home_featured_label: data.homeFeaturedLabel,
       home_market_label: data.homeMarketLabel,
       home_market_enabled: data.homeMarketEnabled,
