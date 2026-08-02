@@ -35,6 +35,56 @@ export const DASHBOARD_REGISTRY: Record<
     defaultTitle: "Rischio di Sequenza dei Rendimenti",
     defaultTitleEn: "Sequence of Returns Risk",
   },
+  "dividend-yield": {
+    path: "/dividend-yield",
+    defaultTitle: "Dividend Yield on Cost e Crescita dei Dividendi",
+    defaultTitleEn: "Dividend Yield on Cost & Growth",
+  },
+  "sostenibilita-debito": {
+    path: "/sostenibilita-debito",
+    defaultTitle: "Sostenibilità del Debito",
+    defaultTitleEn: "Debt Service Coverage",
+  },
+  "beta-volatilita": {
+    path: "/beta-volatilita",
+    defaultTitle: "Beta e Volatilità del Portafoglio",
+    defaultTitleEn: "Portfolio Beta & Volatility",
+  },
+  "rendimento-reale": {
+    path: "/rendimento-reale",
+    defaultTitle: "Rendimento Reale e Inflazione",
+    defaultTitleEn: "Real Return & Inflation",
+  },
+  "twr-mwr": {
+    path: "/twr-mwr",
+    defaultTitle: "TWR vs MWR",
+    defaultTitleEn: "TWR vs MWR",
+  },
+  "tracking-error": {
+    path: "/tracking-error",
+    defaultTitle: "Tracking Error e Information Ratio",
+    defaultTitleEn: "Tracking Error & Information Ratio",
+  },
+  "costo-opportunita": {
+    path: "/costo-opportunita",
+    defaultTitle: "Costo Opportunità degli Investimenti",
+    defaultTitleEn: "Opportunity Cost Simulator",
+  },
+  "max-drawdown": {
+    path: "/max-drawdown",
+    defaultTitle: "Massimo Drawdown Storico",
+    defaultTitleEn: "Maximum Drawdown History",
+  },
+  "asset-location": {
+    path: "/asset-location",
+    defaultTitle: "Asset Location e Efficienza Fiscale",
+    defaultTitleEn: "Asset Location Efficiency",
+  },
+  "burn-rate-pensione": {
+    path: "/burn-rate-pensione",
+    defaultTitle: "Burn Rate e Sostenibilità in Pensione",
+    defaultTitleEn: "Retirement Burn Rate",
+  },
 };
 
 export type DashboardKey = keyof typeof DASHBOARD_REGISTRY;
