@@ -53,29 +53,7 @@ const dashboardsQuery = {
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Andrea Muti - Finanza" },
-      {
-        name: "description",
-        content:
-          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
-      },
-      { property: "og:title", content: "Andrea Muti - Finanza" },
-      {
-        property: "og:description",
-        content:
-          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
-      },
-      { property: "og:url", content: "https://www.andreamuti.com/" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Andrea Muti - Finanza" },
-      {
-        name: "twitter:description",
-        content:
-          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
-      },
-    ],
+    meta: [{ property: "og:url", content: "https://www.andreamuti.com/" }],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
   }),
   loader: ({ context }) =>
