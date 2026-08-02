@@ -86,7 +86,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
       },
       { name: "author", content: "Andrea Muti" },
-      { name: "robots", content: "index, follow, max-image-preview:large" },
+      { name: "google-site-verification", content: "gHd0k9VUZ9v5UGeKwg1uMMfWOt_ul1gqfnm6wErCOls" },
       { name: "theme-color", content: "#ffffff" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Andrea Muti" },
