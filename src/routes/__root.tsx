@@ -87,7 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "author", content: "Andrea Muti" },
       { name: "google-site-verification", content: "gHd0k9VUZ9v5UGeKwg1uMMfWOt_ul1gqfnm6wErCOls" },
-      { name: "theme-color", content: "#ffffff" },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Andrea Muti" },
       { property: "og:locale", content: "it_IT" },
