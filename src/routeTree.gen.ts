@@ -9,16 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TwrMwrRouteImport } from './routes/twr-mwr'
+import { Route as TrackingErrorRouteImport } from './routes/tracking-error'
 import { Route as TerminiRouteImport } from './routes/termini'
 import { Route as StressTestRouteImport } from './routes/stress-test'
+import { Route as SostenibilitaDebitoRouteImport } from './routes/sostenibilita-debito'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RischioSequenzaRouteImport } from './routes/rischio-sequenza'
 import { Route as RibilanciamentoRouteImport } from './routes/ribilanciamento'
+import { Route as RendimentoRealeRouteImport } from './routes/rendimento-reale'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as MutuoRouteImport } from './routes/mutuo'
+import { Route as MaxDrawdownRouteImport } from './routes/max-drawdown'
 import { Route as InteresseCompostoRouteImport } from './routes/interesse-composto'
 import { Route as EfficienzaFiscaleRouteImport } from './routes/efficienza-fiscale'
+import { Route as DividendYieldRouteImport } from './routes/dividend-yield'
+import { Route as CostoOpportunitaRouteImport } from './routes/costo-opportunita'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
+import { Route as BurnRatePensioneRouteImport } from './routes/burn-rate-pensione'
+import { Route as BetaVolatilitaRouteImport } from './routes/beta-volatilita'
+import { Route as AssetLocationRouteImport } from './routes/asset-location'
 import { Route as ArchivioRouteImport } from './routes/archivio'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,6 +47,16 @@ import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 import { Route as ApiPublicHooksMarketSyncRouteImport } from './routes/api/public/hooks/market-sync'
 
+const TwrMwrRoute = TwrMwrRouteImport.update({
+  id: '/twr-mwr',
+  path: '/twr-mwr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackingErrorRoute = TrackingErrorRouteImport.update({
+  id: '/tracking-error',
+  path: '/tracking-error',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TerminiRoute = TerminiRouteImport.update({
   id: '/termini',
   path: '/termini',
@@ -45,6 +65,11 @@ const TerminiRoute = TerminiRouteImport.update({
 const StressTestRoute = StressTestRouteImport.update({
   id: '/stress-test',
   path: '/stress-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SostenibilitaDebitoRoute = SostenibilitaDebitoRouteImport.update({
+  id: '/sostenibilita-debito',
+  path: '/sostenibilita-debito',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -62,6 +87,11 @@ const RibilanciamentoRoute = RibilanciamentoRouteImport.update({
   path: '/ribilanciamento',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RendimentoRealeRoute = RendimentoRealeRouteImport.update({
+  id: '/rendimento-reale',
+  path: '/rendimento-reale',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -70,6 +100,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const MutuoRoute = MutuoRouteImport.update({
   id: '/mutuo',
   path: '/mutuo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaxDrawdownRoute = MaxDrawdownRouteImport.update({
+  id: '/max-drawdown',
+  path: '/max-drawdown',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InteresseCompostoRoute = InteresseCompostoRouteImport.update({
@@ -82,9 +117,34 @@ const EfficienzaFiscaleRoute = EfficienzaFiscaleRouteImport.update({
   path: '/efficienza-fiscale',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DividendYieldRoute = DividendYieldRouteImport.update({
+  id: '/dividend-yield',
+  path: '/dividend-yield',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CostoOpportunitaRoute = CostoOpportunitaRouteImport.update({
+  id: '/costo-opportunita',
+  path: '/costo-opportunita',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CookiePolicyRoute = CookiePolicyRouteImport.update({
   id: '/cookie-policy',
   path: '/cookie-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BurnRatePensioneRoute = BurnRatePensioneRouteImport.update({
+  id: '/burn-rate-pensione',
+  path: '/burn-rate-pensione',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BetaVolatilitaRoute = BetaVolatilitaRouteImport.update({
+  id: '/beta-volatilita',
+  path: '/beta-volatilita',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssetLocationRoute = AssetLocationRouteImport.update({
+  id: '/asset-location',
+  path: '/asset-location',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ArchivioRoute = ArchivioRouteImport.update({
@@ -178,16 +238,26 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
+  '/asset-location': typeof AssetLocationRoute
+  '/beta-volatilita': typeof BetaVolatilitaRoute
+  '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/costo-opportunita': typeof CostoOpportunitaRoute
+  '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
+  '/max-drawdown': typeof MaxDrawdownRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
+  '/rendimento-reale': typeof RendimentoRealeRoute
   '/ribilanciamento': typeof RibilanciamentoRoute
   '/rischio-sequenza': typeof RischioSequenzaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sostenibilita-debito': typeof SostenibilitaDebitoRoute
   '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
+  '/tracking-error': typeof TrackingErrorRoute
+  '/twr-mwr': typeof TwrMwrRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboards': typeof AdminDashboardsRoute
   '/admin/keys': typeof AdminKeysRoute
@@ -207,16 +277,26 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
+  '/asset-location': typeof AssetLocationRoute
+  '/beta-volatilita': typeof BetaVolatilitaRoute
+  '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/costo-opportunita': typeof CostoOpportunitaRoute
+  '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
+  '/max-drawdown': typeof MaxDrawdownRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
+  '/rendimento-reale': typeof RendimentoRealeRoute
   '/ribilanciamento': typeof RibilanciamentoRoute
   '/rischio-sequenza': typeof RischioSequenzaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sostenibilita-debito': typeof SostenibilitaDebitoRoute
   '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
+  '/tracking-error': typeof TrackingErrorRoute
+  '/twr-mwr': typeof TwrMwrRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboards': typeof AdminDashboardsRoute
   '/admin/keys': typeof AdminKeysRoute
@@ -237,16 +317,26 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/archivio': typeof ArchivioRoute
+  '/asset-location': typeof AssetLocationRoute
+  '/beta-volatilita': typeof BetaVolatilitaRoute
+  '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
+  '/costo-opportunita': typeof CostoOpportunitaRoute
+  '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
+  '/max-drawdown': typeof MaxDrawdownRoute
   '/mutuo': typeof MutuoRoute
   '/privacy': typeof PrivacyRoute
+  '/rendimento-reale': typeof RendimentoRealeRoute
   '/ribilanciamento': typeof RibilanciamentoRoute
   '/rischio-sequenza': typeof RischioSequenzaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/sostenibilita-debito': typeof SostenibilitaDebitoRoute
   '/stress-test': typeof StressTestRoute
   '/termini': typeof TerminiRoute
+  '/tracking-error': typeof TrackingErrorRoute
+  '/twr-mwr': typeof TwrMwrRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/dashboards': typeof AdminDashboardsRoute
   '/admin/keys': typeof AdminKeysRoute
@@ -268,16 +358,26 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/archivio'
+    | '/asset-location'
+    | '/beta-volatilita'
+    | '/burn-rate-pensione'
     | '/cookie-policy'
+    | '/costo-opportunita'
+    | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
+    | '/max-drawdown'
     | '/mutuo'
     | '/privacy'
+    | '/rendimento-reale'
     | '/ribilanciamento'
     | '/rischio-sequenza'
     | '/sitemap.xml'
+    | '/sostenibilita-debito'
     | '/stress-test'
     | '/termini'
+    | '/tracking-error'
+    | '/twr-mwr'
     | '/admin/content'
     | '/admin/dashboards'
     | '/admin/keys'
@@ -297,16 +397,26 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/archivio'
+    | '/asset-location'
+    | '/beta-volatilita'
+    | '/burn-rate-pensione'
     | '/cookie-policy'
+    | '/costo-opportunita'
+    | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
+    | '/max-drawdown'
     | '/mutuo'
     | '/privacy'
+    | '/rendimento-reale'
     | '/ribilanciamento'
     | '/rischio-sequenza'
     | '/sitemap.xml'
+    | '/sostenibilita-debito'
     | '/stress-test'
     | '/termini'
+    | '/tracking-error'
+    | '/twr-mwr'
     | '/admin/content'
     | '/admin/dashboards'
     | '/admin/keys'
@@ -326,16 +436,26 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/archivio'
+    | '/asset-location'
+    | '/beta-volatilita'
+    | '/burn-rate-pensione'
     | '/cookie-policy'
+    | '/costo-opportunita'
+    | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
+    | '/max-drawdown'
     | '/mutuo'
     | '/privacy'
+    | '/rendimento-reale'
     | '/ribilanciamento'
     | '/rischio-sequenza'
     | '/sitemap.xml'
+    | '/sostenibilita-debito'
     | '/stress-test'
     | '/termini'
+    | '/tracking-error'
+    | '/twr-mwr'
     | '/admin/content'
     | '/admin/dashboards'
     | '/admin/keys'
@@ -356,16 +476,26 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   ArchivioRoute: typeof ArchivioRoute
+  AssetLocationRoute: typeof AssetLocationRoute
+  BetaVolatilitaRoute: typeof BetaVolatilitaRoute
+  BurnRatePensioneRoute: typeof BurnRatePensioneRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
+  CostoOpportunitaRoute: typeof CostoOpportunitaRoute
+  DividendYieldRoute: typeof DividendYieldRoute
   EfficienzaFiscaleRoute: typeof EfficienzaFiscaleRoute
   InteresseCompostoRoute: typeof InteresseCompostoRoute
+  MaxDrawdownRoute: typeof MaxDrawdownRoute
   MutuoRoute: typeof MutuoRoute
   PrivacyRoute: typeof PrivacyRoute
+  RendimentoRealeRoute: typeof RendimentoRealeRoute
   RibilanciamentoRoute: typeof RibilanciamentoRoute
   RischioSequenzaRoute: typeof RischioSequenzaRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SostenibilitaDebitoRoute: typeof SostenibilitaDebitoRoute
   StressTestRoute: typeof StressTestRoute
   TerminiRoute: typeof TerminiRoute
+  TrackingErrorRoute: typeof TrackingErrorRoute
+  TwrMwrRoute: typeof TwrMwrRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminDashboardsRoute: typeof AdminDashboardsRoute
   AdminKeysRoute: typeof AdminKeysRoute
@@ -384,6 +514,20 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/twr-mwr': {
+      id: '/twr-mwr'
+      path: '/twr-mwr'
+      fullPath: '/twr-mwr'
+      preLoaderRoute: typeof TwrMwrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracking-error': {
+      id: '/tracking-error'
+      path: '/tracking-error'
+      fullPath: '/tracking-error'
+      preLoaderRoute: typeof TrackingErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/termini': {
       id: '/termini'
       path: '/termini'
@@ -396,6 +540,13 @@ declare module '@tanstack/react-router' {
       path: '/stress-test'
       fullPath: '/stress-test'
       preLoaderRoute: typeof StressTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sostenibilita-debito': {
+      id: '/sostenibilita-debito'
+      path: '/sostenibilita-debito'
+      fullPath: '/sostenibilita-debito'
+      preLoaderRoute: typeof SostenibilitaDebitoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -419,6 +570,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RibilanciamentoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rendimento-reale': {
+      id: '/rendimento-reale'
+      path: '/rendimento-reale'
+      fullPath: '/rendimento-reale'
+      preLoaderRoute: typeof RendimentoRealeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -431,6 +589,13 @@ declare module '@tanstack/react-router' {
       path: '/mutuo'
       fullPath: '/mutuo'
       preLoaderRoute: typeof MutuoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/max-drawdown': {
+      id: '/max-drawdown'
+      path: '/max-drawdown'
+      fullPath: '/max-drawdown'
+      preLoaderRoute: typeof MaxDrawdownRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/interesse-composto': {
@@ -447,11 +612,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EfficienzaFiscaleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dividend-yield': {
+      id: '/dividend-yield'
+      path: '/dividend-yield'
+      fullPath: '/dividend-yield'
+      preLoaderRoute: typeof DividendYieldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/costo-opportunita': {
+      id: '/costo-opportunita'
+      path: '/costo-opportunita'
+      fullPath: '/costo-opportunita'
+      preLoaderRoute: typeof CostoOpportunitaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/cookie-policy': {
       id: '/cookie-policy'
       path: '/cookie-policy'
       fullPath: '/cookie-policy'
       preLoaderRoute: typeof CookiePolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/burn-rate-pensione': {
+      id: '/burn-rate-pensione'
+      path: '/burn-rate-pensione'
+      fullPath: '/burn-rate-pensione'
+      preLoaderRoute: typeof BurnRatePensioneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beta-volatilita': {
+      id: '/beta-volatilita'
+      path: '/beta-volatilita'
+      fullPath: '/beta-volatilita'
+      preLoaderRoute: typeof BetaVolatilitaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/asset-location': {
+      id: '/asset-location'
+      path: '/asset-location'
+      fullPath: '/asset-location'
+      preLoaderRoute: typeof AssetLocationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/archivio': {
@@ -580,16 +780,26 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   ArchivioRoute: ArchivioRoute,
+  AssetLocationRoute: AssetLocationRoute,
+  BetaVolatilitaRoute: BetaVolatilitaRoute,
+  BurnRatePensioneRoute: BurnRatePensioneRoute,
   CookiePolicyRoute: CookiePolicyRoute,
+  CostoOpportunitaRoute: CostoOpportunitaRoute,
+  DividendYieldRoute: DividendYieldRoute,
   EfficienzaFiscaleRoute: EfficienzaFiscaleRoute,
   InteresseCompostoRoute: InteresseCompostoRoute,
+  MaxDrawdownRoute: MaxDrawdownRoute,
   MutuoRoute: MutuoRoute,
   PrivacyRoute: PrivacyRoute,
+  RendimentoRealeRoute: RendimentoRealeRoute,
   RibilanciamentoRoute: RibilanciamentoRoute,
   RischioSequenzaRoute: RischioSequenzaRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SostenibilitaDebitoRoute: SostenibilitaDebitoRoute,
   StressTestRoute: StressTestRoute,
   TerminiRoute: TerminiRoute,
+  TrackingErrorRoute: TrackingErrorRoute,
+  TwrMwrRoute: TwrMwrRoute,
   AdminContentRoute: AdminContentRoute,
   AdminDashboardsRoute: AdminDashboardsRoute,
   AdminKeysRoute: AdminKeysRoute,
