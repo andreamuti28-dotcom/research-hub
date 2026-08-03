@@ -241,21 +241,15 @@ function Index() {
               >
                 {t("home.ctaReadPapers")}
               </Link>
-              {settings.homeMarketEnabled && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMarketOpen(true);
-                    requestAnimationFrame(() =>
-                      document
-                        .getElementById("market-section")
-                        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                    );
-                  }}
+              {settings.forbesUrl && (
+                <a
+                  href={settings.forbesUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
                   className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-foreground text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors whitespace-nowrap"
                 >
-                  {t("home.ctaMarkets")}
-                </button>
+                  Forbes
+                </a>
               )}
               <a
                 href={settings.linkedinUrl}
