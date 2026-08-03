@@ -30,6 +30,9 @@ export type SiteSettings = {
   heroTitle: string;
   heroVideoUrl: string | null;
   heroIntro: string;
+  heroLogoLightUrl: string | null;
+  heroLogoDarkUrl: string | null;
+  forbesUrl: string;
   linkedinUrl: string;
   contactEmail: string;
   portraitUrl: string | null;
@@ -81,6 +84,9 @@ const DEFAULTS: SiteSettings = {
   heroVideoUrl: null,
   heroIntro:
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
+  heroLogoLightUrl: null,
+  heroLogoDarkUrl: null,
+  forbesUrl: "",
   linkedinUrl: "https://www.linkedin.com",
   contactEmail: "",
   portraitUrl: null,
@@ -229,6 +235,9 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       heroTitle: str(d.hero_title, DEFAULTS.heroTitle),
       heroVideoUrl: (d.hero_video_url as string | null) ?? null,
       heroIntro: str(d.hero_intro, DEFAULTS.heroIntro),
+      heroLogoLightUrl: (d.hero_logo_light_url as string | null) ?? null,
+      heroLogoDarkUrl: (d.hero_logo_dark_url as string | null) ?? null,
+      forbesUrl: typeof d.forbes_url === "string" ? d.forbes_url : "",
       linkedinUrl: str(d.linkedin_url, DEFAULTS.linkedinUrl),
       contactEmail: typeof d.contact_email === "string" ? d.contact_email : "",
       portraitUrl: (d.portrait_url as string | null) ?? null,
@@ -312,6 +321,9 @@ const updateSchema = z.object({
   heroTitle: z.string().trim().min(1).max(500),
   heroVideoUrl: z.string().trim().url().max(2000).nullable().optional(),
   heroIntro: z.string().trim().min(1).max(2000),
+  heroLogoLightUrl: z.string().trim().url().max(1000).nullable().optional(),
+  heroLogoDarkUrl: z.string().trim().url().max(1000).nullable().optional(),
+  forbesUrl: z.union([z.string().trim().url().max(500), z.literal("")]).default(""),
   linkedinUrl: z.string().trim().url().max(500),
   contactEmail: z.union([z.string().trim().email().max(254), z.literal("")]).default(""),
   portraitUrl: z.string().trim().url().max(1000).nullable().optional(),
@@ -387,6 +399,9 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       hero_title: data.heroTitle,
       hero_video_url: data.heroVideoUrl ?? null,
       hero_intro: data.heroIntro,
+      hero_logo_light_url: data.heroLogoLightUrl ?? null,
+      hero_logo_dark_url: data.heroLogoDarkUrl ?? null,
+      forbes_url: data.forbesUrl || null,
       linkedin_url: data.linkedinUrl,
       contact_email: data.contactEmail || null,
       portrait_url: data.portraitUrl ?? null,

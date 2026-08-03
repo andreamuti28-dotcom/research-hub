@@ -44,6 +44,9 @@ type FormState = {
   heroTitle: string;
   heroVideoUrl: string | null;
   heroIntro: string;
+  heroLogoLightUrl: string | null;
+  heroLogoDarkUrl: string | null;
+  forbesUrl: string;
   linkedinUrl: string;
   contactEmail: string;
   portraitUrl: string | null;
@@ -164,6 +167,9 @@ function AdminSettingsPage() {
         heroTitle: s.heroTitle,
         heroVideoUrl: s.heroVideoUrl,
         heroIntro: s.heroIntro,
+        heroLogoLightUrl: s.heroLogoLightUrl,
+        heroLogoDarkUrl: s.heroLogoDarkUrl,
+        forbesUrl: s.forbesUrl,
         linkedinUrl: s.linkedinUrl,
         contactEmail: s.contactEmail,
         portraitUrl: s.portraitUrl,
