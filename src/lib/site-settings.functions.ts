@@ -619,7 +619,7 @@ const MIME_EXT: Record<string, string> = {
 const uploadLogoSchema = z.object({
   fileName: z.string().trim().min(1).max(255),
   mimeType: z.enum(ALLOWED_LOGO_MIME),
-  folder: z.enum(["software", "certifications", "languages", "education"]),
+  folder: z.enum(["software", "certifications", "languages", "education", "hero"]),
   base64: z.string().min(1),
 });
 
