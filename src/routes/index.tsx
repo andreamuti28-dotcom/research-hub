@@ -214,6 +214,26 @@ function Index() {
             <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
               <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
+            {(settings.heroLogoLightUrl || settings.heroLogoDarkUrl) && (
+              <div className="mt-8 md:pl-6">
+                {settings.heroLogoLightUrl && (
+                  <img
+                    src={settings.heroLogoLightUrl}
+                    alt={`${HERO_TITLE_FIXED} logo`}
+                    className="block dark:hidden max-h-20 w-auto object-contain"
+                    loading="lazy"
+                  />
+                )}
+                {settings.heroLogoDarkUrl && (
+                  <img
+                    src={settings.heroLogoDarkUrl}
+                    alt={`${HERO_TITLE_FIXED} logo`}
+                    className="hidden dark:block max-h-20 w-auto object-contain"
+                    loading="lazy"
+                  />
+                )}
+              </div>
+            )}
             <div className="mt-8 flex flex-nowrap items-stretch gap-2 sm:gap-3 md:pl-6">
               <Link
                 to="/archivio"
