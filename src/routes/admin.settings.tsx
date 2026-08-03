@@ -44,6 +44,9 @@ type FormState = {
   heroTitle: string;
   heroVideoUrl: string | null;
   heroIntro: string;
+  heroLogoLightUrl: string | null;
+  heroLogoDarkUrl: string | null;
+  forbesUrl: string;
   linkedinUrl: string;
   contactEmail: string;
   portraitUrl: string | null;
@@ -102,6 +105,10 @@ function AdminSettingsPage() {
   const [faviconError, setFaviconError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const marketImageInputRef = useRef<HTMLInputElement>(null);
+  const heroLogoLightRef = useRef<HTMLInputElement>(null);
+  const heroLogoDarkRef = useRef<HTMLInputElement>(null);
+  const [heroLogoBusy, setHeroLogoBusy] = useState<"light" | "dark" | null>(null);
+  const [heroLogoError, setHeroLogoError] = useState<string | null>(null);
   const [marketImageBusy, setMarketImageBusy] = useState(false);
   const [marketImageError, setMarketImageError] = useState<string | null>(null);
   const heroVideoInputRef = useRef<HTMLInputElement>(null);
@@ -164,6 +171,9 @@ function AdminSettingsPage() {
         heroTitle: s.heroTitle,
         heroVideoUrl: s.heroVideoUrl,
         heroIntro: s.heroIntro,
+        heroLogoLightUrl: s.heroLogoLightUrl,
+        heroLogoDarkUrl: s.heroLogoDarkUrl,
+        forbesUrl: s.forbesUrl,
         linkedinUrl: s.linkedinUrl,
         contactEmail: s.contactEmail,
         portraitUrl: s.portraitUrl,
@@ -339,6 +349,37 @@ function AdminSettingsPage() {
       setFaviconError(e instanceof Error ? e.message : "Rigenerazione favicon fallita");
     } finally {
       setFaviconBusy(false);
+    }
+  };
+
+  const handleHeroLogoFile = async (file: File, variant: "light" | "dark") => {
+    setHeroLogoError(null);
+    setHeroLogoBusy(variant);
+    try {
+      const allowed = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"] as const;
+      if (!(allowed as readonly string[]).includes(file.type)) {
+        throw new Error("Formato non supportato. Usa PNG, JPEG, WEBP o SVG.");
+      }
+      const base64 = await blobToBase64(file);
+      const { publicUrl } = await uploadLogo({
+        data: {
+          fileName: file.name,
+          mimeType: file.type as (typeof allowed)[number],
+          folder: "hero",
+          base64,
+        },
+      });
+      setForm((f) =>
+        f
+          ? variant === "light"
+            ? { ...f, heroLogoLightUrl: publicUrl }
+            : { ...f, heroLogoDarkUrl: publicUrl }
+          : f,
+      );
+    } catch (e) {
+      setHeroLogoError(e instanceof Error ? e.message : "Upload fallito");
+    } finally {
+      setHeroLogoBusy(null);
     }
   };
 
@@ -692,6 +733,116 @@ function AdminSettingsPage() {
               className={`${inputCls} min-h-[160px]`}
               required
               maxLength={2000}
+            />
+          </Field>
+
+          <Field label="Logo home — modalità giorno">
+            <div className="space-y-3">
+              {form.heroLogoLightUrl ? (
+                <div className="border border-surface-dark-muted bg-white p-3">
+                  <img
+                    src={form.heroLogoLightUrl}
+                    alt="Logo modalità giorno"
+                    className="block max-h-24 mx-auto object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="border border-dashed border-surface-dark-muted p-6 text-center font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/50">
+                  Nessun logo impostato
+                </div>
+              )}
+              <input
+                ref={heroLogoLightRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleHeroLogoFile(f, "light");
+                  e.target.value = "";
+                }}
+              />
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => heroLogoLightRef.current?.click()}
+                  disabled={heroLogoBusy !== null}
+                  className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                >
+                  {heroLogoBusy === "light" ? "Caricamento…" : form.heroLogoLightUrl ? "Sostituisci" : "Carica logo"}
+                </button>
+                {form.heroLogoLightUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => (f ? { ...f, heroLogoLightUrl: null } : f))}
+                    className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/30 text-surface-dark-foreground/70 px-4 py-2 hover:border-red-500 hover:text-red-500 transition-colors"
+                  >
+                    Rimuovi
+                  </button>
+                )}
+              </div>
+            </div>
+          </Field>
+
+          <Field label="Logo home — modalità notte">
+            <div className="space-y-3">
+              {form.heroLogoDarkUrl ? (
+                <div className="border border-surface-dark-muted bg-black p-3">
+                  <img
+                    src={form.heroLogoDarkUrl}
+                    alt="Logo modalità notte"
+                    className="block max-h-24 mx-auto object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="border border-dashed border-surface-dark-muted p-6 text-center font-mono text-[11px] uppercase tracking-widest text-surface-dark-foreground/50">
+                  Nessun logo impostato
+                </div>
+              )}
+              <input
+                ref={heroLogoDarkRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleHeroLogoFile(f, "dark");
+                  e.target.value = "";
+                }}
+              />
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => heroLogoDarkRef.current?.click()}
+                  disabled={heroLogoBusy !== null}
+                  className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                >
+                  {heroLogoBusy === "dark" ? "Caricamento…" : form.heroLogoDarkUrl ? "Sostituisci" : "Carica logo"}
+                </button>
+                {form.heroLogoDarkUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => (f ? { ...f, heroLogoDarkUrl: null } : f))}
+                    className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/30 text-surface-dark-foreground/70 px-4 py-2 hover:border-red-500 hover:text-red-500 transition-colors"
+                  >
+                    Rimuovi
+                  </button>
+                )}
+              </div>
+              {heroLogoError && (
+                <p className="font-mono text-[11px] text-red-400">{heroLogoError}</p>
+              )}
+            </div>
+          </Field>
+
+          <Field label="URL pulsante Forbes (home)">
+            <input
+              type="url"
+              value={form.forbesUrl}
+              onChange={(e) => setForm({ ...form, forbesUrl: e.target.value })}
+              className={inputCls}
+              maxLength={500}
+              placeholder="https://www.forbes.it/..."
             />
           </Field>
 

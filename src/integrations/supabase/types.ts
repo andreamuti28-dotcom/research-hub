@@ -206,8 +206,11 @@ export type Database = {
           favicon_url: string | null
           featured_dashboard_ids: string[]
           featured_paper_ids: string[]
+          forbes_url: string | null
           header_bg: string
           hero_intro: string
+          hero_logo_dark_url: string | null
+          hero_logo_light_url: string | null
           hero_title: string
           hero_video_url: string | null
           home_featured_label: string
@@ -262,8 +265,11 @@ export type Database = {
           favicon_url?: string | null
           featured_dashboard_ids?: string[]
           featured_paper_ids?: string[]
+          forbes_url?: string | null
           header_bg?: string
           hero_intro?: string
+          hero_logo_dark_url?: string | null
+          hero_logo_light_url?: string | null
           hero_title?: string
           hero_video_url?: string | null
           home_featured_label?: string
@@ -318,8 +324,11 @@ export type Database = {
           favicon_url?: string | null
           featured_dashboard_ids?: string[]
           featured_paper_ids?: string[]
+          forbes_url?: string | null
           header_bg?: string
           hero_intro?: string
+          hero_logo_dark_url?: string | null
+          hero_logo_light_url?: string | null
           hero_title?: string
           hero_video_url?: string | null
           home_featured_label?: string
