@@ -1,0 +1,1 @@
+UPDATE public.site_settings SET hero_logo_light_url = 'https://lguyurlffsesnbfmpdew.supabase.co/storage/v1/object/public/site-assets/hero%2Fforbes-next-leaders-light.png', hero_logo_dark_url = 'https://lguyurlffsesnbfmpdew.supabase.co/storage/v1/object/public/site-assets/hero%2Fforbes-next-leaders-dark.png';
