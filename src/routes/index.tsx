@@ -215,12 +215,12 @@ function Index() {
               <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
             {(settings.heroLogoLightUrl || settings.heroLogoDarkUrl) && (
-              <div className="mt-8 md:pl-6">
+              <div className="mt-8 md:pl-6 flex justify-center">
                 {settings.heroLogoLightUrl && (
                   <img
                     src={settings.heroLogoLightUrl}
                     alt={`${HERO_TITLE_FIXED} logo`}
-                    className="block dark:hidden max-h-20 w-auto object-contain"
+                    className="block dark:hidden max-h-20 w-auto object-contain mx-auto mix-blend-multiply"
                     loading="lazy"
                   />
                 )}
@@ -228,7 +228,7 @@ function Index() {
                   <img
                     src={settings.heroLogoDarkUrl}
                     alt={`${HERO_TITLE_FIXED} logo`}
-                    className="hidden dark:block max-h-20 w-auto object-contain"
+                    className="hidden dark:block max-h-20 w-auto object-contain mx-auto mix-blend-screen"
                     loading="lazy"
                   />
                 )}
