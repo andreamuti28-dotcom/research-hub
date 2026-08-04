@@ -189,6 +189,7 @@ function Index() {
       <SiteHeader />
 
       <section className="max-w-6xl mx-auto px-6 pt-10 md:pt-16 pb-12 md:pb-16 w-full">
+        <h1 className="sr-only">{HERO_TITLE_FIXED}</h1>
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-start">
           <div className="md:col-span-7">
             {settings.heroVideoUrl ? (
