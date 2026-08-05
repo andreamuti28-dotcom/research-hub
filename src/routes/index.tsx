@@ -134,9 +134,17 @@ function Index() {
           { key: "dashboards" as const, label: "Dashboard" },
         ] as const)
       : ([
-          { key: "markets" as const, label: lang === "en" ? "Financial markets" : "Mercati finanziari" },
+          ...(settings.homeMarketEnabled
+            ? [
+                {
+                  key: "markets" as const,
+                  label: lang === "en" ? "Financial markets" : "Mercati finanziari",
+                },
+              ]
+            : []),
           { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
         ] as const);
+
 
   const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
   const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
