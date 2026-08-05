@@ -119,9 +119,33 @@ function Index() {
     settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
       ? HOME_MARKET_LABEL_EN
       : marketLabel;
-  const [marketOpen, setMarketOpen] = useState(false);
-  const [featuredOpen, setFeaturedOpen] = useState(false);
-  const [dashboardsOpen, setDashboardsOpen] = useState(false);
+  const [group, setGroupState] = useState<"featured" | "live">("featured");
+  const [sub, setSub] = useState<"publications" | "dashboards" | "markets" | "news">(
+    "publications",
+  );
+  const setGroup = (g: "featured" | "live") => {
+    setGroupState(g);
+    setSub(g === "featured" ? "publications" : settings.homeMarketEnabled ? "markets" : "news");
+  };
+  const subTabs =
+    group === "featured"
+      ? ([
+          { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
+          { key: "dashboards" as const, label: "Dashboard" },
+        ] as const)
+      : ([
+          ...(settings.homeMarketEnabled
+            ? [
+                {
+                  key: "markets" as const,
+                  label: lang === "en" ? "Financial markets" : "Mercati finanziari",
+                },
+              ]
+            : []),
+          { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
+        ] as const);
+
+
   const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
   const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
   const dashboardsOpenLabel = lang === "en" ? "Open dashboard" : "Apri dashboard";
@@ -264,93 +288,81 @@ function Index() {
         </div>
       </section>
 
-      {featured.length > 0 && (
-        <section className="border-t border-border bg-background">
-          <div className="max-w-6xl mx-auto px-6">
-            <button
-              type="button"
-              onClick={() => setFeaturedOpen((v) => !v)}
-              aria-expanded={featuredOpen}
-              className="group w-full flex items-center justify-between gap-6 py-7 md:py-9 text-left transition-colors"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <span className="inline-flex items-center font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-foreground/10 text-foreground shrink-0">
-                  {t("home.featuredKicker")}
-                </span>
-                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {localizedFeaturedLabel || t("home.featuredTitle")}
-                </h2>
-              </div>
-              <span
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all group-hover:border-primary group-hover:text-primary shrink-0"
-                style={{ transform: featuredOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                aria-hidden
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-4 h-4"
+      <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
+        <div className="max-w-6xl mx-auto px-6 py-10 md:py-14">
+          {/* Primary categories */}
+          <div className="flex items-end gap-8 border-b border-border pb-3">
+            {(
+              [
+                { key: "featured" as const, label: lang === "en" ? "Featured" : "In evidenza" },
+                { key: "live" as const, label: "Live" },
+              ]
+            ).map((g) => {
+              const active = group === g.key;
+              return (
+                <button
+                  key={g.key}
+                  type="button"
+                  onClick={() => setGroup(g.key)}
+                  aria-pressed={active}
+                  className={`relative -mb-[13px] pb-3 font-display font-bold tracking-tighter italic transition-all duration-300 ${
+                    active
+                      ? "text-2xl md:text-4xl text-foreground border-b-2 border-foreground"
+                      : "text-lg md:text-xl text-muted-foreground hover:text-foreground border-b-2 border-transparent"
+                  }`}
                 >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </span>
-            </button>
-            {featuredOpen && (
-              <div className="pb-10 md:pb-14 animate-fade-up">
+                  <span className="inline-flex items-center gap-2">
+                    {g.key === "live" && (
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full bg-primary ${active ? "animate-pulse" : "opacity-60"}`}
+                        aria-hidden
+                      />
+                    )}
+                    {g.label}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Sub categories */}
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+            {subTabs.map((s) => {
+              const active = sub === s.key;
+              return (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => setSub(s.key)}
+                  aria-pressed={active}
+                  className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                    active
+                      ? "text-foreground border-foreground"
+                      : "text-muted-foreground border-transparent hover:text-foreground"
+                  }`}
+                >
+                  {s.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-8 animate-fade-up" key={`${group}-${sub}`}>
+            {sub === "publications" &&
+              (featured.length > 0 ? (
                 <div className="space-y-px bg-border border border-border">
                   {featured.map((p) => (
                     <PaperRow key={p.id} paper={p} />
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
-        </section>
-      )}
+              ) : (
+                <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
+                  {t("home.empty")}
+                </div>
+              ))}
 
-      {visibleDashboards.length > 0 && (
-        <section className="border-t border-border bg-background">
-          <div className="max-w-6xl mx-auto px-6">
-            <button
-              type="button"
-              onClick={() => setDashboardsOpen((v) => !v)}
-              aria-expanded={dashboardsOpen}
-              className="group w-full flex items-center justify-between gap-6 py-7 md:py-9 text-left transition-colors"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <span className="inline-flex items-center font-mono text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-full bg-amber-400 text-black shrink-0">
-                  {dashboardsBadge}
-                </span>
-                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {dashboardsLabel}
-                </h2>
-              </div>
-              <span
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all group-hover:border-primary group-hover:text-primary shrink-0"
-                style={{ transform: dashboardsOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                aria-hidden
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-4 h-4"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </span>
-            </button>
-            {dashboardsOpen && (
-              <div className="pb-10 md:pb-14 animate-fade-up">
+            {sub === "dashboards" &&
+              (visibleDashboards.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {visibleDashboards.map((d) => {
                     const path = dashboardPath(d.component_key)!;
@@ -383,53 +395,14 @@ function Index() {
                     );
                   })}
                 </div>
-              </div>
-            )}
-          </div>
-        </section>
-      )}
+              ) : (
+                <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
+                  {t("home.empty")}
+                </div>
+              ))}
 
-
-
-      {settings.homeMarketEnabled && (
-        <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
-          <div className="max-w-6xl mx-auto px-6">
-            <button
-              type="button"
-              onClick={() => setMarketOpen((v) => !v)}
-              aria-expanded={marketOpen}
-              className="group w-full flex items-center justify-between gap-6 py-7 md:py-9 text-left transition-colors"
-            >
-              <div className="flex items-center gap-4 min-w-0">
-                <span className="inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest px-2 py-1 rounded-full bg-primary/10 text-primary shrink-0">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Live
-                </span>
-                <h2 className="text-xl md:text-2xl font-display font-bold tracking-tighter italic group-hover:text-primary leading-tight transition-colors">
-                  {localizedMarketLabel}
-                </h2>
-              </div>
-              <span
-                className="inline-flex items-center justify-center w-9 h-9 rounded-full border border-border transition-all group-hover:border-primary group-hover:text-primary shrink-0"
-                style={{ transform: marketOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                aria-hidden
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="w-4 h-4"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
-              </span>
-            </button>
-            {marketOpen && (
-              <div className="pb-10 md:pb-14 animate-fade-up">
+            {sub === "markets" && (
+              <div>
                 {latestReport ? (
                   <article className="border border-border bg-surface p-6 md:p-8">
                     <div className="flex flex-wrap items-baseline gap-3 mb-4">
@@ -478,11 +451,12 @@ function Index() {
                 )}
               </div>
             )}
-          </div>
-        </section>
-      )}
 
-      <FinancialNewsSection />
+            {sub === "news" && <FinancialNewsSection embedded />}
+          </div>
+        </div>
+      </section>
+
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">

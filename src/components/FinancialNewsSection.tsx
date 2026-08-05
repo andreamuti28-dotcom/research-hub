@@ -8,8 +8,10 @@ import { useTranslatedAlways } from "@/hooks/use-translated";
 
 const COUNTDOWN_MS = 5000;
 
-export function FinancialNewsSection() {
-  const [open, setOpen] = useState(false);
+export function FinancialNewsSection({ embedded = false }: { embedded?: boolean } = {}) {
+  const [openState, setOpen] = useState(false);
+  const open = embedded || openState;
+
   const settings = useSiteSettings();
   const fetchNews = useServerFn(getLatestNews);
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
@@ -68,10 +70,9 @@ export function FinancialNewsSection() {
 
   const barColor = settings.newsCountdownColor || "#9ca3af";
 
-  return (
-    <section className="border-t border-border bg-background">
-      <div className="max-w-6xl mx-auto px-6">
-        <button
+  const header = (
+    <button
+
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
@@ -105,9 +106,11 @@ export function FinancialNewsSection() {
             </svg>
           </span>
         </button>
+  );
 
-        {open && (
-          <div className="pb-10 md:pb-14 animate-fade-up">
+  const body = (
+    <div className={embedded ? "animate-fade-up" : "pb-10 md:pb-14 animate-fade-up"}>
+
             {/* 5s countdown bar */}
             <div className="h-1 w-full bg-muted overflow-hidden mb-6" aria-hidden>
               <div
@@ -207,9 +210,18 @@ export function FinancialNewsSection() {
                 })}
               </div>
             )}
-          </div>
-        )}
+    </div>
+  );
+
+  if (embedded) return body;
+
+  return (
+    <section className="border-t border-border bg-background">
+      <div className="max-w-6xl mx-auto px-6">
+        {header}
+        {open && body}
       </div>
     </section>
   );
 }
+
