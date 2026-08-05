@@ -291,7 +291,7 @@ function Index() {
       <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-14">
           {/* Primary categories */}
-          <div className="flex items-end gap-8 border-b border-border pb-3">
+          <div className="flex items-end justify-between gap-8 border-b border-border pb-3">
             {(
               [
                 { key: "featured" as const, label: lang === "en" ? "Featured" : "In evidenza" },
@@ -326,7 +326,7 @@ function Index() {
           </div>
 
           {/* Sub categories */}
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
             {subTabs.map((s) => {
               const active = sub === s.key;
               return (
