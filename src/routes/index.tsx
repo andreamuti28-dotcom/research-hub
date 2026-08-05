@@ -125,7 +125,7 @@ function Index() {
   );
   const setGroup = (g: "featured" | "live") => {
     setGroupState(g);
-    setSub(g === "featured" ? "publications" : "markets");
+    setSub(g === "featured" ? "publications" : settings.homeMarketEnabled ? "markets" : "news");
   };
   const subTabs =
     group === "featured"
