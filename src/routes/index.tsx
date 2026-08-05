@@ -119,9 +119,25 @@ function Index() {
     settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
       ? HOME_MARKET_LABEL_EN
       : marketLabel;
-  const [marketOpen, setMarketOpen] = useState(false);
-  const [featuredOpen, setFeaturedOpen] = useState(false);
-  const [dashboardsOpen, setDashboardsOpen] = useState(false);
+  const [group, setGroupState] = useState<"featured" | "live">("featured");
+  const [sub, setSub] = useState<"publications" | "dashboards" | "markets" | "news">(
+    "publications",
+  );
+  const setGroup = (g: "featured" | "live") => {
+    setGroupState(g);
+    setSub(g === "featured" ? "publications" : "markets");
+  };
+  const subTabs =
+    group === "featured"
+      ? ([
+          { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
+          { key: "dashboards" as const, label: "Dashboard" },
+        ] as const)
+      : ([
+          { key: "markets" as const, label: lang === "en" ? "Financial markets" : "Mercati finanziari" },
+          { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
+        ] as const);
+
   const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
   const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
   const dashboardsOpenLabel = lang === "en" ? "Open dashboard" : "Apri dashboard";
