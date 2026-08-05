@@ -299,17 +299,17 @@ function Index() {
               type="button"
               onClick={() => setGroup("featured")}
               aria-pressed={group === "featured"}
-              className={`absolute top-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+              className={`absolute bottom-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
                 group === "featured"
                   ? "text-2xl md:text-4xl text-foreground text-center z-10"
-                  : "text-lg md:text-xl text-muted-foreground hover:text-foreground text-left opacity-60 z-0"
+                  : "text-xl md:text-2xl text-muted-foreground hover:text-foreground text-left opacity-80 z-0"
               }`}
               style={{
                 left: group === "featured" ? "50%" : "0",
                 transform:
                   group === "featured"
                     ? "translateX(-50%) rotateY(0deg) scale(1)"
-                    : "rotateY(-45deg) scale(0.75)",
+                    : "rotateY(-45deg) scale(0.85)",
                 transformOrigin: group === "featured" ? "center center" : "left center",
                 transformStyle: "preserve-3d",
               }}
@@ -323,17 +323,17 @@ function Index() {
               type="button"
               onClick={() => setGroup("live")}
               aria-pressed={group === "live"}
-              className={`absolute top-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+              className={`absolute bottom-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
                 group === "live"
                   ? "text-2xl md:text-4xl text-foreground text-center z-10"
-                  : "text-lg md:text-xl text-muted-foreground hover:text-foreground text-right opacity-60 z-0"
+                  : "text-xl md:text-2xl text-muted-foreground hover:text-foreground text-right opacity-80 z-0"
               }`}
               style={{
                 left: group === "live" ? "50%" : "100%",
                 transform:
                   group === "live"
                     ? "translateX(-50%) rotateY(0deg) scale(1)"
-                    : "translateX(-100%) rotateY(45deg) scale(0.75)",
+                    : "translateX(-100%) rotateY(45deg) scale(0.85)",
                 transformOrigin: group === "live" ? "center center" : "right center",
                 transformStyle: "preserve-3d",
               }}
