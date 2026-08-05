@@ -207,9 +207,18 @@ export function FinancialNewsSection() {
                 })}
               </div>
             )}
-          </div>
-        )}
+    </div>
+  );
+
+  if (embedded) return body;
+
+  return (
+    <section className="border-t border-border bg-background">
+      <div className="max-w-6xl mx-auto px-6">
+        {header}
+        {open && body}
       </div>
     </section>
   );
 }
+
