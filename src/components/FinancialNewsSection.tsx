@@ -105,9 +105,11 @@ export function FinancialNewsSection() {
             </svg>
           </span>
         </button>
+  );
 
-        {open && (
-          <div className="pb-10 md:pb-14 animate-fade-up">
+  const body = (
+    <div className={embedded ? "animate-fade-up" : "pb-10 md:pb-14 animate-fade-up"}>
+
             {/* 5s countdown bar */}
             <div className="h-1 w-full bg-muted overflow-hidden mb-6" aria-hidden>
               <div
