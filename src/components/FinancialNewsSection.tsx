@@ -68,10 +68,9 @@ export function FinancialNewsSection() {
 
   const barColor = settings.newsCountdownColor || "#9ca3af";
 
-  return (
-    <section className="border-t border-border bg-background">
-      <div className="max-w-6xl mx-auto px-6">
-        <button
+  const header = (
+    <button
+
           type="button"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
