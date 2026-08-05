@@ -291,38 +291,61 @@ function Index() {
       <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-14">
           {/* Primary categories */}
-          <div className="flex items-end justify-between gap-8 border-b border-border pb-3">
-            {(
-              [
-                { key: "featured" as const, label: lang === "en" ? "Featured" : "In evidenza" },
-                { key: "live" as const, label: "Live" },
-              ]
-            ).map((g) => {
-              const active = group === g.key;
-              return (
-                <button
-                  key={g.key}
-                  type="button"
-                  onClick={() => setGroup(g.key)}
-                  aria-pressed={active}
-                  className={`relative -mb-[13px] pb-3 font-display font-bold tracking-tighter italic transition-all duration-300 ${
-                    active
-                      ? "text-2xl md:text-4xl text-foreground border-b-2 border-foreground"
-                      : "text-lg md:text-xl text-muted-foreground hover:text-foreground border-b-2 border-transparent"
-                  }`}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    {g.key === "live" && (
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full bg-primary ${active ? "animate-pulse" : "opacity-60"}`}
-                        aria-hidden
-                      />
-                    )}
-                    {g.label}
-                  </span>
-                </button>
-              );
-            })}
+          <div
+            className="relative h-16 md:h-20 border-b border-border pb-3"
+            style={{ perspective: "1200px" }}
+          >
+            <button
+              type="button"
+              onClick={() => setGroup("featured")}
+              aria-pressed={group === "featured"}
+              className={`absolute top-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                group === "featured"
+                  ? "text-2xl md:text-4xl text-foreground text-center z-10"
+                  : "text-lg md:text-xl text-muted-foreground hover:text-foreground text-left opacity-60 z-0"
+              }`}
+              style={{
+                left: group === "featured" ? "50%" : "0",
+                transform:
+                  group === "featured"
+                    ? "translateX(-50%) rotateY(0deg) scale(1)"
+                    : "rotateY(-45deg) scale(0.75)",
+                transformOrigin: group === "featured" ? "center center" : "left center",
+                transformStyle: "preserve-3d",
+              }}
+            >
+              <span className="inline-flex items-center gap-2">
+                {lang === "en" ? "Featured" : "In evidenza"}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setGroup("live")}
+              aria-pressed={group === "live"}
+              className={`absolute top-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+                group === "live"
+                  ? "text-2xl md:text-4xl text-foreground text-center z-10"
+                  : "text-lg md:text-xl text-muted-foreground hover:text-foreground text-right opacity-60 z-0"
+              }`}
+              style={{
+                left: group === "live" ? "50%" : "100%",
+                transform:
+                  group === "live"
+                    ? "translateX(-50%) rotateY(0deg) scale(1)"
+                    : "translateX(-100%) rotateY(45deg) scale(0.75)",
+                transformOrigin: group === "live" ? "center center" : "right center",
+                transformStyle: "preserve-3d",
+              }}
+            >
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full bg-primary ${group === "live" ? "animate-pulse" : "opacity-60"}`}
+                  aria-hidden
+                />
+                Live
+              </span>
+            </button>
           </div>
 
           {/* Sub categories */}
