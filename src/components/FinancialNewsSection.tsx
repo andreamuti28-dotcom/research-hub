@@ -8,8 +8,10 @@ import { useTranslatedAlways } from "@/hooks/use-translated";
 
 const COUNTDOWN_MS = 5000;
 
-export function FinancialNewsSection() {
-  const [open, setOpen] = useState(false);
+export function FinancialNewsSection({ embedded = false }: { embedded?: boolean } = {}) {
+  const [openState, setOpen] = useState(false);
+  const open = embedded || openState;
+
   const settings = useSiteSettings();
   const fetchNews = useServerFn(getLatestNews);
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
