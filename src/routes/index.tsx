@@ -326,48 +326,50 @@ function Index() {
           {/* Sub categories in two centered cells */}
           <div className="grid grid-cols-2 gap-4 mt-6">
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              {subTabs
-                .filter((s) => s.key === "publications" || s.key === "dashboards")
-                .map((s) => {
-                  const active = sub === s.key;
-                  return (
-                    <button
-                      key={s.key}
-                      type="button"
-                      onClick={() => setSub(s.key)}
-                      aria-pressed={active}
-                      className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
-                        active
-                          ? "text-foreground border-foreground"
-                          : "text-muted-foreground border-transparent hover:text-foreground"
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  );
-                })}
+              {featuredSubTabs.map((s) => {
+                const active = sub === s.key;
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => {
+                      setGroup("featured");
+                      setSub(s.key);
+                    }}
+                    aria-pressed={active}
+                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                      active
+                        ? "text-foreground border-foreground"
+                        : "text-muted-foreground border-transparent hover:text-foreground"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
             </div>
             <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-              {subTabs
-                .filter((s) => s.key === "markets" || s.key === "news")
-                .map((s) => {
-                  const active = sub === s.key;
-                  return (
-                    <button
-                      key={s.key}
-                      type="button"
-                      onClick={() => setSub(s.key)}
-                      aria-pressed={active}
-                      className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
-                        active
-                          ? "text-foreground border-foreground"
-                          : "text-muted-foreground border-transparent hover:text-foreground"
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  );
-                })}
+              {liveSubTabs.map((s) => {
+                const active = sub === s.key;
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => {
+                      setGroup("live");
+                      setSub(s.key);
+                    }}
+                    aria-pressed={active}
+                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                      active
+                        ? "text-foreground border-foreground"
+                        : "text-muted-foreground border-transparent hover:text-foreground"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
