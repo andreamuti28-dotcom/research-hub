@@ -456,14 +456,6 @@ function Index() {
                     <div className="market-report-prose text-foreground">
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{reportContent}</ReactMarkdown>
                     </div>
-                    <div className="mt-6">
-                      <Link
-                        to="/archivio"
-                        className="font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 hover:text-primary hover:border-primary transition-all"
-                      >
-                        {t("home.reportArchive")}
-                      </Link>
-                    </div>
                   </article>
                 ) : (
                   <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
