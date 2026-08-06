@@ -127,23 +127,21 @@ function Index() {
     setGroupState(g);
     setSub(g === "featured" ? "publications" : settings.homeMarketEnabled ? "markets" : "news");
   };
-  const subTabs =
-    group === "featured"
-      ? ([
-          { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
-          { key: "dashboards" as const, label: "Dashboard" },
-        ] as const)
-      : ([
-          ...(settings.homeMarketEnabled
-            ? [
-                {
-                  key: "markets" as const,
-                  label: lang === "en" ? "Financial markets" : "Mercati finanziari",
-                },
-              ]
-            : []),
-          { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
-        ] as const);
+  const featuredSubTabs = [
+    { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
+    { key: "dashboards" as const, label: "Dashboard" },
+  ] as const;
+  const liveSubTabs = [
+    ...(settings.homeMarketEnabled
+      ? [
+          {
+            key: "markets" as const,
+            label: lang === "en" ? "Financial markets" : "Mercati finanziari",
+          },
+        ]
+      : []),
+    { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
+  ] as const;
 
 
   const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
