@@ -127,23 +127,21 @@ function Index() {
     setGroupState(g);
     setSub(g === "featured" ? "publications" : settings.homeMarketEnabled ? "markets" : "news");
   };
-  const subTabs =
-    group === "featured"
-      ? ([
-          { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
-          { key: "dashboards" as const, label: "Dashboard" },
-        ] as const)
-      : ([
-          ...(settings.homeMarketEnabled
-            ? [
-                {
-                  key: "markets" as const,
-                  label: lang === "en" ? "Financial markets" : "Mercati finanziari",
-                },
-              ]
-            : []),
-          { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
-        ] as const);
+  const featuredSubTabs = [
+    { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
+    { key: "dashboards" as const, label: "Dashboard" },
+  ] as const;
+  const liveSubTabs = [
+    ...(settings.homeMarketEnabled
+      ? [
+          {
+            key: "markets" as const,
+            label: lang === "en" ? "Financial markets" : "Mercati finanziari",
+          },
+        ]
+      : []),
+    { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
+  ] as const;
 
 
   const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
@@ -290,57 +288,34 @@ function Index() {
 
       <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-14">
-          {/* Primary categories */}
-          <div
-            className="relative h-16 md:h-20 border-b border-border pb-3"
-            style={{ perspective: "1200px" }}
-          >
+          {/* Primary categories side-by-side */}
+          <div className="grid grid-cols-2 gap-4 items-center border-b border-border pb-4">
             <button
               type="button"
               onClick={() => setGroup("featured")}
               aria-pressed={group === "featured"}
-              className={`absolute bottom-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+              className={`text-center font-display font-bold tracking-tighter italic transition-all duration-300 ${
                 group === "featured"
-                  ? "text-2xl md:text-4xl text-foreground text-center z-10"
-                  : "text-xl md:text-2xl text-muted-foreground hover:text-foreground text-left opacity-80 z-0"
+                  ? "text-3xl md:text-4xl text-foreground"
+                  : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
-              style={{
-                left: group === "featured" ? "50%" : "0",
-                transform:
-                  group === "featured"
-                    ? "translateX(-50%) rotateY(0deg) scale(1)"
-                    : "rotateY(-45deg) scale(0.85)",
-                transformOrigin: group === "featured" ? "center center" : "left center",
-                transformStyle: "preserve-3d",
-              }}
             >
-              <span className="inline-flex items-center gap-2">
-                {lang === "en" ? "Featured" : "In evidenza"}
-              </span>
+              {lang === "en" ? "Featured" : "In evidenza"}
             </button>
 
             <button
               type="button"
               onClick={() => setGroup("live")}
               aria-pressed={group === "live"}
-              className={`absolute bottom-0 font-display font-bold tracking-tighter italic transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+              className={`text-center font-display font-bold tracking-tighter italic transition-all duration-300 ${
                 group === "live"
-                  ? "text-2xl md:text-4xl text-foreground text-center z-10"
-                  : "text-xl md:text-2xl text-muted-foreground hover:text-foreground text-right opacity-80 z-0"
+                  ? "text-3xl md:text-4xl text-foreground"
+                  : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
-              style={{
-                left: group === "live" ? "50%" : "100%",
-                transform:
-                  group === "live"
-                    ? "translateX(-50%) rotateY(0deg) scale(1)"
-                    : "translateX(-100%) rotateY(45deg) scale(0.85)",
-                transformOrigin: group === "live" ? "center center" : "right center",
-                transformStyle: "preserve-3d",
-              }}
             >
-              <span className="inline-flex items-center gap-2">
+              <span className="inline-flex items-center justify-center gap-2">
                 <span
-                  className={`w-1.5 h-1.5 rounded-full bg-primary ${group === "live" ? "animate-pulse" : "opacity-60"}`}
+                  className={`w-1.5 h-1.5 rounded-full bg-primary ${group === "live" ? "animate-pulse" : ""}`}
                   aria-hidden
                 />
                 Live
@@ -348,26 +323,54 @@ function Index() {
             </button>
           </div>
 
-          {/* Sub categories */}
-          <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-            {subTabs.map((s) => {
-              const active = sub === s.key;
-              return (
-                <button
-                  key={s.key}
-                  type="button"
-                  onClick={() => setSub(s.key)}
-                  aria-pressed={active}
-                  className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
-                    active
-                      ? "text-foreground border-foreground"
-                      : "text-muted-foreground border-transparent hover:text-foreground"
-                  }`}
-                >
-                  {s.label}
-                </button>
-              );
-            })}
+          {/* Sub categories in two centered cells */}
+          <div className="grid grid-cols-2 gap-4 mt-6">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              {featuredSubTabs.map((s) => {
+                const active = sub === s.key;
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => {
+                      setGroup("featured");
+                      setSub(s.key);
+                    }}
+                    aria-pressed={active}
+                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                      active
+                        ? "text-foreground border-foreground"
+                        : "text-muted-foreground border-transparent hover:text-foreground"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              {liveSubTabs.map((s) => {
+                const active = sub === s.key;
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => {
+                      setGroup("live");
+                      setSub(s.key);
+                    }}
+                    aria-pressed={active}
+                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                      active
+                        ? "text-foreground border-foreground"
+                        : "text-muted-foreground border-transparent hover:text-foreground"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="mt-8 animate-fade-up" key={`${group}-${sub}`}>
