@@ -289,15 +289,15 @@ function Index() {
       <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
         <div className="max-w-6xl mx-auto px-6 py-10 md:py-14">
           {/* Primary categories side-by-side */}
-          <div className="grid grid-cols-2 gap-4 border-b border-border pb-4">
+          <div className="grid grid-cols-2 gap-4 items-center border-b border-border pb-4">
             <button
               type="button"
               onClick={() => setGroup("featured")}
               aria-pressed={group === "featured"}
               className={`text-center font-display font-bold tracking-tighter italic transition-all duration-300 ${
                 group === "featured"
-                  ? "text-2xl md:text-4xl text-foreground"
-                  : "text-lg md:text-2xl text-muted-foreground hover:text-foreground"
+                  ? "text-3xl md:text-4xl text-foreground"
+                  : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
             >
               {lang === "en" ? "Featured" : "In evidenza"}
@@ -309,8 +309,8 @@ function Index() {
               aria-pressed={group === "live"}
               className={`text-center font-display font-bold tracking-tighter italic transition-all duration-300 ${
                 group === "live"
-                  ? "text-2xl md:text-4xl text-foreground"
-                  : "text-lg md:text-2xl text-muted-foreground hover:text-foreground"
+                  ? "text-3xl md:text-4xl text-foreground"
+                  : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
             >
               <span className="inline-flex items-center justify-center gap-2">
