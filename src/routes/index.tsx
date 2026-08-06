@@ -294,7 +294,7 @@ function Index() {
               type="button"
               onClick={() => setGroup("featured")}
               aria-pressed={group === "featured"}
-              className={`text-center font-display font-bold tracking-tighter italic transition-all duration-300 ${
+              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 ${
                 group === "featured"
                   ? "text-3xl md:text-4xl text-foreground"
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
@@ -307,7 +307,7 @@ function Index() {
               type="button"
               onClick={() => setGroup("live")}
               aria-pressed={group === "live"}
-              className={`text-center font-display font-bold tracking-tighter italic transition-all duration-300 ${
+              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 ${
                 group === "live"
                   ? "text-3xl md:text-4xl text-foreground"
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
