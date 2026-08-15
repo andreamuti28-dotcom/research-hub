@@ -4,6 +4,7 @@ import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { supabase } from "@/integrations/supabase/client";
+import { adminSignIn } from "@/lib/admin-auth.functions";
 
 export const Route = createFileRoute("/admin/login")({
   head: () => ({
@@ -28,31 +29,6 @@ const credsSchema = z.object({
     .max(72, "La password è troppo lunga"),
 });
 
-const RL_KEY = "admin_login_rl_v1";
-const MAX_ATTEMPTS = 5;
-const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
-
-function readAttempts(): number[] {
-  try {
-    const raw = localStorage.getItem(RL_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr.filter((n) => typeof n === "number") : [];
-  } catch {
-    return [];
-  }
-}
-
-function recordFailure() {
-  const now = Date.now();
-  const next = [...readAttempts().filter((t) => now - t < WINDOW_MS), now];
-  localStorage.setItem(RL_KEY, JSON.stringify(next));
-}
-
-function clearAttempts() {
-  localStorage.removeItem(RL_KEY);
-}
-
 function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -63,15 +39,6 @@ function LoginPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    const now = Date.now();
-    const recent = readAttempts().filter((t) => now - t < WINDOW_MS);
-    if (recent.length >= MAX_ATTEMPTS) {
-      const wait = Math.ceil((WINDOW_MS - (now - recent[0])) / 60000);
-      setError(`Troppi tentativi. Riprova tra ~${wait} min.`);
-      return;
-    }
-
     setLoading(true);
     try {
       const parsed = credsSchema.safeParse({ email, password });
@@ -79,30 +46,32 @@ function LoginPage() {
         setError(parsed.error.issues[0]?.message ?? "Dati non validi");
         return;
       }
-      const { data: signInData, error: signInError } =
-        await supabase.auth.signInWithPassword({
-          email: parsed.data.email,
-          password: parsed.data.password,
-        });
-      if (signInError || !signInData.user) {
-        recordFailure();
-        setError("Credenziali non valide.");
+
+      // Server-side authentication + IP rate limiting (not bypassable client-side).
+      const result = await adminSignIn({ data: parsed.data });
+
+      if (!result.ok || !result.session) {
+        if (result.error === "rate_limited") {
+          setError(
+            `Troppi tentativi falliti. Riprova tra ~${result.retryInMinutes ?? 15} min.`,
+          );
+        } else if (result.error === "not_authorized") {
+          setError("Accesso non autorizzato.");
+        } else {
+          setError("Credenziali non valide.");
+        }
         return;
       }
-      // Restrict access: only admin can stay logged in.
-      const { data: roleRow } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", signInData.user.id)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (!roleRow) {
-        await supabase.auth.signOut();
-        recordFailure();
-        setError("Accesso non autorizzato.");
+
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: result.session.access_token,
+        refresh_token: result.session.refresh_token,
+      });
+      if (sessionError) {
+        setError("Sessione non valida. Riprova.");
         return;
       }
-      clearAttempts();
+
       await navigate({ to: "/admin" });
     } catch {
       setError("Errore imprevisto. Riprova.");
