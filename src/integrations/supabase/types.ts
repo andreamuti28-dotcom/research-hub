@@ -53,6 +53,30 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          created_at: string
+          email_hash: string | null
+          id: string
+          ip_hash: string
+          succeeded: boolean
+        }
+        Insert: {
+          created_at?: string
+          email_hash?: string | null
+          id?: string
+          ip_hash: string
+          succeeded?: boolean
+        }
+        Update: {
+          created_at?: string
+          email_hash?: string | null
+          id?: string
+          ip_hash?: string
+          succeeded?: boolean
+        }
+        Relationships: []
+      }
       market_reports: {
         Row: {
           content: string
