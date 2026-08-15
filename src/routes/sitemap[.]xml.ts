@@ -25,6 +25,11 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/termini", changefreq: "yearly", priority: "0.3" },
         ];
 
+        // Interactive dashboards: standalone indexable pages.
+        for (const { path } of Object.values(DASHBOARD_REGISTRY)) {
+          entries.push({ path, changefreq: "monthly", priority: "0.6" });
+        }
+
         try {
           const papers = await listPublishedPapers();
           for (const p of papers) {
