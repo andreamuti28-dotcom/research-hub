@@ -16,7 +16,11 @@ export const Route = createFileRoute("/rischio-sequenza")({
         content:
           "Simulatore interattivo del sequence-of-returns risk con PAC.",
       },
+      { property: "og:url", content: "https://www.andreamuti.com/rischio-sequenza" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/rischio-sequenza" }],
   }),
   component: () => <SequenceRiskDashboard />,
 });

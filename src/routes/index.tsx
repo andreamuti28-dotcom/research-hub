@@ -21,6 +21,7 @@ import { formatReportLocal } from "@/lib/format-report-local";
 import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
+import { ogImageMeta } from "@/lib/og";
 
 const HERO_INTRO_IT =
   "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.";
@@ -81,6 +82,7 @@ export const Route = createFileRoute("/")({
         content:
           "Paper, dashboard interattive e report giornalieri sui mercati finanziari: risk management, derivati, crypto e macroeconomia.",
       },
+      ...ogImageMeta(),
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
   }),
@@ -242,11 +244,38 @@ function Index() {
         <h1 className="sr-only">{HERO_TITLE_FIXED}</h1>
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-start">
           <div className="md:col-span-7">
-            {settings.heroVideoUrl ? (
-              <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
+            <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
+              {/* Fallback layer: never leave an empty grey box while the video
+                  loads, fails, or has not been set from the admin area. */}
+              <div className="absolute inset-0 flex items-center justify-center px-6">
+                {settings.heroLogoLightUrl || settings.heroLogoDarkUrl ? (
+                  <>
+                    {settings.heroLogoLightUrl && (
+                      <img
+                        src={settings.heroLogoLightUrl}
+                        alt={HERO_TITLE_FIXED}
+                        className="block dark:hidden max-h-24 w-auto object-contain mix-blend-multiply"
+                      />
+                    )}
+                    {settings.heroLogoDarkUrl && (
+                      <img
+                        src={settings.heroLogoDarkUrl}
+                        alt={HERO_TITLE_FIXED}
+                        className="hidden dark:block max-h-24 w-auto object-contain mix-blend-screen"
+                      />
+                    )}
+                  </>
+                ) : (
+                  <span className="font-display font-bold uppercase tracking-widest text-foreground text-center">
+                    {HERO_TITLE_FIXED}
+                  </span>
+                )}
+              </div>
+              {settings.heroVideoUrl && (
                 <video
                   key={settings.heroVideoUrl}
                   src={settings.heroVideoUrl}
+                  poster={settings.heroLogoLightUrl || undefined}
                   autoPlay
                   loop
                   muted
@@ -254,19 +283,15 @@ function Index() {
                   preload="metadata"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-              </div>
-            ) : (
-              <div className="aspect-video w-full border border-dashed border-border bg-surface flex items-center justify-center font-display font-bold uppercase tracking-widest text-foreground text-center px-6">
-                {HERO_TITLE_FIXED}
-              </div>
-            )}
+              )}
+            </div>
           </div>
           <div className="md:col-span-5 md:pt-2">
             <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
               <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
             {(settings.heroLogoLightUrl || settings.heroLogoDarkUrl) && (
-              <div className="mt-8 md:pl-6 flex justify-center">
+              <div className="mt-6 md:mt-8 md:pl-6 flex justify-center">
                 {settings.heroLogoLightUrl && (
                   <img
                     src={settings.heroLogoLightUrl}
@@ -285,7 +310,7 @@ function Index() {
                 )}
               </div>
             )}
-            <div className="mt-8 flex flex-nowrap items-stretch gap-2 sm:gap-3 md:pl-6">
+            <div className="mt-6 md:mt-8 flex flex-nowrap items-stretch gap-2 sm:gap-3 md:pl-6">
               <Link
                 to="/archivio"
                 className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 bg-foreground text-background font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors whitespace-nowrap"
@@ -353,7 +378,11 @@ function Index() {
 
           {/* Sub categories in two centered cells */}
           <div className="grid grid-cols-2 gap-4 mt-6">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <div
+              className={`flex flex-wrap items-center justify-center gap-x-4 gap-y-2 transition-opacity duration-300 ${
+                group === "featured" ? "opacity-100" : "opacity-45 hover:opacity-80"
+              }`}
+            >
               {featuredSubTabs.map((s) => {
                 const active = sub === s.key;
                 return (
@@ -376,7 +405,11 @@ function Index() {
                 );
               })}
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <div
+              className={`flex flex-wrap items-center justify-center gap-x-4 gap-y-2 transition-opacity duration-300 ${
+                group === "live" ? "opacity-100" : "opacity-45 hover:opacity-80"
+              }`}
+            >
               {liveSubTabs.map((s) => {
                 const active = sub === s.key;
                 return (

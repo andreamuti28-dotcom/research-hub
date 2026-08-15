@@ -16,7 +16,11 @@ export const Route = createFileRoute("/mutuo")({
         content:
           "Simulatore interattivo mutuo: fisso vs variabile, scenari BCE, break-even e ammortamento.",
       },
+      { property: "og:url", content: "https://www.andreamuti.com/mutuo" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/mutuo" }],
   }),
   component: MutuoPage,
 });

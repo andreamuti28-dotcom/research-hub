@@ -17,11 +17,11 @@ export function CookieConsent() {
       aria-modal="false"
       aria-live="polite"
       aria-label={t("cookie.dialogLabel")}
-      className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-md z-[60] border border-border bg-background shadow-lg p-4 animate-fade-up"
+      className="fixed bottom-3 left-3 right-3 sm:bottom-4 sm:left-auto sm:right-4 sm:max-w-md z-[60] border border-border bg-background shadow-lg p-3 sm:p-4 animate-fade-up"
     >
       {!showPrefs ? (
         <>
-          <p className="text-xs leading-relaxed text-foreground mb-3">
+          <p className="text-[11px] sm:text-xs leading-snug sm:leading-relaxed text-foreground mb-2.5 sm:mb-3 line-clamp-4 sm:line-clamp-none">
             {t("cookie.notice")}{" "}
             <Link to="/cookie-policy" className="underline hover:text-primary">
               {t("common.cookiePolicy")}
@@ -32,25 +32,25 @@ export function CookieConsent() {
             </Link>
             .
           </p>
-          <div className="flex flex-wrap gap-2 justify-end">
+          <div className="flex flex-nowrap items-stretch gap-1.5 sm:gap-2 sm:justify-end">
             <button
               type="button"
               onClick={() => setShowPrefs(true)}
-              className="px-3 py-1.5 text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors"
+              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 text-[9px] sm:text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors whitespace-nowrap"
             >
               {t("cookie.manage")}
             </button>
             <button
               type="button"
               onClick={rejectAll}
-              className="px-3 py-1.5 text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors"
+              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 text-[9px] sm:text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors whitespace-nowrap"
             >
               {t("cookie.reject")}
             </button>
             <button
               type="button"
               onClick={acceptAll}
-              className="px-3 py-1.5 text-[11px] font-display font-bold uppercase tracking-wider bg-foreground text-background hover:bg-primary transition-colors"
+              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 text-[9px] sm:text-[11px] font-display font-bold uppercase tracking-wider bg-foreground text-background hover:bg-primary transition-colors whitespace-nowrap"
             >
               {t("cookie.accept")}
             </button>

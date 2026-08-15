@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { SiteSettings, LanguageItem } from "@/lib/site-settings.functions";
 import { useT } from "@/lib/i18n";
+import { ogImageMeta } from "@/lib/og";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -31,12 +32,13 @@ export const Route = createFileRoute("/about")({
       },
       { property: "og:url", content: "https://www.andreamuti.com/about" },
       { property: "og:type", content: "profile" },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Chi sono — Andrea Muti" },
       {
         name: "twitter:description",
         content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
       },
+      ...ogImageMeta(),
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/about" }],
   }),

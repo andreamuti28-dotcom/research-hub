@@ -10,7 +10,11 @@ export const Route = createFileRoute("/dividend-yield")({
       { property: "og:description", content: "Dashboard interattiva: yield on cost, crescita storica dei dividendi (DGR) e proiezione del rendimento sul capitale investito." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://www.andreamuti.com/dividend-yield" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/dividend-yield" }],
   }),
   component: () => <DividendYieldDashboard />,
 });

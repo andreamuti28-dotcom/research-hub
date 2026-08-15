@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { listPublishedPapers } from "@/lib/papers.functions";
+import { DASHBOARD_REGISTRY } from "@/lib/dashboard-registry";
 
 const BASE_URL = "https://www.andreamuti.com";
 
@@ -23,6 +24,11 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/cookie-policy", changefreq: "yearly", priority: "0.3" },
           { path: "/termini", changefreq: "yearly", priority: "0.3" },
         ];
+
+        // Interactive dashboards: standalone indexable pages.
+        for (const { path } of Object.values(DASHBOARD_REGISTRY)) {
+          entries.push({ path, changefreq: "monthly", priority: "0.6" });
+        }
 
         try {
           const papers = await listPublishedPapers();

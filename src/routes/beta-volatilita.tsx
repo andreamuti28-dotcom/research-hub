@@ -10,7 +10,11 @@ export const Route = createFileRoute("/beta-volatilita")({
       { property: "og:description", content: "Dashboard interattiva: beta, alpha, correlazione e volatilità del portafoglio rispetto al benchmark." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://www.andreamuti.com/beta-volatilita" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/beta-volatilita" }],
   }),
   component: () => <BetaVolatilityDashboard />,
 });

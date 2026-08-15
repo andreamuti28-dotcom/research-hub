@@ -11,6 +11,7 @@ import { parseContent, renderMathHtml, estimateReadingMinutes } from "@/lib/pape
 import { useT } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
+import { ogImageMeta } from "@/lib/og";
 
 export const Route = createFileRoute("/paper/$slug")({
   loader: async ({ params }) => {
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/paper/$slug")({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: paper.title },
         { name: "twitter:description", content: paper.abstract },
+        ...ogImageMeta(),
       ],
       links: [{ rel: "canonical", href: url }],
       scripts: [

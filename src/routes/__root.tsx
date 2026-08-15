@@ -11,6 +11,7 @@ import {
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { LanguageProvider, langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
+import { Toaster } from "@/components/ui/sonner";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { i18n } from "@/lib/i18n";
 
@@ -136,7 +137,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="it" suppressHydrationWarning>
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
@@ -159,6 +160,7 @@ function RootComponent() {
         <ThemeOverridesStyle />
         <Outlet />
         <CookieConsent />
+        <Toaster />
       </LanguageProvider>
     </QueryClientProvider>
   );

@@ -1,6 +1,36 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
+const NAV_GROUPS: {
+  label: string;
+  items: { to: string; label: string; exact?: boolean }[];
+}[] = [
+  {
+    label: "Contenuti",
+    items: [
+      { to: "/admin", label: "Recap", exact: true },
+      { to: "/admin/new", label: "Nuovo Paper" },
+      { to: "/admin/content", label: "Contenuti" },
+    ],
+  },
+  {
+    label: "Dati",
+    items: [
+      { to: "/admin/news", label: "News" },
+      { to: "/admin/market-sync", label: "Mercati" },
+      { to: "/admin/dashboards", label: "Dashboard" },
+    ],
+  },
+  {
+    label: "Impostazioni",
+    items: [
+      { to: "/admin/users", label: "Utenti" },
+      { to: "/admin/keys", label: "Chiavi" },
+      { to: "/admin/settings", label: "Profilo" },
+    ],
+  },
+];
+
 export function AdminShell({
   title,
   children,
@@ -24,19 +54,37 @@ export function AdminShell({
           >
             CMS
           </Link>
-          <div className="hidden md:flex gap-6 font-display text-[11px] uppercase tracking-widest mr-auto ml-8">
-            <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Recap</Link>
-            <Link to="/admin/new" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
-            <Link to="/admin/news" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>News</Link>
-            <Link to="/admin/market-sync" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Mercati</Link>
-            <Link to="/admin/dashboards" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Dashboard</Link>
-            <Link to="/admin/users" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Utenti</Link>
-            <Link to="/admin/keys" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Chiavi</Link>
-            <Link to="/admin/content" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Contenuti</Link>
-            <Link to="/admin/settings" className="hover:text-background transition-colors" activeProps={{ className: "text-background" }}>Profilo</Link>
+          <div className="hidden lg:flex items-center gap-6 mr-auto ml-8">
+            {NAV_GROUPS.map((g, i) => (
+              <div key={g.label} className="flex items-center gap-6">
+                {i > 0 && (
+                  <span className="h-4 w-px bg-surface-dark-muted" aria-hidden />
+                )}
+                <div className="flex flex-col">
+                  <span className="font-mono text-[8px] uppercase tracking-widest text-surface-dark-foreground/40">
+                    {g.label}
+                  </span>
+                  <div className="flex gap-4 font-display text-[11px] uppercase tracking-widest">
+                    {g.items.map((it) => (
+                      <Link
+                        key={it.to}
+                        to={it.to}
+                        activeOptions={it.exact ? { exact: true } : undefined}
+                        className="hover:text-background transition-colors"
+                        activeProps={{ className: "text-background" }}
+                      >
+                        {it.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
           <div className="flex items-center gap-2 sm:gap-3 font-mono text-[10px] uppercase tracking-widest shrink-0">
-            <Link to="/" target="_blank" className="hidden sm:inline hover:text-background transition-colors">↗ Pubblico</Link>
+            <Link to="/" target="_blank" className="hidden sm:inline hover:text-background transition-colors">
+              ↗ Pubblico
+            </Link>
             <button
               type="button"
               onClick={onLogout}
@@ -46,19 +94,37 @@ export function AdminShell({
             </button>
           </div>
         </div>
-        {/* Mobile sub-nav */}
-        <div className="md:hidden border-t border-surface-dark-muted bg-surface-dark/95 overflow-x-auto">
-          <div className="flex gap-4 px-4 py-2 font-display text-[10px] uppercase tracking-widest whitespace-nowrap">
-            <Link to="/admin" activeOptions={{ exact: true }} className="hover:text-background" activeProps={{ className: "text-background" }}>Recap</Link>
-            <Link to="/admin/new" className="hover:text-background" activeProps={{ className: "text-background" }}>Nuovo Paper</Link>
-            <Link to="/admin/news" className="hover:text-background" activeProps={{ className: "text-background" }}>News</Link>
-            <Link to="/admin/market-sync" className="hover:text-background" activeProps={{ className: "text-background" }}>Mercati</Link>
-            <Link to="/admin/dashboards" className="hover:text-background" activeProps={{ className: "text-background" }}>Dashboard</Link>
-            <Link to="/admin/users" className="hover:text-background" activeProps={{ className: "text-background" }}>Utenti</Link>
-            <Link to="/admin/keys" className="hover:text-background" activeProps={{ className: "text-background" }}>Chiavi</Link>
-            <Link to="/admin/content" className="hover:text-background" activeProps={{ className: "text-background" }}>Contenuti</Link>
-            <Link to="/admin/settings" className="hover:text-background" activeProps={{ className: "text-background" }}>Profilo</Link>
-            <Link to="/" target="_blank" className="hover:text-background ml-auto">↗ Pubblico</Link>
+
+        {/* Compact grouped nav for small screens: every destination stays visible. */}
+        <div className="lg:hidden border-t border-surface-dark-muted bg-surface-dark/95 px-4 py-2 space-y-1.5">
+          {NAV_GROUPS.map((g) => (
+            <div key={g.label} className="flex items-baseline gap-3">
+              <span className="font-mono text-[8px] uppercase tracking-widest text-surface-dark-foreground/40 w-16 shrink-0">
+                {g.label}
+              </span>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 font-display text-[10px] uppercase tracking-widest">
+                {g.items.map((it) => (
+                  <Link
+                    key={it.to}
+                    to={it.to}
+                    activeOptions={it.exact ? { exact: true } : undefined}
+                    className="hover:text-background"
+                    activeProps={{ className: "text-background" }}
+                  >
+                    {it.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div className="pt-1">
+            <Link
+              to="/"
+              target="_blank"
+              className="font-mono text-[10px] uppercase tracking-widest hover:text-background"
+            >
+              ↗ Pubblico
+            </Link>
           </div>
         </div>
       </nav>

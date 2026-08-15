@@ -10,7 +10,11 @@ export const Route = createFileRoute("/twr-mwr")({
       { property: "og:description", content: "Dashboard interattiva: differenza tra rendimento time-weighted e money-weighted (IRR) con flussi di cassa reali." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://www.andreamuti.com/twr-mwr" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/twr-mwr" }],
   }),
   component: () => <TwrMwrDashboard />,
 });

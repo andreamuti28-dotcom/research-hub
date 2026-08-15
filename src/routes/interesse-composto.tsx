@@ -16,7 +16,11 @@ export const Route = createFileRoute("/interesse-composto")({
         content:
           "Simulatore interattivo di interesse semplice e composto con versamenti periodici.",
       },
+      { property: "og:url", content: "https://www.andreamuti.com/interesse-composto" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/interesse-composto" }],
   }),
   component: () => <InterestDashboard />,
 });

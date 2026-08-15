@@ -10,7 +10,11 @@ export const Route = createFileRoute("/max-drawdown")({
       { property: "og:description", content: "Dashboard interattiva: massimo drawdown, durata e recupero per diverse asset class." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://www.andreamuti.com/max-drawdown" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/max-drawdown" }],
   }),
   component: () => <MaxDrawdownDashboard />,
 });
