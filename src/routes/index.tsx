@@ -291,7 +291,7 @@ function Index() {
               <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
             {(settings.heroLogoLightUrl || settings.heroLogoDarkUrl) && (
-              <div className="mt-8 md:pl-6 flex justify-center">
+              <div className="mt-6 md:mt-8 md:pl-6 flex justify-center">
                 {settings.heroLogoLightUrl && (
                   <img
                     src={settings.heroLogoLightUrl}
