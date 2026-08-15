@@ -11,6 +11,7 @@ import {
 import { themeBootstrapScript } from "@/hooks/use-theme";
 import { LanguageProvider, langBootstrapScript } from "@/hooks/use-language";
 import { CookieConsent } from "@/components/CookieConsent";
+import { Toaster } from "@/components/ui/sonner";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { i18n } from "@/lib/i18n";
 
