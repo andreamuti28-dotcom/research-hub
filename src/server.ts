@@ -105,6 +105,26 @@ const CSP = [
   "upgrade-insecure-requests",
 ].join("; ");
 
+function isHttps(request: Request): boolean {
+  const proto =
+    request.headers.get("x-forwarded-proto") ??
+    (new URL(request.url).protocol === "https:" ? "https" : "http");
+  return proto.split(",")[0]?.trim() === "https";
+}
+
+// HSTS preload requires plain HTTP to 301 to HTTPS and to NOT send an HSTS
+// header over HTTP.
+function httpToHttpsRedirect(request: Request): Response | null {
+  if (isHttps(request)) return null;
+  const url = new URL(request.url);
+  url.protocol = "https:";
+  url.port = "";
+  return new Response(null, {
+    status: 301,
+    headers: { location: url.toString() },
+  });
+}
+
 function withSecurityHeaders(response: Response, request: Request): Response {
   const headers = new Headers(response.headers);
   const contentType = headers.get("content-type") ?? "";
@@ -113,10 +133,14 @@ function withSecurityHeaders(response: Response, request: Request): Response {
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
-  headers.set(
-    "Strict-Transport-Security",
-    "max-age=31536000; includeSubDomains; preload",
-  );
+  if (isHttps(request)) {
+    headers.set(
+      "Strict-Transport-Security",
+      "max-age=31536000; includeSubDomains; preload",
+    );
+  } else {
+    headers.delete("Strict-Transport-Security");
+  }
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   if (isDocument) headers.set("Content-Security-Policy", CSP);
 
