@@ -244,11 +244,38 @@ function Index() {
         <h1 className="sr-only">{HERO_TITLE_FIXED}</h1>
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-start">
           <div className="md:col-span-7">
-            {settings.heroVideoUrl ? (
-              <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
+            <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
+              {/* Fallback layer: never leave an empty grey box while the video
+                  loads, fails, or has not been set from the admin area. */}
+              <div className="absolute inset-0 flex items-center justify-center px-6">
+                {settings.heroLogoLightUrl || settings.heroLogoDarkUrl ? (
+                  <>
+                    {settings.heroLogoLightUrl && (
+                      <img
+                        src={settings.heroLogoLightUrl}
+                        alt={HERO_TITLE_FIXED}
+                        className="block dark:hidden max-h-24 w-auto object-contain mix-blend-multiply"
+                      />
+                    )}
+                    {settings.heroLogoDarkUrl && (
+                      <img
+                        src={settings.heroLogoDarkUrl}
+                        alt={HERO_TITLE_FIXED}
+                        className="hidden dark:block max-h-24 w-auto object-contain mix-blend-screen"
+                      />
+                    )}
+                  </>
+                ) : (
+                  <span className="font-display font-bold uppercase tracking-widest text-foreground text-center">
+                    {HERO_TITLE_FIXED}
+                  </span>
+                )}
+              </div>
+              {settings.heroVideoUrl && (
                 <video
                   key={settings.heroVideoUrl}
                   src={settings.heroVideoUrl}
+                  poster={settings.heroLogoLightUrl || undefined}
                   autoPlay
                   loop
                   muted
@@ -256,12 +283,8 @@ function Index() {
                   preload="metadata"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
-              </div>
-            ) : (
-              <div className="aspect-video w-full border border-dashed border-border bg-surface flex items-center justify-center font-display font-bold uppercase tracking-widest text-foreground text-center px-6">
-                {HERO_TITLE_FIXED}
-              </div>
-            )}
+              )}
+            </div>
           </div>
           <div className="md:col-span-5 md:pt-2">
             <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
