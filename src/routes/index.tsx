@@ -81,6 +81,7 @@ export const Route = createFileRoute("/")({
         content:
           "Paper, dashboard interattive e report giornalieri sui mercati finanziari: risk management, derivati, crypto e macroeconomia.",
       },
+      ...ogImageMeta(),
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
   }),
