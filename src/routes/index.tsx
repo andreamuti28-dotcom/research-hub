@@ -53,7 +53,35 @@ const dashboardsQuery = {
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [{ property: "og:url", content: "https://www.andreamuti.com/" }],
+    meta: [
+      { title: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management" },
+      {
+        name: "description",
+        content:
+          "Paper, dashboard interattive e report giornalieri sui mercati finanziari: risk management, derivati, crypto e macroeconomia.",
+      },
+      {
+        property: "og:title",
+        content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management",
+      },
+      {
+        property: "og:description",
+        content:
+          "Paper, dashboard interattive e report giornalieri sui mercati finanziari: risk management, derivati, crypto e macroeconomia.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.andreamuti.com/" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Paper, dashboard interattive e report giornalieri sui mercati finanziari: risk management, derivati, crypto e macroeconomia.",
+      },
+    ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/" }],
   }),
   loader: ({ context }) =>
