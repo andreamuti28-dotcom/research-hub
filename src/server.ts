@@ -105,17 +105,32 @@ const CSP = [
   "upgrade-insecure-requests",
 ].join("; ");
 
-function isHttps(request: Request): boolean {
-  const proto =
-    request.headers.get("x-forwarded-proto") ??
-    (new URL(request.url).protocol === "https:" ? "https" : "http");
-  return proto.split(",")[0]?.trim() === "https";
+// Returns the explicit client-facing protocol when known.
+// Behind proxies without x-forwarded-proto the inbound URL can be http even
+// though the client spoke https, so "unknown" must NOT be treated as http.
+function explicitProto(request: Request): "https" | "http" | null {
+  const forwarded = request.headers.get("x-forwarded-proto");
+  if (forwarded) {
+    const value = forwarded.split(",")[0]?.trim().toLowerCase();
+    if (value === "https" || value === "http") return value;
+  }
+  return null;
+}
+
+function isLocalHost(request: Request): boolean {
+  const host = new URL(request.url).hostname;
+  return host === "localhost" || host === "127.0.0.1" || host.endsWith(".local");
+}
+
+function shouldSendHsts(request: Request): boolean {
+  if (isLocalHost(request)) return false;
+  return explicitProto(request) !== "http";
 }
 
 // HSTS preload requires plain HTTP to 301 to HTTPS and to NOT send an HSTS
 // header over HTTP.
 function httpToHttpsRedirect(request: Request): Response | null {
-  if (isHttps(request)) return null;
+  if (explicitProto(request) !== "http" || isLocalHost(request)) return null;
   const url = new URL(request.url);
   url.protocol = "https:";
   url.port = "";
@@ -125,6 +140,7 @@ function httpToHttpsRedirect(request: Request): Response | null {
   });
 }
 
+
 function withSecurityHeaders(response: Response, request: Request): Response {
   const headers = new Headers(response.headers);
   const contentType = headers.get("content-type") ?? "";
@@ -133,7 +149,7 @@ function withSecurityHeaders(response: Response, request: Request): Response {
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
-  if (isHttps(request)) {
+  if (shouldSendHsts(request)) {
     headers.set(
       "Strict-Transport-Security",
       "max-age=31536000; includeSubDomains; preload",
