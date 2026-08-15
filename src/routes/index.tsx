@@ -405,7 +405,11 @@ function Index() {
                 );
               })}
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <div
+              className={`flex flex-wrap items-center justify-center gap-x-4 gap-y-2 transition-opacity duration-300 ${
+                group === "live" ? "opacity-100" : "opacity-45 hover:opacity-80"
+              }`}
+            >
               {liveSubTabs.map((s) => {
                 const active = sub === s.key;
                 return (
