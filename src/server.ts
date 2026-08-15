@@ -50,9 +50,25 @@ function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boole
   );
 }
 
+// A client that navigates away / cancels an in-flight request aborts the
+// connection. srvx surfaces that as an AbortError and h3 turns it into a 500,
+// but it is not an application error: never log it or render the error page.
+function isClientAbort(error: unknown): boolean {
+  if (!error) return false;
+  const err = error as { name?: unknown; message?: unknown; cause?: unknown };
+  if (err.name === "AbortError") return true;
+  if (typeof err.message === "string" && /\baborted\b/i.test(err.message)) return true;
+  return err.cause ? isClientAbort(err.cause) : false;
+}
+
+const clientAbortResponse = () => new Response(null, { status: 499 });
+
 // h3 swallows in-handler throws into a normal 500 Response with body
 // {"unhandled":true,"message":"HTTPError"} — try/catch alone never fires for those.
-async function normalizeCatastrophicSsrResponse(response: Response): Promise<Response> {
+async function normalizeCatastrophicSsrResponse(
+  response: Response,
+  request: Request,
+): Promise<Response> {
   if (response.status < 500) return response;
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) return response;
@@ -62,7 +78,12 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
     return response;
   }
 
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  const captured = consumeLastCapturedError();
+  if (request.signal.aborted || isClientAbort(captured)) {
+    return clientAbortResponse();
+  }
+
+  console.error(captured ?? new Error(`h3 swallowed SSR error: ${body}`));
   return brandedErrorResponse();
 }
 
@@ -71,10 +92,14 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return await normalizeCatastrophicSsrResponse(response, request);
     } catch (error) {
+      if (isClientAbort(error) || request.signal.aborted) {
+        return clientAbortResponse();
+      }
       console.error(error);
       return brandedErrorResponse();
     }
   },
 };
+
