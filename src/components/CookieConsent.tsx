@@ -32,25 +32,25 @@ export function CookieConsent() {
             </Link>
             .
           </p>
-          <div className="flex flex-wrap gap-2 justify-end">
+          <div className="flex flex-nowrap items-stretch gap-1.5 sm:gap-2 sm:justify-end">
             <button
               type="button"
               onClick={() => setShowPrefs(true)}
-              className="px-3 py-1.5 text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors"
+              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 text-[9px] sm:text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors whitespace-nowrap"
             >
               {t("cookie.manage")}
             </button>
             <button
               type="button"
               onClick={rejectAll}
-              className="px-3 py-1.5 text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors"
+              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 text-[9px] sm:text-[11px] font-display uppercase tracking-wider border border-border hover:bg-muted transition-colors whitespace-nowrap"
             >
               {t("cookie.reject")}
             </button>
             <button
               type="button"
               onClick={acceptAll}
-              className="px-3 py-1.5 text-[11px] font-display font-bold uppercase tracking-wider bg-foreground text-background hover:bg-primary transition-colors"
+              className="flex-1 sm:flex-none px-2 sm:px-3 py-1.5 text-[9px] sm:text-[11px] font-display font-bold uppercase tracking-wider bg-foreground text-background hover:bg-primary transition-colors whitespace-nowrap"
             >
               {t("cookie.accept")}
             </button>
