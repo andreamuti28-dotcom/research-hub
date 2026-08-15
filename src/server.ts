@@ -87,19 +87,67 @@ async function normalizeCatastrophicSsrResponse(
   return brandedErrorResponse();
 }
 
+const CSP = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'self'",
+  "form-action 'self'",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' blob: https:",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+  "connect-src 'self' https: wss:",
+  "worker-src 'self' blob:",
+  "upgrade-insecure-requests",
+].join("; ");
+
+function withSecurityHeaders(response: Response, request: Request): Response {
+  const headers = new Headers(response.headers);
+  const contentType = headers.get("content-type") ?? "";
+  const isDocument = contentType.includes("text/html");
+
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set("X-Frame-Options", "SAMEORIGIN");
+  headers.set(
+    "Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains; preload",
+  );
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  if (isDocument) headers.set("Content-Security-Policy", CSP);
+
+  // Belt-and-braces: admin surfaces must never be indexed.
+  if (new URL(request.url).pathname.startsWith("/admin")) {
+    headers.set("X-Robots-Tag", "noindex, nofollow, noarchive");
+    headers.set("Cache-Control", "no-store");
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response, request);
+      return withSecurityHeaders(
+        await normalizeCatastrophicSsrResponse(response, request),
+        request,
+      );
     } catch (error) {
       if (isClientAbort(error) || request.signal.aborted) {
         return clientAbortResponse();
       }
       console.error(error);
-      return brandedErrorResponse();
+      return withSecurityHeaders(brandedErrorResponse(), request);
     }
   },
 };
+
 
