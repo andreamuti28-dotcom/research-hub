@@ -17,7 +17,7 @@ export function CookieConsent() {
       aria-modal="false"
       aria-live="polite"
       aria-label={t("cookie.dialogLabel")}
-      className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-md z-[60] border border-border bg-background shadow-lg p-4 animate-fade-up"
+      className="fixed bottom-3 left-3 right-3 sm:bottom-4 sm:left-auto sm:right-4 sm:max-w-md z-[60] border border-border bg-background shadow-lg p-3 sm:p-4 animate-fade-up"
     >
       {!showPrefs ? (
         <>
