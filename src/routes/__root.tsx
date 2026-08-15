@@ -160,6 +160,7 @@ function RootComponent() {
         <ThemeOverridesStyle />
         <Outlet />
         <CookieConsent />
+        <Toaster />
       </LanguageProvider>
     </QueryClientProvider>
   );
