@@ -21,7 +21,7 @@ export function CookieConsent() {
     >
       {!showPrefs ? (
         <>
-          <p className="text-xs leading-relaxed text-foreground mb-3">
+          <p className="text-[11px] sm:text-xs leading-snug sm:leading-relaxed text-foreground mb-2.5 sm:mb-3 line-clamp-4 sm:line-clamp-none">
             {t("cookie.notice")}{" "}
             <Link to="/cookie-policy" className="underline hover:text-primary">
               {t("common.cookiePolicy")}
