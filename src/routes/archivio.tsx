@@ -42,7 +42,7 @@ export const Route = createFileRoute("/archivio")({
       },
       { property: "og:url", content: "https://www.andreamuti.com/archivio" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Archivio paper e report finanziari — Andrea Muti" },
       {
         name: "twitter:description",

@@ -32,7 +32,7 @@ export const Route = createFileRoute("/about")({
       },
       { property: "og:url", content: "https://www.andreamuti.com/about" },
       { property: "og:type", content: "profile" },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Chi sono — Andrea Muti" },
       {
         name: "twitter:description",
