@@ -9,147 +9,47 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TwrMwrRouteImport } from './routes/twr-mwr'
-import { Route as TrackingErrorRouteImport } from './routes/tracking-error'
-import { Route as TerminiRouteImport } from './routes/termini'
-import { Route as StressTestRouteImport } from './routes/stress-test'
-import { Route as SostenibilitaDebitoRouteImport } from './routes/sostenibilita-debito'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as RischioSequenzaRouteImport } from './routes/rischio-sequenza'
-import { Route as RibilanciamentoRouteImport } from './routes/ribilanciamento'
-import { Route as RendimentoRealeRouteImport } from './routes/rendimento-reale'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as MutuoRouteImport } from './routes/mutuo'
-import { Route as MaxDrawdownRouteImport } from './routes/max-drawdown'
-import { Route as InteresseCompostoRouteImport } from './routes/interesse-composto'
-import { Route as EfficienzaFiscaleRouteImport } from './routes/efficienza-fiscale'
-import { Route as DividendYieldRouteImport } from './routes/dividend-yield'
-import { Route as CostoOpportunitaRouteImport } from './routes/costo-opportunita'
-import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
-import { Route as BurnRatePensioneRouteImport } from './routes/burn-rate-pensione'
-import { Route as BetaVolatilitaRouteImport } from './routes/beta-volatilita'
-import { Route as AssetLocationRouteImport } from './routes/asset-location'
-import { Route as ArchivioRouteImport } from './routes/archivio'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ArchivioRouteImport } from './routes/archivio'
+import { Route as AssetLocationRouteImport } from './routes/asset-location'
+import { Route as BetaVolatilitaRouteImport } from './routes/beta-volatilita'
+import { Route as BurnRatePensioneRouteImport } from './routes/burn-rate-pensione'
+import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
+import { Route as CostoOpportunitaRouteImport } from './routes/costo-opportunita'
+import { Route as DividendYieldRouteImport } from './routes/dividend-yield'
+import { Route as EfficienzaFiscaleRouteImport } from './routes/efficienza-fiscale'
+import { Route as InteresseCompostoRouteImport } from './routes/interesse-composto'
+import { Route as MaxDrawdownRouteImport } from './routes/max-drawdown'
+import { Route as MutuoRouteImport } from './routes/mutuo'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as RendimentoRealeRouteImport } from './routes/rendimento-reale'
+import { Route as RibilanciamentoRouteImport } from './routes/ribilanciamento'
+import { Route as RischioSequenzaRouteImport } from './routes/rischio-sequenza'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SostenibilitaDebitoRouteImport } from './routes/sostenibilita-debito'
+import { Route as StressTestRouteImport } from './routes/stress-test'
+import { Route as TerminiRouteImport } from './routes/termini'
+import { Route as TrackingErrorRouteImport } from './routes/tracking-error'
+import { Route as TwrMwrRouteImport } from './routes/twr-mwr'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
-import { Route as AdminNewsRouteImport } from './routes/admin.news'
-import { Route as AdminNewRouteImport } from './routes/admin.new'
-import { Route as AdminMarketSyncRouteImport } from './routes/admin.market-sync'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminKeysRouteImport } from './routes/admin.keys'
-import { Route as AdminDashboardsRouteImport } from './routes/admin.dashboards'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
-import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
+import { Route as AdminDashboardsRouteImport } from './routes/admin.dashboards'
+import { Route as AdminKeysRouteImport } from './routes/admin.keys'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminMarketSyncRouteImport } from './routes/admin.market-sync'
+import { Route as AdminNewRouteImport } from './routes/admin.new'
+import { Route as AdminNewsRouteImport } from './routes/admin.news'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
+import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
 import { Route as ApiPublicHooksMarketSyncRouteImport } from './routes/api/public/hooks/market-sync'
 
-const TwrMwrRoute = TwrMwrRouteImport.update({
-  id: '/twr-mwr',
-  path: '/twr-mwr',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrackingErrorRoute = TrackingErrorRouteImport.update({
-  id: '/tracking-error',
-  path: '/tracking-error',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TerminiRoute = TerminiRouteImport.update({
-  id: '/termini',
-  path: '/termini',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StressTestRoute = StressTestRouteImport.update({
-  id: '/stress-test',
-  path: '/stress-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SostenibilitaDebitoRoute = SostenibilitaDebitoRouteImport.update({
-  id: '/sostenibilita-debito',
-  path: '/sostenibilita-debito',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RischioSequenzaRoute = RischioSequenzaRouteImport.update({
-  id: '/rischio-sequenza',
-  path: '/rischio-sequenza',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RibilanciamentoRoute = RibilanciamentoRouteImport.update({
-  id: '/ribilanciamento',
-  path: '/ribilanciamento',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RendimentoRealeRoute = RendimentoRealeRouteImport.update({
-  id: '/rendimento-reale',
-  path: '/rendimento-reale',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MutuoRoute = MutuoRouteImport.update({
-  id: '/mutuo',
-  path: '/mutuo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MaxDrawdownRoute = MaxDrawdownRouteImport.update({
-  id: '/max-drawdown',
-  path: '/max-drawdown',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InteresseCompostoRoute = InteresseCompostoRouteImport.update({
-  id: '/interesse-composto',
-  path: '/interesse-composto',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EfficienzaFiscaleRoute = EfficienzaFiscaleRouteImport.update({
-  id: '/efficienza-fiscale',
-  path: '/efficienza-fiscale',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DividendYieldRoute = DividendYieldRouteImport.update({
-  id: '/dividend-yield',
-  path: '/dividend-yield',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CostoOpportunitaRoute = CostoOpportunitaRouteImport.update({
-  id: '/costo-opportunita',
-  path: '/costo-opportunita',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CookiePolicyRoute = CookiePolicyRouteImport.update({
-  id: '/cookie-policy',
-  path: '/cookie-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BurnRatePensioneRoute = BurnRatePensioneRouteImport.update({
-  id: '/burn-rate-pensione',
-  path: '/burn-rate-pensione',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BetaVolatilitaRoute = BetaVolatilitaRouteImport.update({
-  id: '/beta-volatilita',
-  path: '/beta-volatilita',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AssetLocationRoute = AssetLocationRouteImport.update({
-  id: '/asset-location',
-  path: '/asset-location',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ArchivioRoute = ArchivioRouteImport.update({
-  id: '/archivio',
-  path: '/archivio',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -157,9 +57,109 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ArchivioRoute = ArchivioRouteImport.update({
+  id: '/archivio',
+  path: '/archivio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssetLocationRoute = AssetLocationRouteImport.update({
+  id: '/asset-location',
+  path: '/asset-location',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BetaVolatilitaRoute = BetaVolatilitaRouteImport.update({
+  id: '/beta-volatilita',
+  path: '/beta-volatilita',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BurnRatePensioneRoute = BurnRatePensioneRouteImport.update({
+  id: '/burn-rate-pensione',
+  path: '/burn-rate-pensione',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiePolicyRoute = CookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CostoOpportunitaRoute = CostoOpportunitaRouteImport.update({
+  id: '/costo-opportunita',
+  path: '/costo-opportunita',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DividendYieldRoute = DividendYieldRouteImport.update({
+  id: '/dividend-yield',
+  path: '/dividend-yield',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EfficienzaFiscaleRoute = EfficienzaFiscaleRouteImport.update({
+  id: '/efficienza-fiscale',
+  path: '/efficienza-fiscale',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InteresseCompostoRoute = InteresseCompostoRouteImport.update({
+  id: '/interesse-composto',
+  path: '/interesse-composto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MaxDrawdownRoute = MaxDrawdownRouteImport.update({
+  id: '/max-drawdown',
+  path: '/max-drawdown',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MutuoRoute = MutuoRouteImport.update({
+  id: '/mutuo',
+  path: '/mutuo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RendimentoRealeRoute = RendimentoRealeRouteImport.update({
+  id: '/rendimento-reale',
+  path: '/rendimento-reale',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RibilanciamentoRoute = RibilanciamentoRouteImport.update({
+  id: '/ribilanciamento',
+  path: '/ribilanciamento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RischioSequenzaRoute = RischioSequenzaRouteImport.update({
+  id: '/rischio-sequenza',
+  path: '/rischio-sequenza',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SostenibilitaDebitoRoute = SostenibilitaDebitoRouteImport.update({
+  id: '/sostenibilita-debito',
+  path: '/sostenibilita-debito',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StressTestRoute = StressTestRouteImport.update({
+  id: '/stress-test',
+  path: '/stress-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerminiRoute = TerminiRouteImport.update({
+  id: '/termini',
+  path: '/termini',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackingErrorRoute = TrackingErrorRouteImport.update({
+  id: '/tracking-error',
+  path: '/tracking-error',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TwrMwrRoute = TwrMwrRouteImport.update({
+  id: '/twr-mwr',
+  path: '/twr-mwr',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -167,44 +167,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PaperSlugRoute = PaperSlugRouteImport.update({
-  id: '/paper/$slug',
-  path: '/paper/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/admin/settings',
-  path: '/admin/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNewsRoute = AdminNewsRouteImport.update({
-  id: '/admin/news',
-  path: '/admin/news',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminNewRoute = AdminNewRouteImport.update({
-  id: '/admin/new',
-  path: '/admin/new',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminMarketSyncRoute = AdminMarketSyncRouteImport.update({
-  id: '/admin/market-sync',
-  path: '/admin/market-sync',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/admin/login',
-  path: '/admin/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminKeysRoute = AdminKeysRouteImport.update({
-  id: '/admin/keys',
-  path: '/admin/keys',
+const AdminContentRoute = AdminContentRouteImport.update({
+  id: '/admin/content',
+  path: '/admin/content',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminDashboardsRoute = AdminDashboardsRouteImport.update({
@@ -212,19 +177,54 @@ const AdminDashboardsRoute = AdminDashboardsRouteImport.update({
   path: '/admin/dashboards',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminContentRoute = AdminContentRouteImport.update({
-  id: '/admin/content',
-  path: '/admin/content',
+const AdminKeysRoute = AdminKeysRouteImport.update({
+  id: '/admin/keys',
+  path: '/admin/keys',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicMarketReportsRoute = ApiPublicMarketReportsRouteImport.update({
-  id: '/api/public/market-reports',
-  path: '/api/public/market-reports',
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMarketSyncRoute = AdminMarketSyncRouteImport.update({
+  id: '/admin/market-sync',
+  path: '/admin/market-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminNewRoute = AdminNewRouteImport.update({
+  id: '/admin/new',
+  path: '/admin/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminNewsRoute = AdminNewsRouteImport.update({
+  id: '/admin/news',
+  path: '/admin/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PaperSlugRoute = PaperSlugRouteImport.update({
+  id: '/paper/$slug',
+  path: '/paper/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminEditIdRoute = AdminEditIdRouteImport.update({
   id: '/admin/edit/$id',
   path: '/admin/edit/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicMarketReportsRoute = ApiPublicMarketReportsRouteImport.update({
+  id: '/api/public/market-reports',
+  path: '/api/public/market-reports',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicHooksMarketSyncRoute =
@@ -514,151 +514,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/twr-mwr': {
-      id: '/twr-mwr'
-      path: '/twr-mwr'
-      fullPath: '/twr-mwr'
-      preLoaderRoute: typeof TwrMwrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/tracking-error': {
-      id: '/tracking-error'
-      path: '/tracking-error'
-      fullPath: '/tracking-error'
-      preLoaderRoute: typeof TrackingErrorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/termini': {
-      id: '/termini'
-      path: '/termini'
-      fullPath: '/termini'
-      preLoaderRoute: typeof TerminiRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stress-test': {
-      id: '/stress-test'
-      path: '/stress-test'
-      fullPath: '/stress-test'
-      preLoaderRoute: typeof StressTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sostenibilita-debito': {
-      id: '/sostenibilita-debito'
-      path: '/sostenibilita-debito'
-      fullPath: '/sostenibilita-debito'
-      preLoaderRoute: typeof SostenibilitaDebitoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rischio-sequenza': {
-      id: '/rischio-sequenza'
-      path: '/rischio-sequenza'
-      fullPath: '/rischio-sequenza'
-      preLoaderRoute: typeof RischioSequenzaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/ribilanciamento': {
-      id: '/ribilanciamento'
-      path: '/ribilanciamento'
-      fullPath: '/ribilanciamento'
-      preLoaderRoute: typeof RibilanciamentoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/rendimento-reale': {
-      id: '/rendimento-reale'
-      path: '/rendimento-reale'
-      fullPath: '/rendimento-reale'
-      preLoaderRoute: typeof RendimentoRealeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mutuo': {
-      id: '/mutuo'
-      path: '/mutuo'
-      fullPath: '/mutuo'
-      preLoaderRoute: typeof MutuoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/max-drawdown': {
-      id: '/max-drawdown'
-      path: '/max-drawdown'
-      fullPath: '/max-drawdown'
-      preLoaderRoute: typeof MaxDrawdownRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/interesse-composto': {
-      id: '/interesse-composto'
-      path: '/interesse-composto'
-      fullPath: '/interesse-composto'
-      preLoaderRoute: typeof InteresseCompostoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/efficienza-fiscale': {
-      id: '/efficienza-fiscale'
-      path: '/efficienza-fiscale'
-      fullPath: '/efficienza-fiscale'
-      preLoaderRoute: typeof EfficienzaFiscaleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dividend-yield': {
-      id: '/dividend-yield'
-      path: '/dividend-yield'
-      fullPath: '/dividend-yield'
-      preLoaderRoute: typeof DividendYieldRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/costo-opportunita': {
-      id: '/costo-opportunita'
-      path: '/costo-opportunita'
-      fullPath: '/costo-opportunita'
-      preLoaderRoute: typeof CostoOpportunitaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cookie-policy': {
-      id: '/cookie-policy'
-      path: '/cookie-policy'
-      fullPath: '/cookie-policy'
-      preLoaderRoute: typeof CookiePolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/burn-rate-pensione': {
-      id: '/burn-rate-pensione'
-      path: '/burn-rate-pensione'
-      fullPath: '/burn-rate-pensione'
-      preLoaderRoute: typeof BurnRatePensioneRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/beta-volatilita': {
-      id: '/beta-volatilita'
-      path: '/beta-volatilita'
-      fullPath: '/beta-volatilita'
-      preLoaderRoute: typeof BetaVolatilitaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/asset-location': {
-      id: '/asset-location'
-      path: '/asset-location'
-      fullPath: '/asset-location'
-      preLoaderRoute: typeof AssetLocationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/archivio': {
-      id: '/archivio'
-      path: '/archivio'
-      fullPath: '/archivio'
-      preLoaderRoute: typeof ArchivioRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -668,11 +528,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/archivio': {
+      id: '/archivio'
+      path: '/archivio'
+      fullPath: '/archivio'
+      preLoaderRoute: typeof ArchivioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/asset-location': {
+      id: '/asset-location'
+      path: '/asset-location'
+      fullPath: '/asset-location'
+      preLoaderRoute: typeof AssetLocationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/beta-volatilita': {
+      id: '/beta-volatilita'
+      path: '/beta-volatilita'
+      fullPath: '/beta-volatilita'
+      preLoaderRoute: typeof BetaVolatilitaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/burn-rate-pensione': {
+      id: '/burn-rate-pensione'
+      path: '/burn-rate-pensione'
+      fullPath: '/burn-rate-pensione'
+      preLoaderRoute: typeof BurnRatePensioneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookie-policy': {
+      id: '/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/cookie-policy'
+      preLoaderRoute: typeof CookiePolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/costo-opportunita': {
+      id: '/costo-opportunita'
+      path: '/costo-opportunita'
+      fullPath: '/costo-opportunita'
+      preLoaderRoute: typeof CostoOpportunitaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dividend-yield': {
+      id: '/dividend-yield'
+      path: '/dividend-yield'
+      fullPath: '/dividend-yield'
+      preLoaderRoute: typeof DividendYieldRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/efficienza-fiscale': {
+      id: '/efficienza-fiscale'
+      path: '/efficienza-fiscale'
+      fullPath: '/efficienza-fiscale'
+      preLoaderRoute: typeof EfficienzaFiscaleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/interesse-composto': {
+      id: '/interesse-composto'
+      path: '/interesse-composto'
+      fullPath: '/interesse-composto'
+      preLoaderRoute: typeof InteresseCompostoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/max-drawdown': {
+      id: '/max-drawdown'
+      path: '/max-drawdown'
+      fullPath: '/max-drawdown'
+      preLoaderRoute: typeof MaxDrawdownRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mutuo': {
+      id: '/mutuo'
+      path: '/mutuo'
+      fullPath: '/mutuo'
+      preLoaderRoute: typeof MutuoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rendimento-reale': {
+      id: '/rendimento-reale'
+      path: '/rendimento-reale'
+      fullPath: '/rendimento-reale'
+      preLoaderRoute: typeof RendimentoRealeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ribilanciamento': {
+      id: '/ribilanciamento'
+      path: '/ribilanciamento'
+      fullPath: '/ribilanciamento'
+      preLoaderRoute: typeof RibilanciamentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rischio-sequenza': {
+      id: '/rischio-sequenza'
+      path: '/rischio-sequenza'
+      fullPath: '/rischio-sequenza'
+      preLoaderRoute: typeof RischioSequenzaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sostenibilita-debito': {
+      id: '/sostenibilita-debito'
+      path: '/sostenibilita-debito'
+      fullPath: '/sostenibilita-debito'
+      preLoaderRoute: typeof SostenibilitaDebitoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stress-test': {
+      id: '/stress-test'
+      path: '/stress-test'
+      fullPath: '/stress-test'
+      preLoaderRoute: typeof StressTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termini': {
+      id: '/termini'
+      path: '/termini'
+      fullPath: '/termini'
+      preLoaderRoute: typeof TerminiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tracking-error': {
+      id: '/tracking-error'
+      path: '/tracking-error'
+      fullPath: '/tracking-error'
+      preLoaderRoute: typeof TrackingErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/twr-mwr': {
+      id: '/twr-mwr'
+      path: '/twr-mwr'
+      fullPath: '/twr-mwr'
+      preLoaderRoute: typeof TwrMwrRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -682,60 +682,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/paper/$slug': {
-      id: '/paper/$slug'
-      path: '/paper/$slug'
-      fullPath: '/paper/$slug'
-      preLoaderRoute: typeof PaperSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/admin/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/news': {
-      id: '/admin/news'
-      path: '/admin/news'
-      fullPath: '/admin/news'
-      preLoaderRoute: typeof AdminNewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/new': {
-      id: '/admin/new'
-      path: '/admin/new'
-      fullPath: '/admin/new'
-      preLoaderRoute: typeof AdminNewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/market-sync': {
-      id: '/admin/market-sync'
-      path: '/admin/market-sync'
-      fullPath: '/admin/market-sync'
-      preLoaderRoute: typeof AdminMarketSyncRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/admin/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/keys': {
-      id: '/admin/keys'
-      path: '/admin/keys'
-      fullPath: '/admin/keys'
-      preLoaderRoute: typeof AdminKeysRouteImport
+    '/admin/content': {
+      id: '/admin/content'
+      path: '/admin/content'
+      fullPath: '/admin/content'
+      preLoaderRoute: typeof AdminContentRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/dashboards': {
@@ -745,18 +696,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/content': {
-      id: '/admin/content'
-      path: '/admin/content'
-      fullPath: '/admin/content'
-      preLoaderRoute: typeof AdminContentRouteImport
+    '/admin/keys': {
+      id: '/admin/keys'
+      path: '/admin/keys'
+      fullPath: '/admin/keys'
+      preLoaderRoute: typeof AdminKeysRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/market-reports': {
-      id: '/api/public/market-reports'
-      path: '/api/public/market-reports'
-      fullPath: '/api/public/market-reports'
-      preLoaderRoute: typeof ApiPublicMarketReportsRouteImport
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/market-sync': {
+      id: '/admin/market-sync'
+      path: '/admin/market-sync'
+      fullPath: '/admin/market-sync'
+      preLoaderRoute: typeof AdminMarketSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/new': {
+      id: '/admin/new'
+      path: '/admin/new'
+      fullPath: '/admin/new'
+      preLoaderRoute: typeof AdminNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/news': {
+      id: '/admin/news'
+      path: '/admin/news'
+      fullPath: '/admin/news'
+      preLoaderRoute: typeof AdminNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/paper/$slug': {
+      id: '/paper/$slug'
+      path: '/paper/$slug'
+      fullPath: '/paper/$slug'
+      preLoaderRoute: typeof PaperSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/edit/$id': {
@@ -764,6 +757,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/edit/$id'
       fullPath: '/admin/edit/$id'
       preLoaderRoute: typeof AdminEditIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/market-reports': {
+      id: '/api/public/market-reports'
+      path: '/api/public/market-reports'
+      fullPath: '/api/public/market-reports'
+      preLoaderRoute: typeof ApiPublicMarketReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/market-sync': {
