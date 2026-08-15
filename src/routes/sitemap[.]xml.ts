@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { listPublishedPapers } from "@/lib/papers.functions";
+import { DASHBOARD_REGISTRY } from "@/lib/dashboard-registry";
 
 const BASE_URL = "https://www.andreamuti.com";
 
