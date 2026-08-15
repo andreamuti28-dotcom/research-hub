@@ -149,7 +149,7 @@ function withSecurityHeaders(response: Response, request: Request): Response {
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   headers.set("X-Frame-Options", "SAMEORIGIN");
-  if (isHttps(request)) {
+  if (shouldSendHsts(request)) {
     headers.set(
       "Strict-Transport-Security",
       "max-age=31536000; includeSubDomains; preload",
