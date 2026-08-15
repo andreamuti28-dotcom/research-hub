@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { SiteSettings, LanguageItem } from "@/lib/site-settings.functions";
 import { useT } from "@/lib/i18n";
+import { ogImageMeta } from "@/lib/og";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/about")({
         name: "twitter:description",
         content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
       },
+      ...ogImageMeta(),
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/about" }],
   }),

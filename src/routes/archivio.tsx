@@ -13,6 +13,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { Link } from "@tanstack/react-router";
 import { listPublishedDashboards } from "@/lib/dashboards.functions";
 import { dashboardPath } from "@/lib/dashboard-registry";
+import { ogImageMeta } from "@/lib/og";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -47,6 +48,7 @@ export const Route = createFileRoute("/archivio")({
         name: "twitter:description",
         content: "Paper di ricerca e report dei mercati finanziari.",
       },
+      ...ogImageMeta(),
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/archivio" }],
   }),
