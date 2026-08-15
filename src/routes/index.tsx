@@ -378,7 +378,11 @@ function Index() {
 
           {/* Sub categories in two centered cells */}
           <div className="grid grid-cols-2 gap-4 mt-6">
-            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <div
+              className={`flex flex-wrap items-center justify-center gap-x-4 gap-y-2 transition-opacity duration-300 ${
+                group === "featured" ? "opacity-100" : "opacity-45 hover:opacity-80"
+              }`}
+            >
               {featuredSubTabs.map((s) => {
                 const active = sub === s.key;
                 return (
