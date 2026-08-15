@@ -310,7 +310,7 @@ function Index() {
                 )}
               </div>
             )}
-            <div className="mt-8 flex flex-nowrap items-stretch gap-2 sm:gap-3 md:pl-6">
+            <div className="mt-6 md:mt-8 flex flex-nowrap items-stretch gap-2 sm:gap-3 md:pl-6">
               <Link
                 to="/archivio"
                 className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 bg-foreground text-background font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors whitespace-nowrap"
