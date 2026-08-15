@@ -97,7 +97,9 @@ const CSP = [
   "media-src 'self' blob: https:",
   "font-src 'self' data: https://fonts.gstatic.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+  // Inline hydration/theme bootstrap scripts require 'unsafe-inline'.
+  // 'unsafe-eval' and the https: wildcard are removed: no third-party scripts.
+  "script-src 'self' 'unsafe-inline'",
   "connect-src 'self' https: wss:",
   "worker-src 'self' blob:",
   "upgrade-insecure-requests",
