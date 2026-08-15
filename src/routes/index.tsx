@@ -21,6 +21,7 @@ import { formatReportLocal } from "@/lib/format-report-local";
 import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { FinancialNewsSection } from "@/components/FinancialNewsSection";
+import { ogImageMeta } from "@/lib/og";
 
 const HERO_INTRO_IT =
   "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.";
