@@ -16,7 +16,11 @@ export const Route = createFileRoute("/ribilanciamento")({
         content:
           "Simulatore interattivo di drift e ribilanciamento multi-asset.",
       },
+      { property: "og:url", content: "https://www.andreamuti.com/ribilanciamento" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/ribilanciamento" }],
   }),
   component: () => <RebalancingDashboard />,
 });

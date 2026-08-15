@@ -10,7 +10,11 @@ export const Route = createFileRoute("/rendimento-reale")({
       { property: "og:description", content: "Dashboard interattiva: confronta capitale nominale e reale al netto dell'inflazione su orizzonti pluriennali." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://www.andreamuti.com/rendimento-reale" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/rendimento-reale" }],
   }),
   component: () => <RealReturnDashboard />,
 });

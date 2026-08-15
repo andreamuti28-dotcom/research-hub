@@ -16,7 +16,11 @@ export const Route = createFileRoute("/stress-test")({
         content:
           "Simulatore interattivo di scenari di stress su portafogli multi-asset.",
       },
+      { property: "og:url", content: "https://www.andreamuti.com/stress-test" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.andreamuti.com/stress-test" }],
   }),
   component: () => <StressTestDashboard />,
 });
