@@ -44,8 +44,14 @@ export function parseContent(raw: string): {
     s.replace(/\u0000MATH(\d+)\u0000/g, (_, i) => placeholders[Number(i)]);
 
   const paragraphs = protect(raw)
-    .split(/\n\n+/)
-    .map((p) => restore(p.trim()))
+    // Google Docs exports some paragraph boundaries as a single newline
+    // followed by an invisible Unicode marker instead of a blank line.
+    .split(/\n(?:\s*\n+|(?=[\u200B-\u200D\u2060\uFEFF]))/)
+    .map((p) =>
+      restore(p)
+        .replace(/[\u200B-\u200D\u2060\uFEFF]/g, "")
+        .trim(),
+    )
     .filter(Boolean);
 
   for (const para of paragraphs) {
