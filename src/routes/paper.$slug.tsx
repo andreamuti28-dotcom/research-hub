@@ -173,13 +173,13 @@ function PaperDetail() {
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
             {tTitle}
           </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed text-pretty text-justify">
+          <p className="text-xl text-muted-foreground leading-relaxed text-pretty">
             {tAbstract}
           </p>
         </header>
 
-        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-16">
-          <div className="space-y-6 text-lg leading-[1.75] text-foreground/90">
+        <div>
+          <div className="w-full space-y-6 text-lg leading-[1.75] text-foreground/90">
             {blocks.map((block, i) =>
               block.type === "h2" ? (
                 <h2
@@ -192,7 +192,7 @@ function PaperDetail() {
               ) : (
                 <p
                   key={i}
-                  className="text-pretty text-justify"
+                  className="w-full text-pretty"
                   dangerouslySetInnerHTML={{ __html: renderMathHtml(block.text) }}
                 />
               ),
@@ -200,12 +200,12 @@ function PaperDetail() {
           </div>
 
           {toc.length > 0 && (
-            <aside className="hidden lg:block">
-              <div className="sticky top-24">
+            <aside className="mt-12 border-t border-border pt-6">
+              <div>
                 <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
                   {t("paper.toc")}
                 </div>
-                <nav className="space-y-2 border-l border-border pl-4">
+                <nav className="grid gap-2 border-l border-border pl-4 sm:grid-cols-2 lg:grid-cols-3">
                   {toc.map((entry) => (
                     <a
                       key={entry.id}
