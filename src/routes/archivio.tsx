@@ -56,7 +56,28 @@ export const Route = createFileRoute("/archivio")({
   component: Archivio,
 });
 
-type SortKey = "recent" | "oldest" | "title";
+type SortKey = "relevance" | "recent" | "oldest" | "title";
+const PAGE_SIZE = 8;
+
+function relevanceScore(
+  p: { title: string; abstract: string; content: string; tags: string[] },
+  q: string,
+) {
+  if (!q) return 0;
+  const inc = (s: string) => s.toLowerCase().includes(q);
+  let score = 0;
+  if (inc(p.title)) score += 10;
+  if (p.tags.some((t) => inc(t))) score += 6;
+  if (inc(p.abstract)) score += 4;
+  const body = p.content.toLowerCase();
+  let idx = body.indexOf(q);
+  let hits = 0;
+  while (idx !== -1 && hits < 20) {
+    hits += 1;
+    idx = body.indexOf(q, idx + q.length);
+  }
+  return score + hits;
+}
 type TabKey = "papers" | "dashboards";
 
 function Archivio() {
