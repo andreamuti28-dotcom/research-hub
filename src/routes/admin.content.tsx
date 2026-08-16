@@ -48,7 +48,9 @@ const SECTION_LABELS: Record<string, string> = {
 
 // Tema editabile: token semantici principali del sito
 const THEME_TOKENS: Array<{ key: string; label: string; hint?: string }> = [
+  { key: "--card-accent", label: "Linea card pubblicazioni" },
   { key: "--background", label: "Sfondo pagina" },
+
   { key: "--foreground", label: "Testo principale" },
   { key: "--primary", label: "Colore primario (link / CTA)" },
   { key: "--primary-foreground", label: "Testo su primario" },
