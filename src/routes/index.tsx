@@ -347,7 +347,7 @@ function Index() {
               type="button"
               onClick={() => setGroup("featured")}
               aria-pressed={group === "featured"}
-              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 ${
+              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 hover:scale-105 active:scale-105 ${
                 group === "featured"
                   ? "text-3xl md:text-4xl text-foreground"
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
@@ -360,7 +360,7 @@ function Index() {
               type="button"
               onClick={() => setGroup("live")}
               aria-pressed={group === "live"}
-              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 ${
+              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 hover:scale-105 active:scale-105 ${
                 group === "live"
                   ? "text-3xl md:text-4xl text-foreground"
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
@@ -388,7 +388,7 @@ function Index() {
                       setSub(s.key);
                     }}
                     aria-pressed={active}
-                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-all pb-1 border-b hover:scale-110 active:scale-110 ${
                       active
                         ? "text-foreground border-muted-foreground"
                         : "text-muted-foreground border-transparent hover:text-foreground"
@@ -415,7 +415,7 @@ function Index() {
                       setSub(s.key);
                     }}
                     aria-pressed={active}
-                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-all pb-1 border-b hover:scale-110 active:scale-110 ${
                       active
                         ? "text-foreground border-muted-foreground"
                         : "text-muted-foreground border-transparent hover:text-foreground"
