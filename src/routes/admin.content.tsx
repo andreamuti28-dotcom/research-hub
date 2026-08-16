@@ -1,12 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
 import { siteSettingsQuery, useSiteSettings } from "@/hooks/use-site-settings";
 import { updateSiteOverrides } from "@/lib/site-settings.functions";
 import { I18N_KEYS, getDefaultString } from "@/lib/i18n";
+import { listAllPapers } from "@/lib/admin-papers.functions";
+import { defaultTagColor, tagTokenName } from "@/lib/paper-tags";
 
 export const Route = createFileRoute("/admin/content")({
   head: () => ({
@@ -79,6 +81,19 @@ function AdminContent() {
   const [filter, setFilter] = useState("");
 
   const groups = useMemo(() => groupKeys(I18N_KEYS as unknown as string[]), []);
+
+  const papersFn = useServerFn(listAllPapers);
+  const { data: papers } = useQuery({
+    queryKey: ["admin", "papers", "tags"],
+    queryFn: () => papersFn({}),
+  });
+  const tags = useMemo(() => {
+    const set = new Set<string>();
+    for (const p of (papers ?? []) as Array<{ tags: string[] | null }>) {
+      for (const t of p.tags ?? []) if (t.trim()) set.add(t.trim());
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b));
+  }, [papers]);
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -227,6 +242,71 @@ function AdminContent() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* Tag colours */}
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+          <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70">
+            Colore linea card · per tag
+          </h2>
+        </div>
+        <p className="text-surface-dark-foreground/60 text-xs mb-4 max-w-prose">
+          Ogni paper usa il colore del suo primo tag per la linea in alto nella card.
+          Lascia vuoto per usare il colore predefinito.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {tags.map((tag) => {
+            const token = tagTokenName(tag);
+            const fallback = defaultTagColor(tag);
+            const value = theme[token] ?? "";
+            const shown = value || fallback;
+            const isHex = /^#([0-9a-f]{3,8})$/i.test(shown);
+            return (
+              <div
+                key={tag}
+                className="bg-surface-dark-muted/30 border border-surface-dark-muted p-4 flex items-center gap-3"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60 mb-1">
+                    #{tag}
+                  </div>
+                  <div className="font-mono text-[9px] text-surface-dark-foreground/40 mb-2 truncate">
+                    {token}
+                  </div>
+                  <input
+                    type="text"
+                    value={value}
+                    onChange={(e) => onThemeChange(token, e.target.value)}
+                    placeholder={fallback}
+                    className="w-full bg-surface-dark border border-surface-dark-muted px-2 py-1.5 font-mono text-xs text-background placeholder:text-surface-dark-foreground/30 focus:outline-none focus:border-background"
+                  />
+                </div>
+                <div className="shrink-0">
+                  {isHex ? (
+                    <input
+                      type="color"
+                      value={shown.length === 4 ? shown : shown.slice(0, 7)}
+                      onChange={(e) => onThemeChange(token, e.target.value)}
+                      className="h-10 w-10 cursor-pointer border border-surface-dark-muted bg-transparent"
+                      aria-label={`Colore tag ${tag}`}
+                    />
+                  ) : (
+                    <div
+                      className="h-10 w-10 border border-surface-dark-muted"
+                      style={{ background: shown }}
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          {tags.length === 0 ? (
+            <div className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/50">
+              Nessun tag trovato
+            </div>
+          ) : null}
         </div>
       </section>
 

@@ -56,9 +56,9 @@ export const i18n = {
     "home.reportArchive": "Report archive →",
     "home.noReport": "No report available.",
     "archive.kicker": "Full archive",
-    "archive.title": "Published Research",
+    "archive.title": "Full Archive",
     "archive.intro": (n: number) =>
-      `${n} indexed papers. Search full text, filter by tag or year, and sort by relevance.`,
+      `${n} indexed papers. Search full text, filter by tag or year.`,
     "archive.searchPlaceholder": "Search by title, abstract, content or tag…",
     "archive.allTags": "All tags",
     "archive.allYears": "All years",
@@ -232,9 +232,9 @@ export const i18n = {
     "home.reportArchive": "Archivio report →",
     "home.noReport": "Nessun report disponibile.",
     "archive.kicker": "Archivio completo",
-    "archive.title": "Ricerca Pubblicata",
+    "archive.title": "Archivio Completo",
     "archive.intro": (n: number) =>
-      `${n} paper indicizzati. Cerca nel testo completo, filtra per tag o anno e ordina per rilevanza.`,
+      `${n} paper indicizzati. Cerca nel testo completo, filtra per tag o anno.`,
     "archive.searchPlaceholder": "Cerca per titolo, abstract, contenuto o tag…",
     "archive.allTags": "Tutti i tag",
     "archive.allYears": "Tutti gli anni",
