@@ -7,20 +7,8 @@ import { useTranslated } from "@/hooks/use-translated";
 import { LanguageFlags } from "@/components/Flag";
 import { estimateReadingMinutes } from "@/lib/paper-reading";
 
-const TAG_COLORS: Record<string, string> = {
-  crypto: "bg-amber-500",
-  derivati: "bg-violet-500",
-  energy: "bg-orange-500",
-  geopolitics: "bg-rose-500",
-  quant: "bg-sky-500",
-  "risk management": "bg-emerald-500",
-  inflazione: "bg-teal-500",
-};
+const ACCENT = "var(--card-accent, var(--primary))";
 
-function tagColor(tag?: string) {
-  if (!tag) return "bg-muted-foreground";
-  return TAG_COLORS[tag.toLowerCase()] ?? "bg-muted-foreground";
-}
 
 function truncate(text: string, max = 160) {
   if (text.length <= max) return text;
