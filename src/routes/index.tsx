@@ -296,7 +296,7 @@ function Index() {
                   <img
                     src={settings.heroLogoLightUrl}
                     alt={`${HERO_TITLE_FIXED} logo`}
-                    className="block dark:hidden max-h-16 w-auto object-contain mx-auto mix-blend-multiply"
+                    className="block dark:hidden max-h-20 md:max-h-32 w-auto object-contain mx-auto mix-blend-multiply"
                     loading="lazy"
                   />
                 )}
@@ -304,7 +304,7 @@ function Index() {
                   <img
                     src={settings.heroLogoDarkUrl}
                     alt={`${HERO_TITLE_FIXED} logo`}
-                    className="hidden dark:block max-h-16 w-auto object-contain mx-auto mix-blend-screen"
+                    className="hidden dark:block max-h-20 md:max-h-32 w-auto object-contain mx-auto mix-blend-screen"
                     loading="lazy"
                   />
                 )}
