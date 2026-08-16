@@ -5,11 +5,35 @@ import { useT } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
 import { LanguageFlags } from "@/components/Flag";
+import { estimateReadingMinutes } from "@/lib/paper-reading";
+
+const TAG_COLORS: Record<string, string> = {
+  crypto: "bg-amber-500",
+  derivati: "bg-violet-500",
+  energy: "bg-orange-500",
+  geopolitics: "bg-rose-500",
+  quant: "bg-sky-500",
+  "risk management": "bg-emerald-500",
+  inflazione: "bg-teal-500",
+};
+
+function tagColor(tag?: string) {
+  if (!tag) return "bg-muted-foreground";
+  return TAG_COLORS[tag.toLowerCase()] ?? "bg-muted-foreground";
+}
+
+function truncate(text: string, max = 160) {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${cut.slice(0, lastSpace > 80 ? lastSpace : max).trimEnd()}…`;
+}
 
 export function PaperRow({ paper }: { paper: Paper }) {
   const t = useT();
   const { lang } = useLanguage();
   const [title, abstract] = useTranslated([paper.title, paper.abstract]);
+  const minutes = estimateReadingMinutes(paper.content || paper.abstract);
   const langLabel =
     paper.language === "it"
       ? t("lang.it")
@@ -26,7 +50,15 @@ export function PaperRow({ paper }: { paper: Paper }) {
         <LanguageFlags language={paper.language} className="inline-block w-5 md:w-6 h-auto align-middle" />
       </span>
       <div className="font-mono text-xs text-muted-foreground mb-4 md:mb-0">
-        <div className="mb-1 uppercase">{formatDate(paper.publishedDate, lang)}</div>
+        <div className="mb-1 uppercase flex items-center gap-2">
+          <span
+            aria-hidden="true"
+            className={`inline-block w-2 h-2 rounded-full ${tagColor(paper.tags[0])}`}
+          />
+          <span>{formatDate(paper.publishedDate, lang)}</span>
+          <span className="text-border">·</span>
+          <span className="normal-case">{t("paper.readingTime", minutes)}</span>
+        </div>
         <div className="text-primary uppercase tracking-tighter">
           {paper.tags.map((tag) => `#${tag}`).join(" ")}
         </div>
@@ -37,9 +69,16 @@ export function PaperRow({ paper }: { paper: Paper }) {
             {title}
           </h3>
         </Link>
-        <p className="text-muted-foreground max-w-[65ch] mb-8 leading-relaxed text-justify line-clamp-3">
-          {abstract}
+        <p className="text-muted-foreground max-w-[65ch] mb-3 leading-relaxed text-justify">
+          {truncate(abstract)}
         </p>
+        <Link
+          to="/paper/$slug"
+          params={{ slug: paper.slug }}
+          className="inline-block mb-6 font-display text-[11px] font-bold uppercase tracking-wider text-primary hover:underline"
+        >
+          {t("paper.readMore")}
+        </Link>
         <div className="flex flex-wrap gap-3 font-display text-[11px] font-bold uppercase tracking-wider">
           <Link
             to="/paper/$slug"

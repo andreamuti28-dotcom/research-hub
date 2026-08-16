@@ -56,7 +56,28 @@ export const Route = createFileRoute("/archivio")({
   component: Archivio,
 });
 
-type SortKey = "recent" | "oldest" | "title";
+type SortKey = "relevance" | "recent" | "oldest" | "title";
+const PAGE_SIZE = 8;
+
+function relevanceScore(
+  p: { title: string; abstract: string; content: string; tags: string[] },
+  q: string,
+) {
+  if (!q) return 0;
+  const inc = (s: string) => s.toLowerCase().includes(q);
+  let score = 0;
+  if (inc(p.title)) score += 10;
+  if (p.tags.some((t) => inc(t))) score += 6;
+  if (inc(p.abstract)) score += 4;
+  const body = p.content.toLowerCase();
+  let idx = body.indexOf(q);
+  let hits = 0;
+  while (idx !== -1 && hits < 20) {
+    hits += 1;
+    idx = body.indexOf(q, idx + q.length);
+  }
+  return score + hits;
+}
 type TabKey = "papers" | "dashboards";
 
 function Archivio() {
@@ -124,6 +145,19 @@ function Archivio() {
 
     const sorted = [...result];
     switch (sort) {
+      case "relevance":
+        if (q) {
+          sorted.sort(
+            (a, b) =>
+              relevanceScore(b, q) - relevanceScore(a, q) ||
+              +new Date(b.publishedDate) - +new Date(a.publishedDate),
+          );
+        } else {
+          sorted.sort(
+            (a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate),
+          );
+        }
+        break;
       case "recent":
         sorted.sort(
           (a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate),
@@ -140,6 +174,12 @@ function Archivio() {
     }
     return sorted;
   }, [papers, query, tag, year, sort]);
+
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [query, tag, year, sort, tab]);
+  const shown = filtered.slice(0, visible);
 
   const resetFilters = () => {
     setQuery("");
@@ -239,6 +279,7 @@ function Archivio() {
                   onChange={(e) => setSort(e.target.value as SortKey)}
                   className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
                 >
+                  <option value="relevance">{t("archive.sort.relevance")}</option>
                   <option value="recent">{t("archive.sort.recent")}</option>
                   <option value="oldest">{t("archive.sort.oldest")}</option>
                   <option value="title">{t("archive.sort.title")}</option>
@@ -263,11 +304,24 @@ function Archivio() {
                 {t("archive.empty")}
               </div>
             ) : (
-              <div className="space-y-px bg-border border border-border">
-                {filtered.map((p) => (
-                  <PaperRow key={p.id} paper={p} />
-                ))}
-              </div>
+              <>
+                <div className="space-y-px bg-border border border-border">
+                  {shown.map((p) => (
+                    <PaperRow key={p.id} paper={p} />
+                  ))}
+                </div>
+                {visible < filtered.length && (
+                  <div className="mt-6 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                      className="px-6 py-3 border border-foreground font-display text-[11px] font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors"
+                    >
+                      {t("archive.loadMore")} ({filtered.length - visible})
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </>
         ) : (
