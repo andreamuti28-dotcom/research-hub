@@ -22,6 +22,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
   const t = useT();
   const { lang } = useLanguage();
   const [title, abstract] = useTranslated([paper.title, paper.abstract]);
+  const accent = tagAccentColor(paper.tags ?? []);
   const minutes = estimateReadingMinutes(paper.content || paper.abstract);
   const langLabel =
     paper.language === "it"
@@ -35,7 +36,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
       <span
         aria-hidden="true"
         className="block h-[3px] w-full rounded-full mb-4"
-        style={{ background: ACCENT }}
+        style={{ background: accent }}
       />
 
       <span
