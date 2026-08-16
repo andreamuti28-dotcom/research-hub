@@ -366,13 +366,7 @@ function Index() {
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
             >
-              <span className="inline-flex items-center justify-center gap-2">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full bg-primary ${group === "live" ? "animate-pulse" : ""}`}
-                  aria-hidden
-                />
-                Live
-              </span>
+              Live
             </button>
           </div>
 
