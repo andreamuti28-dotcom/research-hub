@@ -58,7 +58,7 @@ export const i18n = {
     "archive.kicker": "Full archive",
     "archive.title": "Full Archive",
     "archive.intro": (n: number) =>
-      `${n} indexed papers. Search full text, filter by tag or year, and sort by relevance.`,
+      `${n} indexed papers. Search full text, filter by tag or year.`,
     "archive.searchPlaceholder": "Search by title, abstract, content or tag…",
     "archive.allTags": "All tags",
     "archive.allYears": "All years",
