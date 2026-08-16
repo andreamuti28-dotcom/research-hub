@@ -6,8 +6,9 @@ import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
 import { LanguageFlags } from "@/components/Flag";
 import { estimateReadingMinutes } from "@/lib/paper-reading";
+import { tagAccentColor } from "@/lib/paper-tags";
 
-const ACCENT = "var(--card-accent, var(--primary))";
+
 
 
 function truncate(text: string, max = 160) {
