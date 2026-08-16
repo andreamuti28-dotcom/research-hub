@@ -279,6 +279,7 @@ function Archivio() {
                   onChange={(e) => setSort(e.target.value as SortKey)}
                   className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
                 >
+                  <option value="relevance">{t("archive.sort.relevance")}</option>
                   <option value="recent">{t("archive.sort.recent")}</option>
                   <option value="oldest">{t("archive.sort.oldest")}</option>
                   <option value="title">{t("archive.sort.title")}</option>
@@ -303,11 +304,24 @@ function Archivio() {
                 {t("archive.empty")}
               </div>
             ) : (
-              <div className="space-y-px bg-border border border-border">
-                {filtered.map((p) => (
-                  <PaperRow key={p.id} paper={p} />
-                ))}
-              </div>
+              <>
+                <div className="space-y-px bg-border border border-border">
+                  {shown.map((p) => (
+                    <PaperRow key={p.id} paper={p} />
+                  ))}
+                </div>
+                {visible < filtered.length && (
+                  <div className="mt-6 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                      className="px-6 py-3 border border-foreground font-display text-[11px] font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors"
+                    >
+                      {t("archive.loadMore")} ({filtered.length - visible})
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </>
         ) : (
