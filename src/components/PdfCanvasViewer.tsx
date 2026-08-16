@@ -72,7 +72,7 @@ export function PdfCanvasViewer({ url }: { url: string }) {
           const ctx = canvas.getContext("2d");
           if (!ctx) continue;
           container.appendChild(canvas);
-          await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+          await page.render({ canvasContext: ctx, viewport }).promise;
         }
         if (!cancelled) setLoading(false);
       } catch (e) {
