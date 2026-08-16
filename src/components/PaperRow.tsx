@@ -29,29 +29,30 @@ export function PaperRow({ paper }: { paper: Paper }) {
         ? t("lang.en")
         : t("lang.both");
   return (
-    <article className="group relative bg-background p-6 md:p-8 md:grid md:grid-cols-[200px_1fr] gap-12 transition-colors hover:bg-surface">
+    <article className="group relative bg-background p-6 md:p-8 flex flex-col transition-colors hover:bg-surface">
+      {/* Linea elegante da margine a margine */}
       <span
-        className="absolute top-4 right-4 md:top-6 md:right-6 leading-none select-none"
+        aria-hidden="true"
+        className="block h-[3px] w-full rounded-full mb-4"
+        style={{ background: ACCENT }}
+      />
+
+      <span
+        className="absolute top-8 right-6 md:top-10 md:right-8 leading-none select-none"
         title={langLabel}
         aria-label={`${t("paper.languageLabel")}: ${langLabel}`}
       >
         <LanguageFlags language={paper.language} className="inline-block w-5 md:w-6 h-auto align-middle" />
       </span>
-      <div className="font-mono text-xs text-muted-foreground mb-4 md:mb-0">
-        <div className="mb-1 uppercase flex items-center gap-2">
-          <span
-            aria-hidden="true"
-            className={`inline-block w-2 h-2 rounded-full ${tagColor(paper.tags[0])}`}
-          />
-          <span>{formatDate(paper.publishedDate, lang)}</span>
-          <span className="text-border">·</span>
-          <span className="normal-case">{t("paper.readingTime", minutes)}</span>
-        </div>
-        <div className="text-primary uppercase tracking-tighter">
-          {paper.tags.map((tag) => `#${tag}`).join(" ")}
-        </div>
+
+      <div className="font-mono text-xs text-muted-foreground uppercase whitespace-nowrap pr-16">
+        {formatDate(paper.publishedDate, lang)}
       </div>
-      <div>
+      <div className="font-mono text-xs text-primary uppercase tracking-tighter mt-1 mb-5">
+        {paper.tags.map((tag) => `#${tag}`).join(" ")}
+      </div>
+
+      <div className="flex-1">
         <Link to="/paper/$slug" params={{ slug: paper.slug }} className="block">
           <h3 className="text-2xl font-display font-bold tracking-tight mb-4 group-hover:text-primary transition-colors text-balance pr-16">
             {title}
@@ -87,6 +88,11 @@ export function PaperRow({ paper }: { paper: Paper }) {
           )}
         </div>
       </div>
+
+      <div className="mt-6 font-mono text-xs text-muted-foreground text-left">
+        {t("paper.readingTime", minutes)}
+      </div>
     </article>
   );
+
 }
