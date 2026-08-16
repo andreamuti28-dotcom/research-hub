@@ -242,7 +242,7 @@ function Index() {
 
       <section className="max-w-6xl mx-auto px-6 pt-10 md:pt-16 pb-12 md:pb-16 w-full">
         <h1 className="sr-only">{HERO_TITLE_FIXED}</h1>
-        <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-start">
+        <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-stretch">
           <div className="md:col-span-7">
             <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
               {/* Fallback layer: never leave an empty grey box while the video
@@ -286,17 +286,17 @@ function Index() {
               )}
             </div>
           </div>
-          <div className="md:col-span-5 md:pt-2">
-            <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4 md:border-l md:border-border md:pl-6">
+          <div className="md:col-span-5 flex flex-col h-full md:pl-6 md:border-l md:border-border md:pt-2">
+            <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4">
               <p className="whitespace-pre-line">{localizedHeroIntro}</p>
             </div>
             {(settings.heroLogoLightUrl || settings.heroLogoDarkUrl) && (
-              <div className="mt-6 md:mt-8 md:pl-6 flex justify-center">
+              <div className="mt-6 md:mt-8 flex justify-center">
                 {settings.heroLogoLightUrl && (
                   <img
                     src={settings.heroLogoLightUrl}
                     alt={`${HERO_TITLE_FIXED} logo`}
-                    className="block dark:hidden max-h-20 w-auto object-contain mx-auto mix-blend-multiply"
+                    className="block dark:hidden max-h-16 w-auto object-contain mx-auto mix-blend-multiply"
                     loading="lazy"
                   />
                 )}
@@ -304,16 +304,16 @@ function Index() {
                   <img
                     src={settings.heroLogoDarkUrl}
                     alt={`${HERO_TITLE_FIXED} logo`}
-                    className="hidden dark:block max-h-20 w-auto object-contain mx-auto mix-blend-screen"
+                    className="hidden dark:block max-h-16 w-auto object-contain mx-auto mix-blend-screen"
                     loading="lazy"
                   />
                 )}
               </div>
             )}
-            <div className="mt-6 md:mt-8 flex flex-nowrap items-stretch gap-2 sm:gap-3 md:pl-6">
+            <div className="mt-auto pt-6 md:pt-8 flex flex-nowrap items-stretch w-full gap-2 sm:gap-3">
               <Link
                 to="/archivio"
-                className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 bg-foreground text-background font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors whitespace-nowrap"
+                className="flex-1 inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 bg-foreground text-background font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors whitespace-nowrap"
               >
                 {t("home.ctaReadPapers")}
               </Link>
@@ -321,7 +321,7 @@ function Index() {
                 href={settings.forbesUrl || "#"}
                 target={settings.forbesUrl ? "_blank" : undefined}
                 rel="noreferrer noopener"
-                className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-foreground text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors whitespace-nowrap"
+                className="flex-1 inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-foreground text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors whitespace-nowrap"
               >
                 Forbes
               </a>
@@ -330,7 +330,7 @@ function Index() {
                 href={settings.linkedinUrl}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="flex-1 sm:flex-none inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-border text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors whitespace-nowrap"
+                className="flex-1 inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-border text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors whitespace-nowrap"
               >
                 {t("home.ctaLinkedin")}
               </a>
