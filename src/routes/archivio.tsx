@@ -145,6 +145,19 @@ function Archivio() {
 
     const sorted = [...result];
     switch (sort) {
+      case "relevance":
+        if (q) {
+          sorted.sort(
+            (a, b) =>
+              relevanceScore(b, q) - relevanceScore(a, q) ||
+              +new Date(b.publishedDate) - +new Date(a.publishedDate),
+          );
+        } else {
+          sorted.sort(
+            (a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate),
+          );
+        }
+        break;
       case "recent":
         sorted.sort(
           (a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate),
@@ -161,6 +174,12 @@ function Archivio() {
     }
     return sorted;
   }, [papers, query, tag, year, sort]);
+
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [query, tag, year, sort, tab]);
+  const shown = filtered.slice(0, visible);
 
   const resetFilters = () => {
     setQuery("");
