@@ -101,7 +101,7 @@ function AboutPage() {
 
         <section className="bg-background py-16 md:py-24">
           <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-[320px_1fr] gap-10 md:gap-16 items-start">
-            <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="flex flex-col items-center gap-5">
               <img
                 src={portraitSrc}
                 alt={t("about.portraitAlt", settings.name)}
