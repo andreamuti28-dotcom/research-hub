@@ -415,7 +415,7 @@ function Index() {
                       setSub(s.key);
                     }}
                     aria-pressed={active}
-                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-colors pb-1 border-b ${
+                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-all pb-1 border-b hover:scale-110 active:scale-110 ${
                       active
                         ? "text-foreground border-muted-foreground"
                         : "text-muted-foreground border-transparent hover:text-foreground"
