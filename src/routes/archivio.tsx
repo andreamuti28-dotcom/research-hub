@@ -195,18 +195,10 @@ function Archivio() {
       <SiteHeader />
 
       <section className="max-w-6xl mx-auto px-6 py-16 md:py-24 w-full">
-        <div className="mb-10 md:mb-12 animate-fade-up">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-            {t("archive.kicker")}
-          </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter italic mb-3">
+        <div className="mb-10 md:mb-12 animate-fade-up text-center">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tighter italic">
             {t("archive.title")}
           </h1>
-          {archiveDisclaimer && archiveDisclaimer.trim() && (
-            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-              {archiveDisclaimer}
-            </p>
-          )}
         </div>
 
         <div className="flex flex-wrap gap-px bg-border border border-border mb-8">
