@@ -152,7 +152,7 @@ function PaperDetail() {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <article className="max-w-6xl mx-auto px-6 py-16 md:py-24 w-full">
+      <article className="max-w-[1600px] mx-auto px-6 md:px-12 py-16 md:py-24 w-full">
         <Link
           to="/archivio"
           className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-12 inline-block"
@@ -160,7 +160,7 @@ function PaperDetail() {
           {t("paper.back")}
         </Link>
 
-        <header className="mb-12 animate-fade-up max-w-3xl">
+        <header className="mb-12 animate-fade-up">
           <div className="font-mono text-xs text-muted-foreground mb-6 flex flex-wrap items-center gap-3">
             <span>{formatDateShort(paper.publishedDate, lang)}</span>
             <span className="text-border">/</span>
@@ -173,13 +173,13 @@ function PaperDetail() {
           <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
             {tTitle}
           </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed text-pretty text-justify max-w-[60ch]">
+          <p className="text-xl text-muted-foreground leading-relaxed text-pretty text-justify">
             {tAbstract}
           </p>
         </header>
 
-        <div className="lg:grid lg:grid-cols-[1fr_220px] lg:gap-12">
-          <div className="space-y-6 text-lg leading-[1.75] text-foreground/90 max-w-[68ch]">
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-16">
+          <div className="space-y-6 text-lg leading-[1.75] text-foreground/90">
             {blocks.map((block, i) =>
               block.type === "h2" ? (
                 <h2
