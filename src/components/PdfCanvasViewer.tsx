@@ -32,7 +32,13 @@ export function PdfCanvasViewer({ url }: { url: string }) {
     (async () => {
       try {
         const pdfjs = await loadPdfjs();
-        const doc = await pdfjs.getDocument({ url }).promise;
+        const doc = await pdfjs.getDocument({
+          url,
+          standardFontDataUrl: "/pdfjs/standard_fonts/",
+          cMapUrl: "/pdfjs/cmaps/",
+          cMapPacked: true,
+        }).promise;
+
         if (cancelled) return;
 
         const container = containerRef.current;
