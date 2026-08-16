@@ -182,7 +182,11 @@ export function renderMathHtml(text: string): string {
       html += escapeHtml(seg.text);
     }
   }
-  return html.replace(/\n/g, "<br />");
+  // Google Docs often inserts hard line breaks inside what is semantically a
+  // single paragraph. Let the browser wrap those lines naturally instead of
+  // turning every exported newline into a visible <br>, which constrained the
+  // article text to the original document's line length on wide screens.
+  return html.replace(/\s*\n\s*/g, " ");
 }
 
 
