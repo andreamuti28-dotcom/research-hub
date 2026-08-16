@@ -5,13 +5,17 @@ let pdfjsPromise: Promise<typeof import("pdfjs-dist")> | null = null;
 async function loadPdfjs() {
   if (!pdfjsPromise) {
     pdfjsPromise = import("pdfjs-dist").then((mod) => {
-      const version = mod.version;
-      mod.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${version}/build/pdf.worker.min.mjs`;
+      // Serve the worker from our own origin: the site CSP forbids third-party scripts.
+      mod.GlobalWorkerOptions.workerSrc = new URL(
+        "pdfjs-dist/build/pdf.worker.min.mjs",
+        import.meta.url,
+      ).toString();
       return mod;
     });
   }
   return pdfjsPromise;
 }
+
 
 export function PdfCanvasViewer({ url }: { url: string }) {
   const t = useT();
@@ -28,7 +32,13 @@ export function PdfCanvasViewer({ url }: { url: string }) {
     (async () => {
       try {
         const pdfjs = await loadPdfjs();
-        const doc = await pdfjs.getDocument({ url }).promise;
+        const doc = await pdfjs.getDocument({
+          url,
+          standardFontDataUrl: "/pdfjs/standard_fonts/",
+          cMapUrl: "/pdfjs/cmaps/",
+          cMapPacked: true,
+        }).promise;
+
         if (cancelled) return;
 
         const container = containerRef.current;
@@ -62,7 +72,7 @@ export function PdfCanvasViewer({ url }: { url: string }) {
           const ctx = canvas.getContext("2d");
           if (!ctx) continue;
           container.appendChild(canvas);
-          await page.render({ canvasContext: ctx, viewport, canvas }).promise;
+          await page.render({ canvasContext: ctx, viewport }).promise;
         }
         if (!cancelled) setLoading(false);
       } catch (e) {
