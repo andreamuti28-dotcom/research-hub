@@ -109,7 +109,7 @@ function AdminContent() {
     },
   });
 
-  const onTextChange = (key: string, lang: "it" | "en", value: string) => {
+  const onTextChange = (key: string, lang: Lang, value: string) => {
     setI18n((prev) => {
       const next = { ...prev };
       const entry = { ...(next[key] ?? {}) };
@@ -118,7 +118,7 @@ function AdminContent() {
       } else {
         entry[lang] = value;
       }
-      if (entry.it === undefined && entry.en === undefined) {
+      if (Object.keys(entry).length === 0) {
         delete next[key];
       } else {
         next[key] = entry;
