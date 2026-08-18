@@ -81,12 +81,12 @@ async function translateWithFallback(
 
 const InputSchema = z.object({
   texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
-  target: z.enum(["it", "en"]),
+  target: z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
 });
 
 async function translateWithAi(
   texts: string[],
-  target: "it" | "en",
+  target: Lang,
   apiKey: string,
 ): Promise<TranslateResult> {
   const targetName = target === "en" ? "English" : "Italian";
