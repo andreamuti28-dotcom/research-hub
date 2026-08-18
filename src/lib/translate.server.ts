@@ -1,8 +1,6 @@
 import type { Lang } from "@/hooks/use-language";
 import { readCachedTranslations, writeCachedTranslations } from "@/lib/translation-cache.server";
 
-const MAX_TRANSLATION_TEXTS = 300;
-const MAX_TEXT_CHARS = 50000;
 const SERVER_CHUNK_SIZE = 30;
 const FALLBACK_CHUNK_CHARS = 1200;
 
