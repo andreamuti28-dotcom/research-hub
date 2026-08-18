@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
@@ -14,6 +15,10 @@ import { Link } from "@tanstack/react-router";
 import { listPublishedDashboards } from "@/lib/dashboards.functions";
 import { dashboardPath } from "@/lib/dashboard-registry";
 import { ogImageMeta } from "@/lib/og";
+
+const archiveSearchSchema = z.object({
+  tab: z.enum(["papers", "dashboards"]).optional().catch("papers"),
+});
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
