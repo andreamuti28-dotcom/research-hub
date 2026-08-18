@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
+import { z } from "zod";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
@@ -15,6 +16,10 @@ import { listPublishedDashboards } from "@/lib/dashboards.functions";
 import { dashboardPath } from "@/lib/dashboard-registry";
 import { ogImageMeta } from "@/lib/og";
 
+const archiveSearchSchema = z.object({
+  tab: z.enum(["papers", "dashboards"]).optional().catch("papers"),
+});
+
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
   queryFn: () => listPublishedPapers(),
@@ -27,6 +32,7 @@ const dashboardsQuery = {
 };
 
 export const Route = createFileRoute("/archivio")({
+  validateSearch: archiveSearchSchema,
   head: () => ({
     meta: [
       { title: "Archivio paper e report finanziari — Andrea Muti" },
@@ -87,7 +93,8 @@ function Archivio() {
   const settings = useSiteSettings();
   const { lang } = useLanguage();
   const { data: dashboards = [] } = useQuery(dashboardsQuery);
-  const [tab, setTab] = useState<TabKey>("papers");
+  const search = useSearch({ from: "/archivio" });
+  const [tab, setTab] = useState<TabKey>(search.tab ?? "papers");
   const archiveDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
   const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [query, setQuery] = useState("");

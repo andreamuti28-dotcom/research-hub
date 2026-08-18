@@ -409,10 +409,20 @@ function Index() {
           <div className="mt-8 animate-fade-up" key={`${group}-${sub}`}>
             {sub === "publications" &&
               (featured.length > 0 ? (
-                <div className="space-y-px bg-border border border-border">
-                  {featured.map((p) => (
-                    <PaperRow key={p.id} paper={p} />
-                  ))}
+                <div>
+                  <div className="space-y-px bg-border border border-border">
+                    {featured.map((p) => (
+                      <PaperRow key={p.id} paper={p} />
+                    ))}
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <Link
+                      to="/archivio"
+                      className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
+                    >
+                      {t("home.seeArchive")}
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
@@ -422,37 +432,48 @@ function Index() {
 
             {sub === "dashboards" &&
               (visibleDashboards.length > 0 ? (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {visibleDashboards.map((d) => {
-                    const path = dashboardPath(d.component_key)!;
-                    const title = lang === "en" && d.title_en ? d.title_en : d.title;
-                    const desc =
-                      lang === "en" && d.description_en ? d.description_en : d.description;
-                    return (
-                      <Link
-                        key={d.id}
-                        to={path}
-                        className="group block border border-border bg-surface p-6 hover:border-primary transition-colors"
-                      >
-                        <div className="flex items-center gap-2 mb-3">
-                          <span className="inline-flex items-center font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-400 text-black">
-                            {dashboardsBadge}
+                <div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {visibleDashboards.map((d) => {
+                      const path = dashboardPath(d.component_key)!;
+                      const title = lang === "en" && d.title_en ? d.title_en : d.title;
+                      const desc =
+                        lang === "en" && d.description_en ? d.description_en : d.description;
+                      return (
+                        <Link
+                          key={d.id}
+                          to={path}
+                          className="group block border border-border bg-surface p-6 hover:border-primary transition-colors"
+                        >
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="inline-flex items-center font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-400 text-black">
+                              {dashboardsBadge}
+                            </span>
+                          </div>
+                          <h3 className="font-display text-lg font-bold tracking-tight mb-2 group-hover:text-primary transition-colors">
+                            {title}
+                          </h3>
+                          {desc && (
+                            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                              {desc}
+                            </p>
+                          )}
+                          <span className="font-display text-[11px] font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 group-hover:text-primary group-hover:border-primary transition-all">
+                            {dashboardsOpenLabel} →
                           </span>
-                        </div>
-                        <h3 className="font-display text-lg font-bold tracking-tight mb-2 group-hover:text-primary transition-colors">
-                          {title}
-                        </h3>
-                        {desc && (
-                          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                            {desc}
-                          </p>
-                        )}
-                        <span className="font-display text-[11px] font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 group-hover:text-primary group-hover:border-primary transition-all">
-                          {dashboardsOpenLabel} →
-                        </span>
-                      </Link>
-                    );
-                  })}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <Link
+                      to="/archivio"
+                      search={{ tab: "dashboards" }}
+                      className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
+                    >
+                      {t("home.seeArchive")}
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
@@ -511,21 +532,13 @@ function Index() {
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                {t("home.latestKicker")}
-              </div>
-              <h2 className="text-3xl font-display font-bold tracking-tighter">
-                {t("home.latestTitle")}
-              </h2>
+          <div className="mb-12 md:mb-16">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+              {t("home.latestKicker")}
             </div>
-            <Link
-              to="/archivio"
-              className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all self-start md:self-auto"
-            >
-              {t("home.seeArchive")}
-            </Link>
+            <h2 className="text-3xl font-display font-bold tracking-tighter">
+              {t("home.latestTitle")}
+            </h2>
           </div>
 
           {latest.length === 0 ? (
@@ -533,10 +546,20 @@ function Index() {
               {t("home.empty")}
             </div>
           ) : (
-            <div className="space-y-px bg-border border border-border">
-              {latest.map((p) => (
-                <PaperRow key={p.id} paper={p} />
-              ))}
+            <div>
+              <div className="space-y-px bg-border border border-border">
+                {latest.map((p) => (
+                  <PaperRow key={p.id} paper={p} />
+                ))}
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Link
+                  to="/archivio"
+                  className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
+                >
+                  {t("home.seeArchive")}
+                </Link>
+              </div>
             </div>
           )}
         </div>
