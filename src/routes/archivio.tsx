@@ -11,7 +11,6 @@ import { useT } from "@/lib/i18n";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useTranslated } from "@/hooks/use-translated";
 import { useDashboardLabels } from "@/hooks/use-dashboard-labels";
-import { useLanguage } from "@/hooks/use-language";
 import { Link } from "@tanstack/react-router";
 import { listPublishedDashboards } from "@/lib/dashboards.functions";
 import { dashboardPath } from "@/lib/dashboard-registry";
@@ -92,7 +91,6 @@ function Archivio() {
   const queryClient = useQueryClient();
   const t = useT();
   const settings = useSiteSettings();
-  const { lang } = useLanguage();
   const { data: dashboards = [] } = useQuery(dashboardsQuery);
   const search = useSearch({ from: "/archivio" });
   const [tab, setTab] = useState<TabKey>(search.tab ?? "papers");
