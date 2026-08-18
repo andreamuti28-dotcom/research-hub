@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { Lang } from "@/hooks/use-language";
+import { readCachedTranslations, writeCachedTranslations } from "@/lib/translation-cache.server";
 
 const MAX_TRANSLATION_TEXTS = 300;
 const MAX_TEXT_CHARS = 50000;
