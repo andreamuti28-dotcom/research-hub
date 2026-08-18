@@ -247,8 +247,6 @@ function Index() {
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-stretch">
           <div className="md:col-span-7">
             <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
-              {/* No logo fallback here: the box stays neutral and the video
-                  fades in as soon as its first frame is ready. */}
               {settings.heroVideoUrl && (
                 <video
                   key={settings.heroVideoUrl}
@@ -258,12 +256,10 @@ function Index() {
                   muted
                   playsInline
                   preload="auto"
-                  onLoadedData={() => setHeroVideoReady(true)}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-                    heroVideoReady ? "opacity-100" : "opacity-0"
-                  }`}
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               )}
+
 
             </div>
 
