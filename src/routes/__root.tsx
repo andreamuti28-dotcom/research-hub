@@ -102,6 +102,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "alternate", hrefLang: "it", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "en", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "es", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "de", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "zh", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "ru", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "ar", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "x-default", href: "https://www.andreamuti.com/" },
     ],
     scripts: [
       {
