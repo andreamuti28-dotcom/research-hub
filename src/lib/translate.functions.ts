@@ -276,16 +276,28 @@ async function translateChunk(
 }
 
 
-export const translateBatch = createServerFn({ method: "POST" })
-  .inputValidator((input) => InputSchema.parse(input))
-  .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
+/**
+ * Translate a list of texts, reusing anything already stored in the
+ * persistent translation cache. Only genuinely new strings hit the
+ * translation providers, which makes repeat visits effectively instant.
+ */
+export async function translateTexts(
+  texts: string[],
+  target: Lang,
+  apiKey: string,
+): Promise<TranslateResult> {
+  if (target === "it") return { translations: texts };
 
-    const { texts, target } = data;
+  const nonEmpty = texts.filter((t) => t.trim().length > 0);
+  const unique = Array.from(new Set(nonEmpty));
+  const cached = await readCachedTranslations(unique, target);
+  const missing = unique.filter((t) => !cached.has(t));
+
+  let fallback = false;
+  if (missing.length > 0) {
     const chunks: string[][] = [];
-    for (let i = 0; i < texts.length; i += SERVER_CHUNK_SIZE) {
-      chunks.push(texts.slice(i, i + SERVER_CHUNK_SIZE));
+    for (let i = 0; i < missing.length; i += SERVER_CHUNK_SIZE) {
+      chunks.push(missing.slice(i, i + SERVER_CHUNK_SIZE));
     }
     const results = await mapLimit(chunks, 2, (c) =>
       translateChunk(c, target, apiKey).catch((err) => {
@@ -293,9 +305,33 @@ export const translateBatch = createServerFn({ method: "POST" })
         return { translations: c, fallback: true } satisfies TranslateResult;
       }),
     );
+    const translated = results.flatMap((r) => r.translations);
+    fallback = results.some((r) => r.fallback);
 
-    return {
-      translations: results.flatMap((r) => r.translations),
-      fallback: results.some((r) => r.fallback),
-    };
+    const fresh: Array<{ source: string; translated: string }> = [];
+    missing.forEach((source, i) => {
+      const value = translated[i];
+      if (typeof value !== "string" || !value.trim()) return;
+      cached.set(source, value);
+      // Never cache a text that came back untranslated: it must be retried later.
+      if (value !== source && !looksUntranslated(value, target)) {
+        fresh.push({ source, translated: value });
+      }
+    });
+    await writeCachedTranslations(fresh, target);
+  }
+
+  return {
+    translations: texts.map((t) => (t.trim() ? (cached.get(t) ?? t) : t)),
+    fallback,
+  };
+}
+
+export const translateBatch = createServerFn({ method: "POST" })
+  .inputValidator((input) => InputSchema.parse(input))
+  .handler(async ({ data }) => {
+    const apiKey = process.env.LOVABLE_API_KEY;
+    if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
+    return translateTexts(data.texts, data.target, apiKey);
   });
+
