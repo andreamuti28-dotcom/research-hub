@@ -28,7 +28,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
+    // Fire-and-forget: pre-translate the whole site into the chosen language so
+    // every page is served from the translation cache instead of translating
+    // on demand, page by page.
+    if (next !== "it" && !warmedLanguages.has(next)) {
+      warmedLanguages.add(next);
+      void import("@/lib/translate-warmup.functions")
+        .then((m) => m.warmupTranslations({ data: { target: next } }))
+        .catch(() => warmedLanguages.delete(next));
+    }
   }, []);
+
 
   const value = useMemo(() => ({ lang, setLang }), [lang, setLang]);
 
