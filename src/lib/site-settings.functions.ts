@@ -375,10 +375,10 @@ const updateSchema = z.object({
   i18nOverrides: z
     .record(
       z.string().min(1).max(120),
-      z.object({
-        it: z.string().max(2000).optional(),
-        en: z.string().max(2000).optional(),
-      }),
+      z.record(
+        z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
+        z.string().max(2000),
+      ),
     )
     .default({}),
   themeOverrides: z
