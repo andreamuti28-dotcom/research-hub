@@ -167,12 +167,40 @@ async function translateChunk(
   target: Lang,
   apiKey: string,
 ): Promise<TranslateResult> {
-  try {
-    return await translateWithFallback(texts, target);
-  } catch (err) {
-    console.warn("Primary translation fallback failed, trying AI:", err);
-    return translateWithAi(texts, target, apiKey);
+  const out = [...texts];
+  const failed: number[] = [];
+
+  await Promise.all(
+    texts.map(async (text, i) => {
+      if (!text.trim()) return;
+      try {
+        const res = await translateWithFallback([text], target);
+        out[i] = res.translations[0] ?? text;
+      } catch (err) {
+        console.warn("Primary translation failed for one item, will retry with AI:", err);
+        failed.push(i);
+      }
+    }),
+  );
+
+  if (failed.length > 0) {
+    try {
+      const ai = await translateWithAi(
+        failed.map((i) => texts[i]),
+        target,
+        apiKey,
+      );
+      failed.forEach((idx, k) => {
+        out[idx] = ai.translations[k] ?? texts[idx];
+      });
+      if (ai.fallback) return { translations: out, fallback: true };
+    } catch (err) {
+      console.error("AI translation retry failed:", err);
+      return { translations: out, fallback: true };
+    }
   }
+
+  return { translations: out };
 }
 
 export const translateBatch = createServerFn({ method: "POST" })
