@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import { PaperForm, type PaperFormValues } from "@/components/PaperForm";
 import { getPaperForEdit, updatePaper } from "@/lib/admin-papers.functions";
 
@@ -19,7 +20,11 @@ export const Route = createFileRoute("/admin/edit/$id")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: EditPaper,
+  component: () => (
+    <AdminGuard>
+      <EditPaper />
+    </AdminGuard>
+  ),
 });
 
 function EditPaper() {

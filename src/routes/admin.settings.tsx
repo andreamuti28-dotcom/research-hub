@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import { checkAdminStatus } from "@/lib/admin-papers.functions";
 import { listPublishedPapers } from "@/lib/papers.functions";
 import { listPublishedDashboards } from "@/lib/dashboards.functions";
@@ -36,7 +37,11 @@ export const Route = createFileRoute("/admin/settings")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: AdminSettingsPage,
+  component: () => (
+    <AdminGuard>
+      <AdminSettingsPage />
+    </AdminGuard>
+  ),
 });
 
 type FormState = {

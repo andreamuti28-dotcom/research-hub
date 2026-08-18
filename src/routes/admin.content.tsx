@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import { siteSettingsQuery, useSiteSettings } from "@/hooks/use-site-settings";
 import { updateSiteOverrides } from "@/lib/site-settings.functions";
 import { I18N_KEYS, getDefaultString } from "@/lib/i18n";
@@ -22,7 +23,11 @@ export const Route = createFileRoute("/admin/content")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: AdminContent,
+  component: () => (
+    <AdminGuard>
+      <AdminContent />
+    </AdminGuard>
+  ),
 });
 
 // Group i18n keys by section prefix (text before the first dot)

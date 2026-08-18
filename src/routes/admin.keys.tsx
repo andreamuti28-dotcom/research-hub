@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import { getProjectKeys, type ProjectKey } from "@/lib/admin-keys.functions";
 import { toast } from "sonner";
 
@@ -18,7 +19,11 @@ export const Route = createFileRoute("/admin/keys")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: AdminKeysPage,
+  component: () => (
+    <AdminGuard>
+      <AdminKeysPage />
+    </AdminGuard>
+  ),
 });
 
 function AdminKeysPage() {

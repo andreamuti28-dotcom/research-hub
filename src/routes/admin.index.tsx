@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import {
   listAllPapers,
   deletePaper,
@@ -22,7 +23,11 @@ export const Route = createFileRoute("/admin/")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: AdminDashboard,
+  component: () => (
+    <AdminGuard>
+      <AdminDashboard />
+    </AdminGuard>
+  ),
 });
 
 function AdminDashboard() {
