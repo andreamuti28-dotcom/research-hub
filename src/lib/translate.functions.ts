@@ -5,7 +5,7 @@ import type { Lang } from "@/hooks/use-language";
 const MAX_TRANSLATION_TEXTS = 300;
 const MAX_TEXT_CHARS = 50000;
 const SERVER_CHUNK_SIZE = 30;
-const FALLBACK_CHUNK_CHARS = 3500;
+const FALLBACK_CHUNK_CHARS = 1200;
 
 const TARGET_NAMES: Record<Lang, string> = {
   it: "Italian",
@@ -67,10 +67,16 @@ async function translateWithFallback(
           );
           if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
           const json = (await res.json()) as unknown;
-          if (!Array.isArray(json) || !Array.isArray(json[0])) return chunk;
-          return json[0]
+          if (!Array.isArray(json) || !Array.isArray(json[0])) {
+            throw new Error("Fallback translation returned an unexpected payload");
+          }
+          const joined = json[0]
             .map((part) => (Array.isArray(part) && typeof part[0] === "string" ? part[0] : ""))
             .join("");
+          if (!joined.trim()) {
+            throw new Error("Fallback translation returned empty text");
+          }
+          return joined;
         }),
       );
       return translatedChunks.join("");
