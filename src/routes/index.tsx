@@ -331,7 +331,7 @@ function Index() {
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
             >
-              {lang === "en" ? "Featured" : "In evidenza"}
+              {t("home.tab.featured")}
             </button>
 
             <button
@@ -344,7 +344,7 @@ function Index() {
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
             >
-              Live
+              {t("home.tab.live")}
             </button>
           </div>
 
