@@ -219,7 +219,7 @@ function Archivio() {
                 : "bg-background text-muted-foreground hover:text-foreground"
             }`}
           >
-            {lang === "en" ? "Publications" : "Pubblicazioni"}
+            {t("home.sub.papers")}
           </button>
           <button
             type="button"
@@ -231,7 +231,7 @@ function Archivio() {
                 : "bg-background text-muted-foreground hover:text-foreground"
             }`}
           >
-            {lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive"}
+            {t("archive.tab.dashboards")}
           </button>
         </div>
 
