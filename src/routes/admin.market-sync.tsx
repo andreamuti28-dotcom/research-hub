@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import {
   getMarketSyncStatus,
   syncMarketReportFromGoogleDoc,
@@ -24,7 +25,11 @@ export const Route = createFileRoute("/admin/market-sync")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: AdminMarketSync,
+  component: () => (
+    <AdminGuard>
+      <AdminMarketSync />
+    </AdminGuard>
+  ),
 });
 
 const SCHEDULES = [

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import { getNewsArchive, type ArchivedNewsItem } from "@/lib/news.functions";
 
 export const Route = createFileRoute("/admin/news")({
@@ -18,7 +19,11 @@ export const Route = createFileRoute("/admin/news")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: AdminNewsPage,
+  component: () => (
+    <AdminGuard>
+      <AdminNewsPage />
+    </AdminGuard>
+  ),
 });
 
 function groupByDay(items: ArchivedNewsItem[]) {

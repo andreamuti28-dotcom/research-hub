@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminShell } from "@/components/AdminShell";
+import { AdminGuard } from "@/components/AdminGuard";
 import { checkAdminStatus } from "@/lib/admin-papers.functions";
 import { listPublishedPapers } from "@/lib/papers.functions";
 import { listPublishedDashboards } from "@/lib/dashboards.functions";
@@ -36,7 +37,11 @@ export const Route = createFileRoute("/admin/settings")({
     const { data } = await supabase.auth.getSession();
     if (!data.session) throw redirect({ to: "/admin/login" });
   },
-  component: AdminSettingsPage,
+  component: () => (
+    <AdminGuard>
+      <AdminSettingsPage />
+    </AdminGuard>
+  ),
 });
 
 type FormState = {
@@ -231,25 +236,8 @@ function AdminSettingsPage() {
     },
   });
 
-  if (adminQuery.isLoading) {
-    return (
-      <AdminShell title="Caricamento…">
-        <div className="font-mono text-xs text-surface-dark-foreground/60">
-          Verifica accesso…
-        </div>
-      </AdminShell>
-    );
-  }
 
-  if (!adminQuery.data?.isAdmin) {
-    return (
-      <AdminShell title="Accesso non autorizzato">
-        <p className="text-surface-dark-foreground/70">
-          Solo gli admin possono modificare il sito.
-        </p>
-      </AdminShell>
-    );
-  }
+
 
   if (!form) {
     return (
