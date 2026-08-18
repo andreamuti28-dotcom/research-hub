@@ -64,13 +64,13 @@ export function useConsent() {
   }, []);
 
   const acceptAll = useCallback(() => {
-    write({ necessary: true, statistics: true });
+    write({ necessary: true, statistics: true }, "accept");
   }, []);
   const rejectAll = useCallback(() => {
-    write({ necessary: true, statistics: false });
+    write({ necessary: true, statistics: false }, "reject");
   }, []);
   const savePrefs = useCallback((p: Partial<ConsentPrefs>) => {
-    write({ necessary: true, statistics: !!p.statistics });
+    write({ necessary: true, statistics: !!p.statistics }, "custom");
   }, []);
   const reopen = useCallback(() => {
     window.localStorage.removeItem(KEY);
