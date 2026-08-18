@@ -138,17 +138,16 @@ function Index() {
   ]);
   const reportContentRaw = lang === "it" ? formattedItText : reportContentTranslated;
   const reportContent = formatReportLocal(reportContentRaw);
-  const localizedHeroIntro = lang === "en" ? HERO_INTRO_EN : HERO_INTRO_IT;
+  const localizedHeroIntro =
+    lang === "it" ? HERO_INTRO_IT : lang === "en" ? HERO_INTRO_EN : heroIntro;
+  const isDefaultFeaturedLabel =
+    settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase();
+  const isDefaultMarketLabel =
+    settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase();
   const localizedFeaturedLabel =
-    lang === "en" &&
-    settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
-      ? HOME_FEATURED_LABEL_EN
-      : featuredLabel;
+    lang === "en" && isDefaultFeaturedLabel ? HOME_FEATURED_LABEL_EN : featuredLabel;
   const localizedMarketLabel =
-    lang === "en" &&
-    settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
-      ? HOME_MARKET_LABEL_EN
-      : marketLabel;
+    lang === "en" && isDefaultMarketLabel ? HOME_MARKET_LABEL_EN : marketLabel;
   
   
   const [group, setGroupState] = useState<"featured" | "live">("featured");
