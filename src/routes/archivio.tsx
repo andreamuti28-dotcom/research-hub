@@ -327,19 +327,19 @@ function Archivio() {
           <>
             <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
               {archiveDashboards.length}{" "}
-              {lang === "en" ? "dashboards" : "dashboard"}
+              {t("archive.dashboardLabel")}
             </div>
             {archiveDashboards.length === 0 ? (
               <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                {lang === "en" ? "No dashboards" : "Nessuna dashboard"}
+                {t("archive.noDashboards")}
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {archiveDashboards.map((d) => {
                   const path = dashboardPath(d.component_key)!;
-                  const title = lang === "en" && d.title_en ? d.title_en : d.title;
+                  const title = lang !== "it" && d.title_en ? d.title_en : d.title;
                   const desc =
-                    lang === "en" && d.description_en ? d.description_en : d.description;
+                    lang !== "it" && d.description_en ? d.description_en : d.description;
                   return (
                     <Link
                       key={d.id}
@@ -348,7 +348,7 @@ function Archivio() {
                     >
                       <div className="flex items-center gap-2 mb-3">
                         <span className="inline-flex items-center font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-400 text-black">
-                          {lang === "en" ? "Interactive" : "Interattiva"}
+                          {t("dashboard.badge")}
                         </span>
                       </div>
                       <h2 className="font-display text-lg font-bold tracking-tight mb-2 group-hover:text-primary transition-colors">
@@ -360,7 +360,7 @@ function Archivio() {
                         </p>
                       )}
                       <span className="font-display text-[11px] font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 group-hover:text-primary group-hover:border-primary transition-all">
-                        {lang === "en" ? "Open dashboard" : "Apri dashboard"} →
+                        {t("dashboard.open")} →
                       </span>
                     </Link>
                   );
