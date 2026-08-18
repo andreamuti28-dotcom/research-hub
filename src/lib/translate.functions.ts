@@ -287,14 +287,13 @@ export const translateBatch = createServerFn({ method: "POST" })
     for (let i = 0; i < texts.length; i += SERVER_CHUNK_SIZE) {
       chunks.push(texts.slice(i, i + SERVER_CHUNK_SIZE));
     }
-    const results = await Promise.all(
-      chunks.map((c) =>
-        translateChunk(c, target, apiKey).catch((err) => {
-          console.error("Translation chunk failed:", err);
-          return { translations: c, fallback: true } satisfies TranslateResult;
-        }),
-      ),
+    const results = await mapLimit(chunks, 2, (c) =>
+      translateChunk(c, target, apiKey).catch((err) => {
+        console.error("Translation chunk failed:", err);
+        return { translations: c, fallback: true } satisfies TranslateResult;
+      }),
     );
+
     return {
       translations: results.flatMap((r) => r.translations),
       fallback: results.some((r) => r.fallback),
