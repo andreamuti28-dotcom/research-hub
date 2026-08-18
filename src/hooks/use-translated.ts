@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useLanguage } from "@/hooks/use-language";
-import { getCachedTranslationBatch } from "@/lib/translate.functions";
+import { getCachedTranslationBatch, translateLiveBatch } from "@/lib/translate.functions";
 
 const SOURCE = "it" as const;
 const CLIENT_TRANSLATION_CHUNK_SIZE = 50;
 const TRANSLATION_QUERY_VERSION = "v7-cache-only";
+const LIVE_CHUNK_SIZE = 20;
 
 type TranslationResult = {
   translations: string[];
@@ -99,4 +100,40 @@ export function useTranslatedAlways(texts: string[]): string[] {
 
   if (!hasContent) return texts;
   return data?.translations ?? texts;
+}
+
+/**
+ * Live (on-demand) translation for dynamic content that the warmup cache does
+ * not cover: the market report and the financial news feed. Falls back to the
+ * originals while loading or on failure.
+ */
+export function useTranslatedLive(texts: string[]): string[] {
+  const { lang } = useLanguage();
+  const callFn = useServerFn(translateLiveBatch);
+  const hasContent = texts.some((t) => t.trim().length > 0);
+  const needs = lang !== SOURCE && hasContent;
+  const key = `live:${cacheKey(lang, texts)}`;
+
+  const { data } = useQuery({
+    queryKey: ["translate-live", key],
+    queryFn: async () => {
+      const chunks: string[][] = [];
+      for (let i = 0; i < texts.length; i += LIVE_CHUNK_SIZE) {
+        chunks.push(texts.slice(i, i + LIVE_CHUNK_SIZE));
+      }
+      const results: string[][] = [];
+      for (const c of chunks) {
+        const r = await callFn({ data: { texts: c, target: lang } });
+        results.push(r.translations);
+      }
+      return results.flat();
+    },
+    enabled: needs,
+    retry: 1,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
+  if (!needs) return texts;
+  return data ?? texts;
 }
