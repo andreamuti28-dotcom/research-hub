@@ -73,7 +73,7 @@ export type SiteSettings = {
   aboutLanguages: LanguageItem[];
   aboutSoftware: LogoItem[];
   aboutCertifications: LogoItem[];
-  i18nOverrides: Record<string, { it?: string; en?: string }>;
+  i18nOverrides: Record<string, Partial<Record<Lang, string>>>;
   themeOverrides: Record<string, string>;
 };
 
