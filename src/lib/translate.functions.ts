@@ -70,49 +70,79 @@ function splitForFallback(text: string): string[] {
   return chunks;
 }
 
+/** Run async work with bounded concurrency so we don't trip Google's rate limits. */
+async function mapLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const out = new Array<R>(items.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      const i = cursor++;
+      out[i] = await fn(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return out;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function googleTranslateChunk(chunk: string, target: Lang): Promise<string> {
+  const params = new URLSearchParams({
+    client: "gtx",
+    sl: "auto",
+    tl: GOOGLE_TL[target],
+    dt: "t",
+    q: chunk,
+  });
+  const res = await fetch(
+    `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
+    { headers: { Accept: "application/json" } },
+  );
+  if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
+  const json = (await res.json()) as unknown;
+  if (!Array.isArray(json) || !Array.isArray(json[0])) {
+    throw new Error("Fallback translation returned an unexpected payload");
+  }
+  const joined = json[0]
+    .map((part) => (Array.isArray(part) && typeof part[0] === "string" ? part[0] : ""))
+    .join("");
+  if (!joined.trim()) throw new Error("Fallback translation returned empty text");
+  if (looksUntranslated(joined, target)) {
+    throw new Error("Fallback translation returned untranslated text");
+  }
+  return joined;
+}
+
 async function translateWithFallback(
   texts: string[],
   target: Lang,
 ): Promise<TranslateResult> {
-  const translations = await Promise.all(
-    texts.map(async (text) => {
-      if (!text.trim()) return text;
-      const chunks = splitForFallback(text);
-      const translatedChunks = await Promise.all(
-        chunks.map(async (chunk) => {
-          const params = new URLSearchParams({
-            client: "gtx",
-            sl: "auto",
-            tl: GOOGLE_TL[target],
-            dt: "t",
-            q: chunk,
-          });
-          const res = await fetch(
-            `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
-            { headers: { Accept: "application/json" } },
-          );
-          if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
-          const json = (await res.json()) as unknown;
-          if (!Array.isArray(json) || !Array.isArray(json[0])) {
-            throw new Error("Fallback translation returned an unexpected payload");
-          }
-          const joined = json[0]
-            .map((part) => (Array.isArray(part) && typeof part[0] === "string" ? part[0] : ""))
-            .join("");
-          if (!joined.trim()) {
-            throw new Error("Fallback translation returned empty text");
-          }
-          if (looksUntranslated(joined, target)) {
-            throw new Error("Fallback translation returned untranslated text");
-          }
-          return joined;
-        }),
-      );
-      return translatedChunks.join("");
-    }),
-  );
+  const translations = await mapLimit(texts, 3, async (text) => {
+    if (!text.trim()) return text;
+    const chunks = splitForFallback(text);
+    const translatedChunks = await mapLimit(chunks, 3, async (chunk) => {
+      let lastErr: unknown;
+      // Transient 429/503 from the public endpoint is common when several
+      // cards translate at once: retry with a short backoff before giving up.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          return await googleTranslateChunk(chunk, target);
+        } catch (err) {
+          lastErr = err;
+          await sleep(250 * (attempt + 1));
+        }
+      }
+      throw lastErr;
+    });
+    return translatedChunks.join("");
+  });
   return { translations, fallback: false };
 }
+
 
 const InputSchema = z.object({
   texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
