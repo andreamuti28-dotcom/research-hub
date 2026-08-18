@@ -31,36 +31,15 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const listFn = useServerFn(listAllPapers);
   const deleteFn = useServerFn(deletePaper);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
-  const adminQuery = useQuery({
-    queryKey: ["admin", "status"],
-    queryFn: async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const uid = sessionData.session?.user.id;
-      if (!uid) return { isAdmin: false };
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", uid)
-        .eq("role", "admin")
-        .maybeSingle();
-      if (error) throw error;
-      return { isAdmin: !!data };
-    },
-    retry: 1,
-  });
-
   const papersQuery = useQuery({
     queryKey: ["admin", "papers"],
     queryFn: () => listFn(),
-    enabled: adminQuery.data?.isAdmin === true,
   });
-
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteFn({ data: { id } }),
@@ -71,35 +50,6 @@ function AdminDashboard() {
     },
   });
 
-  if (adminQuery.isLoading) {
-    return (
-      <AdminShell title="Caricamento…">
-        <div className="font-mono text-xs text-surface-dark-foreground/60">
-          Verifica accesso in corso…
-        </div>
-      </AdminShell>
-    );
-  }
-
-  if (!adminQuery.data?.isAdmin) {
-    return (
-      <AdminShell title="Accesso non autorizzato">
-        <p className="text-surface-dark-foreground/70 max-w-prose mb-6">
-          Il tuo account non ha permessi di amministratore. Solo il primo
-          utente registrato ottiene il ruolo admin.
-        </p>
-        <button
-          onClick={async () => {
-            await supabase.auth.signOut();
-            router.navigate({ to: "/admin/login" });
-          }}
-          className="px-4 py-2 border border-surface-dark-muted font-display text-[11px] font-bold uppercase tracking-wider hover:border-background hover:text-background transition-colors"
-        >
-          Esci
-        </button>
-      </AdminShell>
-    );
-  }
 
   const papers = papersQuery.data ?? [];
   const published = papers.filter((p) => p.is_published).length;
