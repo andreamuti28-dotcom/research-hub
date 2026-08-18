@@ -1,10 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { Lang } from "@/hooks/use-language";
 
 const MAX_TRANSLATION_TEXTS = 300;
 const MAX_TEXT_CHARS = 50000;
 const SERVER_CHUNK_SIZE = 30;
 const FALLBACK_CHUNK_CHARS = 3500;
+
+const TARGET_NAMES: Record<Lang, string> = {
+  it: "Italian",
+  en: "English",
+  es: "Spanish",
+  de: "German",
+  zh: "Chinese (Simplified)",
+  ru: "Russian",
+  ar: "Arabic",
+};
 
 type TranslateResult = {
   translations: string[];
@@ -35,7 +46,7 @@ function splitForFallback(text: string): string[] {
 
 async function translateWithFallback(
   texts: string[],
-  target: "it" | "en",
+  target: Lang,
 ): Promise<TranslateResult> {
   const translations = await Promise.all(
     texts.map(async (text) => {
@@ -70,15 +81,15 @@ async function translateWithFallback(
 
 const InputSchema = z.object({
   texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
-  target: z.enum(["it", "en"]),
+  target: z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
 });
 
 async function translateWithAi(
   texts: string[],
-  target: "it" | "en",
+  target: Lang,
   apiKey: string,
 ): Promise<TranslateResult> {
-  const targetName = target === "en" ? "English" : "Italian";
+  const targetName = TARGET_NAMES[target];
 
   const numbered = texts.map((t, i) => `[[${i}]]\n${t}`).join("\n\n[[END]]\n\n");
 
@@ -147,7 +158,7 @@ async function translateWithAi(
 
 async function translateChunk(
   texts: string[],
-  target: "it" | "en",
+  target: Lang,
   apiKey: string,
 ): Promise<TranslateResult> {
   try {

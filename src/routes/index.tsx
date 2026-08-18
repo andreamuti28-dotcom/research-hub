@@ -104,7 +104,7 @@ function Index() {
   const queryClient = useQueryClient();
   const t = useT();
   const { lang } = useLanguage();
-  const dateLocale = lang === "en" ? "en-GB" : "it-IT";
+  const dateLocale = t("common.monthLocale");
   // Always format the raw Italian Google Doc into markdown first, regardless
   // of the current UI language. This way EN translation receives already-
   // structured markdown (headings, lists, blank lines) instead of a wall of
@@ -160,25 +160,25 @@ function Index() {
     setSub(g === "featured" ? "publications" : settings.homeMarketEnabled ? "markets" : "news");
   };
   const featuredSubTabs = [
-    { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
-    { key: "dashboards" as const, label: "Dashboard" },
+    { key: "publications" as const, label: t("home.sub.papers") },
+    { key: "dashboards" as const, label: t("home.sub.dashboards") },
   ] as const;
   const liveSubTabs = [
     ...(settings.homeMarketEnabled
       ? [
           {
             key: "markets" as const,
-            label: lang === "en" ? "Financial markets" : "Mercati finanziari",
+            label: t("home.sub.markets"),
           },
         ]
       : []),
-    { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
+    { key: "news" as const, label: t("home.sub.news") },
   ] as const;
 
 
-  const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
-  const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
-  const dashboardsOpenLabel = lang === "en" ? "Open dashboard" : "Apri dashboard";
+  const dashboardsLabel = t("archive.tab.dashboards");
+  const dashboardsBadge = t("dashboard.badge");
+  const dashboardsOpenLabel = t("dashboard.open");
   const routableDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
   const selectedDashboards = settings.featuredDashboardIds
     .map((id) => routableDashboards.find((d) => d.id === id))
@@ -331,7 +331,7 @@ function Index() {
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
             >
-              {lang === "en" ? "Featured" : "In evidenza"}
+              {t("home.tab.featured")}
             </button>
 
             <button
@@ -344,7 +344,7 @@ function Index() {
                   : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
               }`}
             >
-              Live
+              {t("home.tab.live")}
             </button>
           </div>
 
@@ -436,9 +436,9 @@ function Index() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     {visibleDashboards.map((d) => {
                       const path = dashboardPath(d.component_key)!;
-                      const title = lang === "en" && d.title_en ? d.title_en : d.title;
+                      const title = lang !== "it" && d.title_en ? d.title_en : d.title;
                       const desc =
-                        lang === "en" && d.description_en ? d.description_en : d.description;
+                        lang !== "it" && d.description_en ? d.description_en : d.description;
                       return (
                         <Link
                           key={d.id}

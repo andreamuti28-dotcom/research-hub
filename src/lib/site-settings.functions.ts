@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Lang } from "@/hooks/use-language";
 
 async function assertAdmin(userId: string) {
   const { data, error } = await supabaseAdmin
@@ -72,7 +73,7 @@ export type SiteSettings = {
   aboutLanguages: LanguageItem[];
   aboutSoftware: LogoItem[];
   aboutCertifications: LogoItem[];
-  i18nOverrides: Record<string, { it?: string; en?: string }>;
+  i18nOverrides: Record<string, Partial<Record<Lang, string>>>;
   themeOverrides: Record<string, string>;
 };
 
@@ -132,16 +133,21 @@ const DEFAULTS: SiteSettings = {
   themeOverrides: {},
 };
 
-function coerceI18nOverrides(v: unknown): Record<string, { it?: string; en?: string }> {
+const SUPPORTED_LANGS: Lang[] = ["it", "en", "es", "de", "zh", "ru", "ar"];
+
+function coerceI18nOverrides(v: unknown): Record<string, Partial<Record<Lang, string>>> {
   if (!v || typeof v !== "object") return {};
-  const out: Record<string, { it?: string; en?: string }> = {};
+  const out: Record<string, Partial<Record<Lang, string>>> = {};
   for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
     if (!val || typeof val !== "object") continue;
     const o = val as Record<string, unknown>;
-    const it = typeof o.it === "string" ? o.it : undefined;
-    const en = typeof o.en === "string" ? o.en : undefined;
-    if (it === undefined && en === undefined) continue;
-    out[k] = { ...(it !== undefined ? { it } : {}), ...(en !== undefined ? { en } : {}) };
+    const entry: Partial<Record<Lang, string>> = {};
+    for (const lang of SUPPORTED_LANGS) {
+      const s = typeof o[lang] === "string" ? (o[lang] as string) : undefined;
+      if (s !== undefined) entry[lang] = s;
+    }
+    if (Object.keys(entry).length === 0) continue;
+    out[k] = entry;
   }
   return out;
 }
@@ -369,10 +375,10 @@ const updateSchema = z.object({
   i18nOverrides: z
     .record(
       z.string().min(1).max(120),
-      z.object({
-        it: z.string().max(2000).optional(),
-        en: z.string().max(2000).optional(),
-      }),
+      z.record(
+        z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
+        z.string().max(2000),
+      ),
     )
     .default({}),
   themeOverrides: z
