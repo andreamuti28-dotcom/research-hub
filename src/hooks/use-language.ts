@@ -17,6 +17,9 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
+// Languages already pre-translated in this session.
+const warmedLanguages = new Set<Lang>();
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   // Always default to Italian on every load. No persistence, no browser detection.
   const [lang, setLangState] = useState<Lang>("it");
