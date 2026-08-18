@@ -68,7 +68,7 @@ export function Flag({ country, className, title }: FlagProps) {
     );
   }
 
-  if (country === "cn" || country === "zh") {
+  if (country === "cn") {
     return (
       <svg {...common} viewBox="0 0 3 2">
         {title && <title>{title}</title>}
