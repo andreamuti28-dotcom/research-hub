@@ -17,6 +17,32 @@ const TARGET_NAMES: Record<Lang, string> = {
   ar: "Arabic",
 };
 
+// Google's endpoint expects locale-style codes for some languages.
+const GOOGLE_TL: Record<Lang, string> = {
+  it: "it",
+  en: "en",
+  es: "es",
+  de: "de",
+  zh: "zh-CN",
+  ru: "ru",
+  ar: "ar",
+};
+
+// Scripts we can verify: if the "translation" contains none of the target
+// script, the call silently returned the source text and must be retried.
+const TARGET_SCRIPT: Partial<Record<Lang, RegExp>> = {
+  zh: /[\u4e00-\u9fff]/,
+  ru: /[\u0400-\u04ff]/,
+  ar: /[\u0600-\u06ff]/,
+};
+
+function looksUntranslated(text: string, target: Lang): boolean {
+  const re = TARGET_SCRIPT[target];
+  if (!re) return false;
+  if (!/[A-Za-z\u00c0-\u024f]/.test(text)) return false;
+  return !re.test(text);
+}
+
 type TranslateResult = {
   translations: string[];
   fallback?: boolean;
@@ -57,7 +83,7 @@ async function translateWithFallback(
           const params = new URLSearchParams({
             client: "gtx",
             sl: "auto",
-            tl: target,
+            tl: GOOGLE_TL[target],
             dt: "t",
             q: chunk,
           });
@@ -75,6 +101,9 @@ async function translateWithFallback(
             .join("");
           if (!joined.trim()) {
             throw new Error("Fallback translation returned empty text");
+          }
+          if (looksUntranslated(joined, target)) {
+            throw new Error("Fallback translation returned untranslated text");
           }
           return joined;
         }),
