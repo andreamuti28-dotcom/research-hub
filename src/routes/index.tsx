@@ -14,7 +14,7 @@ import { listPublishedDashboards } from "@/lib/dashboards.functions";
 import { dashboardPath } from "@/lib/dashboard-registry";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
-import { useTranslated } from "@/hooks/use-translated";
+import { useTranslated, useTranslatedLive } from "@/hooks/use-translated";
 import { useDashboardLabels } from "@/hooks/use-dashboard-labels";
 import { useServerFn } from "@tanstack/react-start";
 import { formatMarketReportLayout } from "@/lib/format-layout.functions";
@@ -126,14 +126,14 @@ function Index() {
     marketDisclaimer,
     marketLabel,
     featuredLabel,
-    reportTitle,
-    reportContentTranslated,
   ] = useTranslated([
     settings.heroTitle,
     settings.heroIntro,
     settings.homeMarketDisclaimer,
     settings.homeMarketLabel,
     settings.homeFeaturedLabel,
+  ]);
+  const [reportTitle, reportContentTranslated] = useTranslatedLive([
     latestReport?.title ?? "",
     formattedItText,
   ]);
