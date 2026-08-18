@@ -344,11 +344,8 @@ function AdminContent() {
             const visible = keys.filter((k) => {
               if (!filtered) return true;
               if (k.toLowerCase().includes(filtered)) return true;
-              const it = getDefaultString("it", k) ?? "";
-              const en = getDefaultString("en", k) ?? "";
-              return (
-                it.toLowerCase().includes(filtered) ||
-                en.toLowerCase().includes(filtered)
+              return LANGUAGES.some(
+                (l) => (getDefaultString(l, k) ?? "").toLowerCase().includes(filtered),
               );
             });
             if (visible.length === 0) return null;
@@ -362,42 +359,37 @@ function AdminContent() {
                 </div>
                 <div className="divide-y divide-surface-dark-muted">
                   {visible.map((key) => {
-                    const defIt = getDefaultString("it", key);
-                    const defEn = getDefaultString("en", key);
-                    if (defIt === null && defEn === null) {
+                    const defaults = Object.fromEntries(
+                      LANGUAGES.map((l) => [l, getDefaultString(l, key)]),
+                    ) as Record<Lang, string | null>;
+                    if (LANGUAGES.every((l) => defaults[l] === null)) {
                       // formatter — skip (not user-editable text)
                       return null;
                     }
                     const ov = i18n[key] ?? {};
                     return (
-                      <div key={key} className="p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <div className="md:col-span-2 font-mono text-[10px] text-surface-dark-foreground/40 break-all">
+                      <div key={key} className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div className="sm:col-span-2 lg:col-span-3 font-mono text-[10px] text-surface-dark-foreground/40 break-all">
                           {key}
                         </div>
-                        <label className="block">
-                          <span className="block font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60 mb-1">
-                            IT
-                          </span>
-                          <textarea
-                            rows={defIt && defIt.length > 60 ? 3 : 1}
-                            value={ov.it ?? ""}
-                            onChange={(e) => onTextChange(key, "it", e.target.value)}
-                            placeholder={defIt ?? ""}
-                            className="w-full bg-surface-dark border border-surface-dark-muted px-2 py-1.5 font-serif text-sm text-background placeholder:text-surface-dark-foreground/30 focus:outline-none focus:border-background resize-y"
-                          />
-                        </label>
-                        <label className="block">
-                          <span className="block font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60 mb-1">
-                            EN
-                          </span>
-                          <textarea
-                            rows={defEn && defEn.length > 60 ? 3 : 1}
-                            value={ov.en ?? ""}
-                            onChange={(e) => onTextChange(key, "en", e.target.value)}
-                            placeholder={defEn ?? ""}
-                            className="w-full bg-surface-dark border border-surface-dark-muted px-2 py-1.5 font-serif text-sm text-background placeholder:text-surface-dark-foreground/30 focus:outline-none focus:border-background resize-y"
-                          />
-                        </label>
+                        {LANGUAGES.map((l) => {
+                          const def = defaults[l];
+                          if (def === null) return null;
+                          return (
+                            <label key={l} className="block">
+                              <span className="block font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60 mb-1">
+                                {l}
+                              </span>
+                              <textarea
+                                rows={def.length > 60 ? 3 : 1}
+                                value={(ov[l] as string | undefined) ?? ""}
+                                onChange={(e) => onTextChange(key, l, e.target.value)}
+                                placeholder={def}
+                                className="w-full bg-surface-dark border border-surface-dark-muted px-2 py-1.5 font-serif text-sm text-background placeholder:text-surface-dark-foreground/30 focus:outline-none focus:border-background resize-y"
+                              />
+                            </label>
+                          );
+                        })}
                       </div>
                     );
                   })}
