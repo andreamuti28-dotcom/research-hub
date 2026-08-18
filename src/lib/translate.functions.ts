@@ -229,38 +229,52 @@ async function translateChunk(
   const out = [...texts];
   const failed: number[] = [];
 
-  await Promise.all(
-    texts.map(async (text, i) => {
-      if (!text.trim()) return;
-      try {
-        const res = await translateWithFallback([text], target);
-        out[i] = res.translations[0] ?? text;
-      } catch (err) {
-        console.warn("Primary translation failed for one item, will retry with AI:", err);
-        failed.push(i);
-      }
-    }),
-  );
+  await mapLimit(texts, 4, async (text, i) => {
+    if (!text.trim()) return;
+    try {
+      const res = await translateWithFallback([text], target);
+      out[i] = res.translations[0] ?? text;
+    } catch (err) {
+      console.warn("Primary translation failed for one item, will retry with AI:", err);
+      failed.push(i);
+    }
+  });
 
-  if (failed.length > 0) {
+  let degraded = false;
+
+  const aiRetry = async (indexes: number[]) => {
+    if (indexes.length === 0) return;
     try {
       const ai = await translateWithAi(
-        failed.map((i) => texts[i]),
+        indexes.map((i) => texts[i]),
         target,
         apiKey,
       );
-      failed.forEach((idx, k) => {
-        out[idx] = ai.translations[k] ?? texts[idx];
+      indexes.forEach((idx, k) => {
+        const candidate = ai.translations[k];
+        if (typeof candidate === "string" && candidate.trim()) out[idx] = candidate;
       });
-      if (ai.fallback) return { translations: out, fallback: true };
+      if (ai.fallback) degraded = true;
     } catch (err) {
       console.error("AI translation retry failed:", err);
-      return { translations: out, fallback: true };
+      degraded = true;
     }
+  };
+
+  await aiRetry(failed);
+
+  // Final guard: anything still in the source script goes back through the AI
+  // one item at a time, so a single stubborn abstract can't stay untranslated.
+  const stillUntranslated = out
+    .map((text, i) => (text.trim() && looksUntranslated(text, target) ? i : -1))
+    .filter((i) => i >= 0);
+  for (const idx of stillUntranslated) {
+    await aiRetry([idx]);
   }
 
-  return { translations: out };
+  return degraded ? { translations: out, fallback: true } : { translations: out };
 }
+
 
 export const translateBatch = createServerFn({ method: "POST" })
   .inputValidator((input) => InputSchema.parse(input))
