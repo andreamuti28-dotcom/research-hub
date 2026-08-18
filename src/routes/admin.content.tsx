@@ -10,6 +10,7 @@ import { updateSiteOverrides } from "@/lib/site-settings.functions";
 import { I18N_KEYS, getDefaultString } from "@/lib/i18n";
 import { listAllPapers } from "@/lib/admin-papers.functions";
 import { defaultTagColor, tagTokenName } from "@/lib/paper-tags";
+import { LANGUAGES, type Lang } from "@/hooks/use-language";
 
 export const Route = createFileRoute("/admin/content")({
   head: () => ({
