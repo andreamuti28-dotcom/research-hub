@@ -141,14 +141,32 @@ function httpToHttpsRedirect(request: Request): Response | null {
 }
 
 
+// The Lovable editor renders the app inside a cross-origin iframe and its dev
+// tooling evaluates strings, so framing/CSP restrictions must not apply there.
+function isEditorPreview(request: Request): boolean {
+  const host = new URL(request.url).hostname;
+  return (
+    isLocalHost(request) ||
+    host.endsWith(".lovableproject.com") ||
+    host.endsWith("-dev.lovable.app") ||
+    host.startsWith("id-preview--")
+  );
+}
+
 function withSecurityHeaders(response: Response, request: Request): Response {
   const headers = new Headers(response.headers);
   const contentType = headers.get("content-type") ?? "";
   const isDocument = contentType.includes("text/html");
+  const preview = isEditorPreview(request);
 
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  headers.set("X-Frame-Options", "SAMEORIGIN");
+  if (preview) {
+    headers.delete("X-Frame-Options");
+    headers.delete("Content-Security-Policy");
+  } else {
+    headers.set("X-Frame-Options", "SAMEORIGIN");
+  }
   if (shouldSendHsts(request)) {
     headers.set(
       "Strict-Transport-Security",
@@ -158,7 +176,7 @@ function withSecurityHeaders(response: Response, request: Request): Response {
     headers.delete("Strict-Transport-Security");
   }
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  if (isDocument) headers.set("Content-Security-Policy", CSP);
+  if (isDocument && !preview) headers.set("Content-Security-Policy", CSP);
 
   // Belt-and-braces: admin surfaces must never be indexed.
   if (new URL(request.url).pathname.startsWith("/admin")) {
