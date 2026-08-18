@@ -435,11 +435,10 @@ function Index() {
               (visibleDashboards.length > 0 ? (
                 <div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {visibleDashboards.map((d) => {
+                    {visibleDashboards.map((d, di) => {
                       const path = dashboardPath(d.component_key)!;
-                      const title = lang !== "it" && d.title_en ? d.title_en : d.title;
-                      const desc =
-                        lang !== "it" && d.description_en ? d.description_en : d.description;
+                      const title = visibleDashboardLabels[di]?.title ?? d.title;
+                      const desc = visibleDashboardLabels[di]?.description ?? d.description;
                       return (
                         <Link
                           key={d.id}
