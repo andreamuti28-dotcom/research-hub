@@ -93,7 +93,8 @@ function Archivio() {
   const settings = useSiteSettings();
   const { lang } = useLanguage();
   const { data: dashboards = [] } = useQuery(dashboardsQuery);
-  const [tab, setTab] = useState<TabKey>("papers");
+  const search = useSearch({ from: "/archivio" });
+  const [tab, setTab] = useState<TabKey>(search.tab ?? "papers");
   const archiveDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
   const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [query, setQuery] = useState("");
