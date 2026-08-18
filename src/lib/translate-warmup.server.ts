@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { parseContent } from "@/lib/paper-reading";
 import { translateTexts } from "@/lib/translate.functions";
+import { readCachedTranslations } from "@/lib/translation-cache.server";
 import type { Lang } from "@/hooks/use-language";
 
 const BATCH = 40;
