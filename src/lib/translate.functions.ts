@@ -46,7 +46,7 @@ function splitForFallback(text: string): string[] {
 
 async function translateWithFallback(
   texts: string[],
-  target: "it" | "en",
+  target: Lang,
 ): Promise<TranslateResult> {
   const translations = await Promise.all(
     texts.map(async (text) => {
