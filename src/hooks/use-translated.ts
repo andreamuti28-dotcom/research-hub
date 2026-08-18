@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useLanguage } from "@/hooks/use-language";
-import { translateBatch } from "@/lib/translate.functions";
+import { getCachedTranslationBatch } from "@/lib/translate.functions";
 
 const SOURCE = "it" as const;
 const CLIENT_TRANSLATION_CHUNK_SIZE = 50;
-const TRANSLATION_QUERY_VERSION = "v6";
+const TRANSLATION_QUERY_VERSION = "v7-cache-only";
 
 type TranslationResult = {
   translations: string[];
-  fallback?: boolean;
+  missing: boolean;
 };
 
 function hash(s: string): string {
@@ -30,7 +30,7 @@ function cacheKey(target: string, texts: string[]) {
 function unwrapTranslations(results: TranslationResult[]) {
   return {
     translations: results.flatMap((r) => r.translations),
-    fallback: results.some((r) => r.fallback),
+    missing: results.some((r) => r.missing),
   };
 }
 
@@ -40,7 +40,7 @@ function unwrapTranslations(results: TranslationResult[]) {
  */
 export function useTranslated(texts: string[]): string[] {
   const { lang } = useLanguage();
-  const callFn = useServerFn(translateBatch);
+  const callFn = useServerFn(getCachedTranslationBatch);
   const needsTranslation = lang !== SOURCE && texts.some((t) => t.trim().length > 0);
   const key = cacheKey(lang, texts);
 
@@ -57,11 +57,10 @@ export function useTranslated(texts: string[]): string[] {
       return unwrapTranslations(results);
     },
     enabled: needsTranslation,
-    retry: 2,
-    retryDelay: (a) => 500 * (a + 1),
-    // Retry partial failures on the next mount instead of caching them forever.
-    staleTime: ({ state }) => (state.data?.fallback ? 0 : Infinity),
+    retry: 1,
+    staleTime: Infinity,
     gcTime: Infinity,
+    refetchInterval: (query) => (query.state.data?.missing ? 1500 : false),
   });
 
   if (!needsTranslation) return texts;
@@ -75,7 +74,7 @@ export function useTranslated(texts: string[]): string[] {
  */
 export function useTranslatedAlways(texts: string[]): string[] {
   const { lang } = useLanguage();
-  const callFn = useServerFn(translateBatch);
+  const callFn = useServerFn(getCachedTranslationBatch);
   const hasContent = texts.some((t) => t.trim().length > 0);
   const key = `auto:${cacheKey(lang, texts)}`;
 
@@ -92,10 +91,10 @@ export function useTranslatedAlways(texts: string[]): string[] {
       return unwrapTranslations(results);
     },
     enabled: hasContent,
-    retry: 2,
-    retryDelay: (a) => 500 * (a + 1),
-    staleTime: ({ state }) => (state.data?.fallback ? 0 : Infinity),
+    retry: 1,
+    staleTime: Infinity,
     gcTime: Infinity,
+    refetchInterval: (query) => (query.state.data?.missing ? 1500 : false),
   });
 
   if (!hasContent) return texts;

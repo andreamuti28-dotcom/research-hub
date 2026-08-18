@@ -1,5 +1,3 @@
-import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 import type { Lang } from "@/hooks/use-language";
 import { readCachedTranslations, writeCachedTranslations } from "@/lib/translation-cache.server";
 
@@ -144,11 +142,6 @@ async function translateWithFallback(
   return { translations, fallback: false };
 }
 
-
-const InputSchema = z.object({
-  texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
-  target: z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
-});
 
 async function translateWithAi(
   texts: string[],
@@ -335,11 +328,4 @@ export async function translateTexts(
   };
 }
 
-export const translateBatch = createServerFn({ method: "POST" })
-  .inputValidator((input) => InputSchema.parse(input))
-  .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY missing");
-    return translateTexts(data.texts, data.target, apiKey);
-  });
 
