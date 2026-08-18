@@ -55,7 +55,7 @@ const dashboardsQuery = {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management" },
+      { title: "Andrea Muti ricercatore indipendente in finanza" },
       {
         name: "description",
         content:
@@ -63,7 +63,7 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:title",
-        content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management",
+        content: "Andrea Muti ricercatore indipendente in finanza",
       },
       {
         property: "og:description",
@@ -75,7 +75,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management",
+        content: "Andrea Muti ricercatore indipendente in finanza",
       },
       {
         name: "twitter:description",

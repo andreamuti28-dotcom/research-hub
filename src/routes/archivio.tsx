@@ -35,24 +35,24 @@ export const Route = createFileRoute("/archivio")({
   validateSearch: archiveSearchSchema,
   head: () => ({
     meta: [
-      { title: "Archivio paper e report finanziari — Andrea Muti" },
+      { title: "Archivio paper e dashboard interattive — Andrea Muti" },
       {
         name: "description",
         content:
-          "Archivio completo dei paper di ricerca di Andrea Muti e dei report giornalieri sui mercati finanziari.",
+          "Archivio completo dei paper di ricerca e delle dashboard interattive di Andrea Muti sui mercati finanziari.",
       },
-      { property: "og:title", content: "Archivio paper e report finanziari — Andrea Muti" },
+      { property: "og:title", content: "Archivio paper e dashboard interattive — Andrea Muti" },
       {
         property: "og:description",
-        content: "Paper di ricerca e report dei mercati finanziari.",
+        content: "Paper di ricerca e dashboard interattive sui mercati finanziari.",
       },
       { property: "og:url", content: "https://www.andreamuti.com/archivio" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Archivio paper e report finanziari — Andrea Muti" },
+      { name: "twitter:title", content: "Archivio paper e dashboard interattive — Andrea Muti" },
       {
         name: "twitter:description",
-        content: "Paper di ricerca e report dei mercati finanziari.",
+        content: "Paper di ricerca e dashboard interattive sui mercati finanziari.",
       },
       ...ogImageMeta(),
     ],
