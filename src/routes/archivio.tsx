@@ -97,6 +97,7 @@ function Archivio() {
   const search = useSearch({ from: "/archivio" });
   const [tab, setTab] = useState<TabKey>(search.tab ?? "papers");
   const archiveDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
+  const archiveDashboardLabels = useDashboardLabels(archiveDashboards);
   const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
@@ -336,11 +337,10 @@ function Archivio() {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
-                {archiveDashboards.map((d) => {
+                {archiveDashboards.map((d, di) => {
                   const path = dashboardPath(d.component_key)!;
-                  const title = lang !== "it" && d.title_en ? d.title_en : d.title;
-                  const desc =
-                    lang !== "it" && d.description_en ? d.description_en : d.description;
+                  const title = archiveDashboardLabels[di]?.title ?? d.title;
+                  const desc = archiveDashboardLabels[di]?.description ?? d.description;
                   return (
                     <Link
                       key={d.id}
