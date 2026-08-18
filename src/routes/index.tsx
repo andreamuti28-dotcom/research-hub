@@ -150,7 +150,7 @@ function Index() {
       ? HOME_MARKET_LABEL_EN
       : marketLabel;
   const [heroVideoReady, setHeroVideoReady] = useState(false);
-  const [heroVideoFailed, setHeroVideoFailed] = useState(false);
+  
   const [group, setGroupState] = useState<"featured" | "live">("featured");
   const [sub, setSub] = useState<"publications" | "dashboards" | "markets" | "news">(
     "publications",
