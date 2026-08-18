@@ -133,16 +133,21 @@ const DEFAULTS: SiteSettings = {
   themeOverrides: {},
 };
 
-function coerceI18nOverrides(v: unknown): Record<string, { it?: string; en?: string }> {
+const SUPPORTED_LANGS: Lang[] = ["it", "en", "es", "de", "zh", "ru", "ar"];
+
+function coerceI18nOverrides(v: unknown): Record<string, Partial<Record<Lang, string>>> {
   if (!v || typeof v !== "object") return {};
-  const out: Record<string, { it?: string; en?: string }> = {};
+  const out: Record<string, Partial<Record<Lang, string>>> = {};
   for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
     if (!val || typeof val !== "object") continue;
     const o = val as Record<string, unknown>;
-    const it = typeof o.it === "string" ? o.it : undefined;
-    const en = typeof o.en === "string" ? o.en : undefined;
-    if (it === undefined && en === undefined) continue;
-    out[k] = { ...(it !== undefined ? { it } : {}), ...(en !== undefined ? { en } : {}) };
+    const entry: Partial<Record<Lang, string>> = {};
+    for (const lang of SUPPORTED_LANGS) {
+      const s = typeof o[lang] === "string" ? (o[lang] as string) : undefined;
+      if (s !== undefined) entry[lang] = s;
+    }
+    if (Object.keys(entry).length === 0) continue;
+    out[k] = entry;
   }
   return out;
 }
