@@ -176,7 +176,7 @@ function withSecurityHeaders(response: Response, request: Request): Response {
     headers.delete("Strict-Transport-Security");
   }
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
-  if (isDocument) headers.set("Content-Security-Policy", CSP);
+  if (isDocument && !preview) headers.set("Content-Security-Policy", CSP);
 
   // Belt-and-braces: admin surfaces must never be indexed.
   if (new URL(request.url).pathname.startsWith("/admin")) {
