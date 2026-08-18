@@ -158,7 +158,7 @@ async function translateWithAi(
 
 async function translateChunk(
   texts: string[],
-  target: "it" | "en",
+  target: Lang,
   apiKey: string,
 ): Promise<TranslateResult> {
   try {
