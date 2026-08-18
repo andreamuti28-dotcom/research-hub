@@ -5,7 +5,7 @@ import { translateBatch } from "@/lib/translate.functions";
 
 const SOURCE = "it" as const;
 const CLIENT_TRANSLATION_CHUNK_SIZE = 50;
-const TRANSLATION_QUERY_VERSION = "v5";
+const TRANSLATION_QUERY_VERSION = "v6";
 
 type TranslationResult = {
   translations: string[];
@@ -57,6 +57,8 @@ export function useTranslated(texts: string[]): string[] {
       return unwrapTranslations(results);
     },
     enabled: needsTranslation,
+    retry: 2,
+    retryDelay: (a) => 500 * (a + 1),
     // Retry partial failures on the next mount instead of caching them forever.
     staleTime: ({ state }) => (state.data?.fallback ? 0 : Infinity),
     gcTime: Infinity,
@@ -90,6 +92,8 @@ export function useTranslatedAlways(texts: string[]): string[] {
       return unwrapTranslations(results);
     },
     enabled: hasContent,
+    retry: 2,
+    retryDelay: (a) => 500 * (a + 1),
     staleTime: ({ state }) => (state.data?.fallback ? 0 : Infinity),
     gcTime: Infinity,
   });

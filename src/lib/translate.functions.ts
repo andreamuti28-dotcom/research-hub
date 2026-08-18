@@ -70,49 +70,79 @@ function splitForFallback(text: string): string[] {
   return chunks;
 }
 
+/** Run async work with bounded concurrency so we don't trip Google's rate limits. */
+async function mapLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const out = new Array<R>(items.length);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (cursor < items.length) {
+      const i = cursor++;
+      out[i] = await fn(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return out;
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+async function googleTranslateChunk(chunk: string, target: Lang): Promise<string> {
+  const params = new URLSearchParams({
+    client: "gtx",
+    sl: "auto",
+    tl: GOOGLE_TL[target],
+    dt: "t",
+    q: chunk,
+  });
+  const res = await fetch(
+    `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
+    { headers: { Accept: "application/json" } },
+  );
+  if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
+  const json = (await res.json()) as unknown;
+  if (!Array.isArray(json) || !Array.isArray(json[0])) {
+    throw new Error("Fallback translation returned an unexpected payload");
+  }
+  const joined = json[0]
+    .map((part) => (Array.isArray(part) && typeof part[0] === "string" ? part[0] : ""))
+    .join("");
+  if (!joined.trim()) throw new Error("Fallback translation returned empty text");
+  if (looksUntranslated(joined, target)) {
+    throw new Error("Fallback translation returned untranslated text");
+  }
+  return joined;
+}
+
 async function translateWithFallback(
   texts: string[],
   target: Lang,
 ): Promise<TranslateResult> {
-  const translations = await Promise.all(
-    texts.map(async (text) => {
-      if (!text.trim()) return text;
-      const chunks = splitForFallback(text);
-      const translatedChunks = await Promise.all(
-        chunks.map(async (chunk) => {
-          const params = new URLSearchParams({
-            client: "gtx",
-            sl: "auto",
-            tl: GOOGLE_TL[target],
-            dt: "t",
-            q: chunk,
-          });
-          const res = await fetch(
-            `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
-            { headers: { Accept: "application/json" } },
-          );
-          if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
-          const json = (await res.json()) as unknown;
-          if (!Array.isArray(json) || !Array.isArray(json[0])) {
-            throw new Error("Fallback translation returned an unexpected payload");
-          }
-          const joined = json[0]
-            .map((part) => (Array.isArray(part) && typeof part[0] === "string" ? part[0] : ""))
-            .join("");
-          if (!joined.trim()) {
-            throw new Error("Fallback translation returned empty text");
-          }
-          if (looksUntranslated(joined, target)) {
-            throw new Error("Fallback translation returned untranslated text");
-          }
-          return joined;
-        }),
-      );
-      return translatedChunks.join("");
-    }),
-  );
+  const translations = await mapLimit(texts, 3, async (text) => {
+    if (!text.trim()) return text;
+    const chunks = splitForFallback(text);
+    const translatedChunks = await mapLimit(chunks, 3, async (chunk) => {
+      let lastErr: unknown;
+      // Transient 429/503 from the public endpoint is common when several
+      // cards translate at once: retry with a short backoff before giving up.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          return await googleTranslateChunk(chunk, target);
+        } catch (err) {
+          lastErr = err;
+          await sleep(250 * (attempt + 1));
+        }
+      }
+      throw lastErr;
+    });
+    return translatedChunks.join("");
+  });
   return { translations, fallback: false };
 }
+
 
 const InputSchema = z.object({
   texts: z.array(z.string().max(MAX_TEXT_CHARS)).min(1).max(MAX_TRANSLATION_TEXTS),
@@ -199,38 +229,52 @@ async function translateChunk(
   const out = [...texts];
   const failed: number[] = [];
 
-  await Promise.all(
-    texts.map(async (text, i) => {
-      if (!text.trim()) return;
-      try {
-        const res = await translateWithFallback([text], target);
-        out[i] = res.translations[0] ?? text;
-      } catch (err) {
-        console.warn("Primary translation failed for one item, will retry with AI:", err);
-        failed.push(i);
-      }
-    }),
-  );
+  await mapLimit(texts, 4, async (text, i) => {
+    if (!text.trim()) return;
+    try {
+      const res = await translateWithFallback([text], target);
+      out[i] = res.translations[0] ?? text;
+    } catch (err) {
+      console.warn("Primary translation failed for one item, will retry with AI:", err);
+      failed.push(i);
+    }
+  });
 
-  if (failed.length > 0) {
+  let degraded = false;
+
+  const aiRetry = async (indexes: number[]) => {
+    if (indexes.length === 0) return;
     try {
       const ai = await translateWithAi(
-        failed.map((i) => texts[i]),
+        indexes.map((i) => texts[i]),
         target,
         apiKey,
       );
-      failed.forEach((idx, k) => {
-        out[idx] = ai.translations[k] ?? texts[idx];
+      indexes.forEach((idx, k) => {
+        const candidate = ai.translations[k];
+        if (typeof candidate === "string" && candidate.trim()) out[idx] = candidate;
       });
-      if (ai.fallback) return { translations: out, fallback: true };
+      if (ai.fallback) degraded = true;
     } catch (err) {
       console.error("AI translation retry failed:", err);
-      return { translations: out, fallback: true };
+      degraded = true;
     }
+  };
+
+  await aiRetry(failed);
+
+  // Final guard: anything still in the source script goes back through the AI
+  // one item at a time, so a single stubborn abstract can't stay untranslated.
+  const stillUntranslated = out
+    .map((text, i) => (text.trim() && looksUntranslated(text, target) ? i : -1))
+    .filter((i) => i >= 0);
+  for (const idx of stillUntranslated) {
+    await aiRetry([idx]);
   }
 
-  return { translations: out };
+  return degraded ? { translations: out, fallback: true } : { translations: out };
 }
+
 
 export const translateBatch = createServerFn({ method: "POST" })
   .inputValidator((input) => InputSchema.parse(input))
@@ -243,14 +287,13 @@ export const translateBatch = createServerFn({ method: "POST" })
     for (let i = 0; i < texts.length; i += SERVER_CHUNK_SIZE) {
       chunks.push(texts.slice(i, i + SERVER_CHUNK_SIZE));
     }
-    const results = await Promise.all(
-      chunks.map((c) =>
-        translateChunk(c, target, apiKey).catch((err) => {
-          console.error("Translation chunk failed:", err);
-          return { translations: c, fallback: true } satisfies TranslateResult;
-        }),
-      ),
+    const results = await mapLimit(chunks, 2, (c) =>
+      translateChunk(c, target, apiKey).catch((err) => {
+        console.error("Translation chunk failed:", err);
+        return { translations: c, fallback: true } satisfies TranslateResult;
+      }),
     );
+
     return {
       translations: results.flatMap((r) => r.translations),
       fallback: results.some((r) => r.fallback),
