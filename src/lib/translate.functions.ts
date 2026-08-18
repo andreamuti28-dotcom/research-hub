@@ -5,7 +5,7 @@ import type { Lang } from "@/hooks/use-language";
 const MAX_TRANSLATION_TEXTS = 300;
 const MAX_TEXT_CHARS = 50000;
 const SERVER_CHUNK_SIZE = 30;
-const FALLBACK_CHUNK_CHARS = 3500;
+const FALLBACK_CHUNK_CHARS = 1200;
 
 const TARGET_NAMES: Record<Lang, string> = {
   it: "Italian",
@@ -67,10 +67,16 @@ async function translateWithFallback(
           );
           if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
           const json = (await res.json()) as unknown;
-          if (!Array.isArray(json) || !Array.isArray(json[0])) return chunk;
-          return json[0]
+          if (!Array.isArray(json) || !Array.isArray(json[0])) {
+            throw new Error("Fallback translation returned an unexpected payload");
+          }
+          const joined = json[0]
             .map((part) => (Array.isArray(part) && typeof part[0] === "string" ? part[0] : ""))
             .join("");
+          if (!joined.trim()) {
+            throw new Error("Fallback translation returned empty text");
+          }
+          return joined;
         }),
       );
       return translatedChunks.join("");
@@ -161,12 +167,40 @@ async function translateChunk(
   target: Lang,
   apiKey: string,
 ): Promise<TranslateResult> {
-  try {
-    return await translateWithFallback(texts, target);
-  } catch (err) {
-    console.warn("Primary translation fallback failed, trying AI:", err);
-    return translateWithAi(texts, target, apiKey);
+  const out = [...texts];
+  const failed: number[] = [];
+
+  await Promise.all(
+    texts.map(async (text, i) => {
+      if (!text.trim()) return;
+      try {
+        const res = await translateWithFallback([text], target);
+        out[i] = res.translations[0] ?? text;
+      } catch (err) {
+        console.warn("Primary translation failed for one item, will retry with AI:", err);
+        failed.push(i);
+      }
+    }),
+  );
+
+  if (failed.length > 0) {
+    try {
+      const ai = await translateWithAi(
+        failed.map((i) => texts[i]),
+        target,
+        apiKey,
+      );
+      failed.forEach((idx, k) => {
+        out[idx] = ai.translations[k] ?? texts[idx];
+      });
+      if (ai.fallback) return { translations: out, fallback: true };
+    } catch (err) {
+      console.error("AI translation retry failed:", err);
+      return { translations: out, fallback: true };
+    }
   }
+
+  return { translations: out };
 }
 
 export const translateBatch = createServerFn({ method: "POST" })

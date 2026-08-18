@@ -15,6 +15,7 @@ import { dashboardPath } from "@/lib/dashboard-registry";
 import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useTranslated } from "@/hooks/use-translated";
+import { useDashboardLabels } from "@/hooks/use-dashboard-labels";
 import { useServerFn } from "@tanstack/react-start";
 import { formatMarketReportLayout } from "@/lib/format-layout.functions";
 import { formatReportLocal } from "@/lib/format-report-local";
@@ -138,17 +139,16 @@ function Index() {
   ]);
   const reportContentRaw = lang === "it" ? formattedItText : reportContentTranslated;
   const reportContent = formatReportLocal(reportContentRaw);
-  const localizedHeroIntro = lang === "en" ? HERO_INTRO_EN : HERO_INTRO_IT;
+  const localizedHeroIntro =
+    lang === "it" ? HERO_INTRO_IT : lang === "en" ? HERO_INTRO_EN : heroIntro;
+  const isDefaultFeaturedLabel =
+    settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase();
+  const isDefaultMarketLabel =
+    settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase();
   const localizedFeaturedLabel =
-    lang === "en" &&
-    settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase()
-      ? HOME_FEATURED_LABEL_EN
-      : featuredLabel;
+    lang === "en" && isDefaultFeaturedLabel ? HOME_FEATURED_LABEL_EN : featuredLabel;
   const localizedMarketLabel =
-    lang === "en" &&
-    settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
-      ? HOME_MARKET_LABEL_EN
-      : marketLabel;
+    lang === "en" && isDefaultMarketLabel ? HOME_MARKET_LABEL_EN : marketLabel;
   
   
   const [group, setGroupState] = useState<"featured" | "live">("featured");
@@ -186,6 +186,7 @@ function Index() {
   const visibleDashboards = (
     selectedDashboards.length > 0 ? selectedDashboards : routableDashboards
   ).slice(0, 3);
+  const visibleDashboardLabels = useDashboardLabels(visibleDashboards);
 
   useEffect(() => {
     const channel = supabase
@@ -434,11 +435,10 @@ function Index() {
               (visibleDashboards.length > 0 ? (
                 <div>
                   <div className="grid gap-4 sm:grid-cols-2">
-                    {visibleDashboards.map((d) => {
+                    {visibleDashboards.map((d, di) => {
                       const path = dashboardPath(d.component_key)!;
-                      const title = lang !== "it" && d.title_en ? d.title_en : d.title;
-                      const desc =
-                        lang !== "it" && d.description_en ? d.description_en : d.description;
+                      const title = visibleDashboardLabels[di]?.title ?? d.title;
+                      const desc = visibleDashboardLabels[di]?.description ?? d.description;
                       return (
                         <Link
                           key={d.id}

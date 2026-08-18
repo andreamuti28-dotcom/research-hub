@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useTranslated } from "@/hooks/use-translated";
-import { useLanguage } from "@/hooks/use-language";
+import { useDashboardLabels } from "@/hooks/use-dashboard-labels";
 import { Link } from "@tanstack/react-router";
 import { listPublishedDashboards } from "@/lib/dashboards.functions";
 import { dashboardPath } from "@/lib/dashboard-registry";
@@ -91,11 +91,11 @@ function Archivio() {
   const queryClient = useQueryClient();
   const t = useT();
   const settings = useSiteSettings();
-  const { lang } = useLanguage();
   const { data: dashboards = [] } = useQuery(dashboardsQuery);
   const search = useSearch({ from: "/archivio" });
   const [tab, setTab] = useState<TabKey>(search.tab ?? "papers");
   const archiveDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
+  const archiveDashboardLabels = useDashboardLabels(archiveDashboards);
   const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState<string>("");
@@ -335,11 +335,10 @@ function Archivio() {
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
-                {archiveDashboards.map((d) => {
+                {archiveDashboards.map((d, di) => {
                   const path = dashboardPath(d.component_key)!;
-                  const title = lang !== "it" && d.title_en ? d.title_en : d.title;
-                  const desc =
-                    lang !== "it" && d.description_en ? d.description_en : d.description;
+                  const title = archiveDashboardLabels[di]?.title ?? d.title;
+                  const desc = archiveDashboardLabels[di]?.description ?? d.description;
                   return (
                     <Link
                       key={d.id}
