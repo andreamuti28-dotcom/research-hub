@@ -19,13 +19,13 @@ import { ogImageMeta } from "@/lib/og";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Chi sono — Andrea Muti" },
+      { title: "Dott. Andrea Muti" },
       {
         name: "description",
         content:
           "Chi sono: formazione, lingue, software & AI e certificazioni di Andrea Muti, ricercatore indipendente in finanza e mercati.",
       },
-      { property: "og:title", content: "Chi sono — Andrea Muti" },
+      { property: "og:title", content: "Dott. Andrea Muti" },
       {
         property: "og:description",
         content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/about")({
       { property: "og:url", content: "https://www.andreamuti.com/about" },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Chi sono — Andrea Muti" },
+      { name: "twitter:title", content: "Dott. Andrea Muti" },
       {
         name: "twitter:description",
         content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
