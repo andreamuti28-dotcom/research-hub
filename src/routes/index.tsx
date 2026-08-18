@@ -247,40 +247,8 @@ function Index() {
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-stretch">
           <div className="md:col-span-7">
             <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
-              {/* Fallback layer: shown only when no video is configured or the
-                  video fails. It fades out as soon as the first frame is ready,
-                  so no logo flash appears on load. */}
-              <div
-                className={`absolute inset-0 flex items-center justify-center px-6 transition-opacity duration-500 ${
-                  settings.heroVideoUrl && !heroVideoFailed
-                    ? "opacity-0"
-                    : "opacity-100"
-                }`}
-                aria-hidden={settings.heroVideoUrl ? true : undefined}
-              >
-                {settings.heroLogoLightUrl || settings.heroLogoDarkUrl ? (
-                  <>
-                    {settings.heroLogoLightUrl && (
-                      <img
-                        src={settings.heroLogoLightUrl}
-                        alt={HERO_TITLE_FIXED}
-                        className="block dark:hidden max-h-24 w-auto object-contain mix-blend-multiply"
-                      />
-                    )}
-                    {settings.heroLogoDarkUrl && (
-                      <img
-                        src={settings.heroLogoDarkUrl}
-                        alt={HERO_TITLE_FIXED}
-                        className="hidden dark:block max-h-24 w-auto object-contain mix-blend-screen"
-                      />
-                    )}
-                  </>
-                ) : (
-                  <span className="font-display font-bold uppercase tracking-widest text-foreground text-center">
-                    {HERO_TITLE_FIXED}
-                  </span>
-                )}
-              </div>
+              {/* No logo fallback here: the box stays neutral and the video
+                  fades in as soon as its first frame is ready. */}
               {settings.heroVideoUrl && (
                 <video
                   key={settings.heroVideoUrl}
@@ -291,12 +259,12 @@ function Index() {
                   playsInline
                   preload="auto"
                   onLoadedData={() => setHeroVideoReady(true)}
-                  onError={() => setHeroVideoFailed(true)}
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
                     heroVideoReady ? "opacity-100" : "opacity-0"
                   }`}
                 />
               )}
+
             </div>
 
           </div>
