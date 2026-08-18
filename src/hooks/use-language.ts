@@ -37,7 +37,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (next !== "it" && !warmedLanguages.has(next)) {
       warmedLanguages.add(next);
       void import("@/lib/translate-warmup.functions")
-        .then((m) => m.warmupTranslations({ data: { target: next } }))
+        .then(async (m) => {
+          // Each call handles a bounded slice, so resume until nothing is left.
+          for (let pass = 0; pass < 12; pass++) {
+            const res = await m.warmupTranslations({ data: { target: next } });
+            if (!res || res.done || res.remaining === 0) break;
+          }
+        })
         .catch(() => warmedLanguages.delete(next));
     }
   }, []);
