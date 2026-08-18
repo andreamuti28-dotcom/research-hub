@@ -160,25 +160,25 @@ function Index() {
     setSub(g === "featured" ? "publications" : settings.homeMarketEnabled ? "markets" : "news");
   };
   const featuredSubTabs = [
-    { key: "publications" as const, label: lang === "en" ? "Publications" : "Pubblicazioni" },
-    { key: "dashboards" as const, label: "Dashboard" },
+    { key: "publications" as const, label: t("home.sub.papers") },
+    { key: "dashboards" as const, label: t("home.sub.dashboards") },
   ] as const;
   const liveSubTabs = [
     ...(settings.homeMarketEnabled
       ? [
           {
             key: "markets" as const,
-            label: lang === "en" ? "Financial markets" : "Mercati finanziari",
+            label: t("home.sub.markets"),
           },
         ]
       : []),
-    { key: "news" as const, label: lang === "en" ? "Financial news" : "News finanziarie" },
+    { key: "news" as const, label: t("home.sub.news") },
   ] as const;
 
 
-  const dashboardsLabel = lang === "en" ? "Interactive Dashboards" : "Dashboard Interattive";
-  const dashboardsBadge = lang === "en" ? "Interactive" : "Interattiva";
-  const dashboardsOpenLabel = lang === "en" ? "Open dashboard" : "Apri dashboard";
+  const dashboardsLabel = t("archive.tab.dashboards");
+  const dashboardsBadge = t("dashboard.badge");
+  const dashboardsOpenLabel = t("dashboard.open");
   const routableDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
   const selectedDashboards = settings.featuredDashboardIds
     .map((id) => routableDashboards.find((d) => d.id === id))
