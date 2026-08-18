@@ -104,7 +104,7 @@ function Index() {
   const queryClient = useQueryClient();
   const t = useT();
   const { lang } = useLanguage();
-  const dateLocale = lang === "en" ? "en-GB" : "it-IT";
+  const dateLocale = t("common.monthLocale");
   // Always format the raw Italian Google Doc into markdown first, regardless
   // of the current UI language. This way EN translation receives already-
   // structured markdown (headings, lists, blank lines) instead of a wall of
