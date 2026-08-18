@@ -32,6 +32,7 @@ const dashboardsQuery = {
 };
 
 export const Route = createFileRoute("/archivio")({
+  validateSearch: archiveSearchSchema,
   head: () => ({
     meta: [
       { title: "Archivio paper e report finanziari — Andrea Muti" },
