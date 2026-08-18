@@ -5,7 +5,7 @@ import { translateBatch } from "@/lib/translate.functions";
 
 const SOURCE = "it" as const;
 const CLIENT_TRANSLATION_CHUNK_SIZE = 50;
-const TRANSLATION_QUERY_VERSION = "v4";
+const TRANSLATION_QUERY_VERSION = "v5";
 
 type TranslationResult = {
   translations: string[];
@@ -22,9 +22,16 @@ function cacheKey(target: string, texts: string[]) {
   return `tr:${TRANSLATION_QUERY_VERSION}:${target}:${hash(texts.join("\u0001"))}`;
 }
 
-function unwrapTranslations(results: TranslationResult[], fallbackMessage: string) {
-  if (results.some((r) => r.fallback)) throw new Error(fallbackMessage);
-  return results.flatMap((r) => r.translations);
+/**
+ * Never throw on a partial failure: returning the texts we did manage to
+ * translate keeps the rest of the page localized instead of reverting the
+ * whole batch (hero, labels, dashboards) back to Italian.
+ */
+function unwrapTranslations(results: TranslationResult[]) {
+  return {
+    translations: results.flatMap((r) => r.translations),
+    fallback: results.some((r) => r.fallback),
+  };
 }
 
 /**
@@ -47,15 +54,16 @@ export function useTranslated(texts: string[]): string[] {
       const results = await Promise.all(
         chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
       );
-      return unwrapTranslations(results, "Translation temporarily unavailable");
+      return unwrapTranslations(results);
     },
     enabled: needsTranslation,
-    staleTime: Infinity,
+    // Retry partial failures on the next mount instead of caching them forever.
+    staleTime: ({ state }) => (state.data?.fallback ? 0 : Infinity),
     gcTime: Infinity,
   });
 
   if (!needsTranslation) return texts;
-  return data ?? texts;
+  return data?.translations ?? texts;
 }
 
 /**
@@ -79,13 +87,13 @@ export function useTranslatedAlways(texts: string[]): string[] {
       const results = await Promise.all(
         chunks.map((c) => callFn({ data: { texts: c, target: lang } })),
       );
-      return unwrapTranslations(results, "Automatic translation temporarily unavailable");
+      return unwrapTranslations(results);
     },
     enabled: hasContent,
-    staleTime: Infinity,
+    staleTime: ({ state }) => (state.data?.fallback ? 0 : Infinity),
     gcTime: Infinity,
   });
 
   if (!hasContent) return texts;
-  return data ?? texts;
+  return data?.translations ?? texts;
 }
