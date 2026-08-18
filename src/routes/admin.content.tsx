@@ -78,7 +78,7 @@ function AdminContent() {
   const updateFn = useServerFn(updateSiteOverrides);
 
   // Editable state, seeded from current settings
-  const [i18n, setI18n] = useState<Record<string, { it?: string; en?: string }>>(
+  const [i18n, setI18n] = useState<Record<string, Partial<Record<Lang, string>>>>(
     () => ({ ...(settings.i18nOverrides ?? {}) }),
   );
   const [theme, setTheme] = useState<Record<string, string>>(
