@@ -264,13 +264,20 @@ async function translateChunk(
 
   await aiRetry(failed);
 
-  // Final guard: anything still in the source script goes back through the AI
-  // one item at a time, so a single stubborn abstract can't stay untranslated.
+  // Final guard: anything still in the source script — or returned verbatim by
+  // the provider (Google sometimes misdetects the source and echoes it back) —
+  // goes through the AI, so a single stubborn abstract can't stay untranslated.
   const stillUntranslated = out
-    .map((text, i) => (text.trim() && looksUntranslated(text, target) ? i : -1))
+    .map((text, i) => {
+      if (!text.trim()) return -1;
+      if (looksUntranslated(text, target)) return i;
+      const src = texts[i] ?? "";
+      const echoed = text.trim() === src.trim() && src.trim().split(/\s+/).length >= 4;
+      return echoed ? i : -1;
+    })
     .filter((i) => i >= 0);
-  for (const idx of stillUntranslated) {
-    await aiRetry([idx]);
+  if (stillUntranslated.length > 0) {
+    await aiRetry(stillUntranslated);
   }
 
   return degraded ? { translations: out, fallback: true } : { translations: out };

@@ -1,6 +1,7 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { parseContent } from "@/lib/paper-reading";
 import { translateTexts } from "@/lib/translate.functions";
+import { readCachedTranslations } from "@/lib/translation-cache.server";
 import type { Lang } from "@/hooks/use-language";
 
 const BATCH = 40;
@@ -69,16 +70,41 @@ function collectStrings(value: unknown, out: string[], depth = 0) {
   }
 }
 
-/** Translate everything into `target`, filling the persistent cache. */
+/** Max texts handled per warmup call, so a single request stays short-lived. */
+const SLICE = 160;
+/** Batches translated in parallel inside one call. */
+const CONCURRENCY = 4;
+
+/**
+ * Translate everything into `target`, filling the persistent cache.
+ * Already-cached texts are skipped, and the remaining work is capped per call
+ * so the client can resume instead of holding one long, abortable request.
+ */
 export async function warmupLanguage(target: Lang, apiKey: string) {
-  if (target === "it") return { total: 0 };
+  if (target === "it") return { total: 0, remaining: 0, done: true };
+
   const texts = await collectSiteTexts();
-  for (let i = 0; i < texts.length; i += BATCH) {
-    try {
-      await translateTexts(texts.slice(i, i + BATCH), target, apiKey);
-    } catch (err) {
-      console.error("Warmup batch failed:", err);
-    }
-  }
-  return { total: texts.length };
+  const cached = await readCachedTranslations(texts, target);
+  const pending = texts.filter((t) => !cached.has(t));
+  const slice = pending.slice(0, SLICE);
+
+  const batches: string[][] = [];
+  for (let i = 0; i < slice.length; i += BATCH) batches.push(slice.slice(i, i + BATCH));
+
+  let cursor = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENCY, batches.length) }, async () => {
+      while (cursor < batches.length) {
+        const batch = batches[cursor++];
+        try {
+          await translateTexts(batch, target, apiKey);
+        } catch (err) {
+          console.error("Warmup batch failed:", err);
+        }
+      }
+    }),
+  );
+
+  const remaining = Math.max(pending.length - slice.length, 0);
+  return { total: texts.length, remaining, done: remaining === 0 };
 }
