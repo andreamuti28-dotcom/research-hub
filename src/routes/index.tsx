@@ -546,10 +546,20 @@ function Index() {
               {t("home.empty")}
             </div>
           ) : (
-            <div className="space-y-px bg-border border border-border">
-              {latest.map((p) => (
-                <PaperRow key={p.id} paper={p} />
-              ))}
+            <div>
+              <div className="space-y-px bg-border border border-border">
+                {latest.map((p) => (
+                  <PaperRow key={p.id} paper={p} />
+                ))}
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Link
+                  to="/archivio"
+                  className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
+                >
+                  {t("home.seeArchive")}
+                </Link>
+              </div>
             </div>
           )}
         </div>
