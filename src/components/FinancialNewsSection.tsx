@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { getLatestNews, type NewsItem } from "@/lib/news.functions";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useT } from "@/lib/i18n";
-import { useTranslatedAlways } from "@/hooks/use-translated";
+import { useTranslatedLive } from "@/hooks/use-translated";
 
 const COUNTDOWN_MS = 5000;
 
@@ -45,7 +45,7 @@ export function FinancialNewsSection({ embedded = false }: { embedded?: boolean 
     }
     return arr;
   }, [items]);
-  const translated = useTranslatedAlways(translatable);
+  const translated = useTranslatedLive(translatable, { force: true });
 
   // Countdown bar on expand
   const [countdown, setCountdown] = useState(0); // 0 -> 100
