@@ -532,21 +532,13 @@ function Index() {
 
       <section className="border-t border-border bg-surface py-20 md:py-24">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-16 gap-6">
-            <div>
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-                {t("home.latestKicker")}
-              </div>
-              <h2 className="text-3xl font-display font-bold tracking-tighter">
-                {t("home.latestTitle")}
-              </h2>
+          <div className="mb-12 md:mb-16">
+            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+              {t("home.latestKicker")}
             </div>
-            <Link
-              to="/archivio"
-              className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all self-start md:self-auto"
-            >
-              {t("home.seeArchive")}
-            </Link>
+            <h2 className="text-3xl font-display font-bold tracking-tighter">
+              {t("home.latestTitle")}
+            </h2>
           </div>
 
           {latest.length === 0 ? (
