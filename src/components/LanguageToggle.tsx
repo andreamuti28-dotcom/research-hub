@@ -36,8 +36,8 @@ export function LanguageToggle() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label={t("langToggle.label", LANG_LABELS[lang], t("lang.next"))}
-        title={t("langToggle.label", LANG_LABELS[lang], t("lang.next"))}
+        aria-label={t("langToggle.label", LANG_LABELS[lang], LANG_LABELS[lang])}
+        title={t("langToggle.label", LANG_LABELS[lang], LANG_LABELS[lang])}
         className="inline-flex items-center justify-center gap-1.5 w-auto px-2 h-8 rounded-xs border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
       >
         <LanguageFlags language={lang} className="w-5 h-auto" />
