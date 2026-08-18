@@ -185,6 +185,7 @@ function Index() {
   const visibleDashboards = (
     selectedDashboards.length > 0 ? selectedDashboards : routableDashboards
   ).slice(0, 3);
+  const visibleDashboardLabels = useDashboardLabels(visibleDashboards);
 
   useEffect(() => {
     const channel = supabase
