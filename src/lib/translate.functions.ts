@@ -29,15 +29,18 @@ export const translateLiveBatch = createServerFn({ method: "POST" })
     z.object({
       texts: z.array(z.string().max(50000)).min(1).max(120),
       target: z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
+      force: z.boolean().optional(),
     }).parse(input),
   )
   .handler(async ({ data }) => {
-    if (data.target === "it") return { translations: data.texts };
+    if (data.target === "it" && !data.force) return { translations: data.texts };
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) return { translations: data.texts };
     try {
       const { translateTexts } = await import("@/lib/translate.server");
-      const result = await translateTexts(data.texts, data.target, apiKey);
+      const result = await translateTexts(data.texts, data.target, apiKey, {
+        force: data.force === true,
+      });
       return { translations: result.translations };
     } catch (err) {
       console.error("Live translation failed:", err);

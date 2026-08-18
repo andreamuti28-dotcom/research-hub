@@ -284,8 +284,9 @@ export async function translateTexts(
   texts: string[],
   target: Lang,
   apiKey: string,
+  opts: { force?: boolean } = {},
 ): Promise<TranslateResult> {
-  if (target === "it") return { translations: texts };
+  if (target === "it" && !opts.force) return { translations: texts };
 
   const nonEmpty = texts.filter((t) => t.trim().length > 0);
   const unique = Array.from(new Set(nonEmpty));

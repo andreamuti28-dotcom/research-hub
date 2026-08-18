@@ -107,12 +107,13 @@ export function useTranslatedAlways(texts: string[]): string[] {
  * not cover: the market report and the financial news feed. Falls back to the
  * originals while loading or on failure.
  */
-export function useTranslatedLive(texts: string[]): string[] {
+export function useTranslatedLive(texts: string[], options: { force?: boolean } = {}): string[] {
   const { lang } = useLanguage();
   const callFn = useServerFn(translateLiveBatch);
+  const force = options.force === true;
   const hasContent = texts.some((t) => t.trim().length > 0);
-  const needs = lang !== SOURCE && hasContent;
-  const key = `live:${cacheKey(lang, texts)}`;
+  const needs = hasContent && (force || lang !== SOURCE);
+  const key = `live:${force ? "f:" : ""}${cacheKey(lang, texts)}`;
 
   const { data } = useQuery({
     queryKey: ["translate-live", key],
@@ -123,7 +124,7 @@ export function useTranslatedLive(texts: string[]): string[] {
       }
       const results: string[][] = [];
       for (const c of chunks) {
-        const r = await callFn({ data: { texts: c, target: lang } });
+        const r = await callFn({ data: { texts: c, target: lang, force } });
         results.push(r.translations);
       }
       return results.flat();
