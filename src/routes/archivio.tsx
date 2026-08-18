@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useT } from "@/lib/i18n";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { useTranslated } from "@/hooks/use-translated";
+import { useDashboardLabels } from "@/hooks/use-dashboard-labels";
 import { useLanguage } from "@/hooks/use-language";
 import { Link } from "@tanstack/react-router";
 import { listPublishedDashboards } from "@/lib/dashboards.functions";
