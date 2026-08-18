@@ -1,6 +1,15 @@
 import { createContext, createElement, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type Lang = "it" | "en";
+export const LANGUAGES = ["it", "en", "es", "de", "zh", "ru", "ar"] as const;
+export type Lang = (typeof LANGUAGES)[number];
+export type LangDir = "ltr" | "rtl";
+
+const RTL_LANGUAGES: Lang[] = ["ar"];
+
+export function langDir(lang: Lang): LangDir {
+  return RTL_LANGUAGES.includes(lang) ? "rtl" : "ltr";
+}
+
 type LanguageContextValue = {
   lang: Lang;
   setLang: (next: Lang) => void;
@@ -14,6 +23,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    document.documentElement.dir = langDir(lang);
   }, [lang]);
 
   const setLang = useCallback((next: Lang) => {
@@ -36,6 +46,7 @@ export function useLanguage() {
 export const langBootstrapScript = `
 (function(){try{
   document.documentElement.lang = 'it';
+  document.documentElement.dir = 'ltr';
   try { localStorage.removeItem('lang'); } catch(_){}
 }catch(e){}})();
 `;
