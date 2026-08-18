@@ -149,6 +149,8 @@ function Index() {
     settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase()
       ? HOME_MARKET_LABEL_EN
       : marketLabel;
+  const [heroVideoReady, setHeroVideoReady] = useState(false);
+  const [heroVideoFailed, setHeroVideoFailed] = useState(false);
   const [group, setGroupState] = useState<"featured" | "live">("featured");
   const [sub, setSub] = useState<"publications" | "dashboards" | "markets" | "news">(
     "publications",
@@ -245,9 +247,17 @@ function Index() {
         <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-stretch">
           <div className="md:col-span-7">
             <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
-              {/* Fallback layer: never leave an empty grey box while the video
-                  loads, fails, or has not been set from the admin area. */}
-              <div className="absolute inset-0 flex items-center justify-center px-6">
+              {/* Fallback layer: shown only when no video is configured or the
+                  video fails. It fades out as soon as the first frame is ready,
+                  so no logo flash appears on load. */}
+              <div
+                className={`absolute inset-0 flex items-center justify-center px-6 transition-opacity duration-500 ${
+                  settings.heroVideoUrl && !heroVideoFailed
+                    ? "opacity-0"
+                    : "opacity-100"
+                }`}
+                aria-hidden={settings.heroVideoUrl ? true : undefined}
+              >
                 {settings.heroLogoLightUrl || settings.heroLogoDarkUrl ? (
                   <>
                     {settings.heroLogoLightUrl && (
@@ -275,16 +285,20 @@ function Index() {
                 <video
                   key={settings.heroVideoUrl}
                   src={settings.heroVideoUrl}
-                  poster={settings.heroLogoLightUrl || undefined}
                   autoPlay
                   loop
                   muted
                   playsInline
-                  preload="metadata"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  preload="auto"
+                  onLoadedData={() => setHeroVideoReady(true)}
+                  onError={() => setHeroVideoFailed(true)}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+                    heroVideoReady ? "opacity-100" : "opacity-0"
+                  }`}
                 />
               )}
             </div>
+
           </div>
           <div className="md:col-span-5 flex flex-col h-full md:pl-6 md:border-l md:border-border md:pt-2">
             <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4">
