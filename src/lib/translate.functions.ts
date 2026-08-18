@@ -89,7 +89,7 @@ async function translateWithAi(
   target: Lang,
   apiKey: string,
 ): Promise<TranslateResult> {
-  const targetName = target === "en" ? "English" : "Italian";
+  const targetName = TARGET_NAMES[target];
 
   const numbered = texts.map((t, i) => `[[${i}]]\n${t}`).join("\n\n[[END]]\n\n");
 
