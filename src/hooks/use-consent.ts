@@ -18,12 +18,21 @@ const DEFAULT: ConsentState = {
   prefs: { necessary: true, statistics: false },
 };
 
+const MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000; // 12 mesi, come da cookie policy
+
 function read(): ConsentState {
   if (typeof window === "undefined") return DEFAULT;
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return DEFAULT;
     const parsed = JSON.parse(raw);
+    // Consideriamo valida solo una scelta esplicita e non scaduta.
+    const explicit = parsed?.decision === "accept" || parsed?.decision === "reject" || parsed?.decision === "custom";
+    const ts = typeof parsed?.ts === "number" ? parsed.ts : 0;
+    if (!explicit || !ts || Date.now() - ts > MAX_AGE_MS) {
+      window.localStorage.removeItem(KEY);
+      return DEFAULT;
+    }
     return {
       decided: true,
       prefs: {
@@ -36,10 +45,10 @@ function read(): ConsentState {
   }
 }
 
-function write(prefs: ConsentPrefs) {
+function write(prefs: ConsentPrefs, decision: "accept" | "reject" | "custom") {
   window.localStorage.setItem(
     KEY,
-    JSON.stringify({ prefs, ts: Date.now() }),
+    JSON.stringify({ prefs, decision, ts: Date.now() }),
   );
   window.dispatchEvent(new Event(EVENT));
 }
@@ -55,13 +64,13 @@ export function useConsent() {
   }, []);
 
   const acceptAll = useCallback(() => {
-    write({ necessary: true, statistics: true });
+    write({ necessary: true, statistics: true }, "accept");
   }, []);
   const rejectAll = useCallback(() => {
-    write({ necessary: true, statistics: false });
+    write({ necessary: true, statistics: false }, "reject");
   }, []);
   const savePrefs = useCallback((p: Partial<ConsentPrefs>) => {
-    write({ necessary: true, statistics: !!p.statistics });
+    write({ necessary: true, statistics: !!p.statistics }, "custom");
   }, []);
   const reopen = useCallback(() => {
     window.localStorage.removeItem(KEY);
