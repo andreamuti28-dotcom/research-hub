@@ -17,6 +17,9 @@ type LanguageContextValue = {
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
+// Languages already pre-translated in this session.
+const warmedLanguages = new Set<Lang>();
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
   // Always default to Italian on every load. No persistence, no browser detection.
   const [lang, setLangState] = useState<Lang>("it");
@@ -28,7 +31,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLang = useCallback((next: Lang) => {
     setLangState(next);
+    // Fire-and-forget: pre-translate the whole site into the chosen language so
+    // every page is served from the translation cache instead of translating
+    // on demand, page by page.
+    if (next !== "it" && !warmedLanguages.has(next)) {
+      warmedLanguages.add(next);
+      void import("@/lib/translate-warmup.functions")
+        .then((m) => m.warmupTranslations({ data: { target: next } }))
+        .catch(() => warmedLanguages.delete(next));
+    }
   }, []);
+
 
   const value = useMemo(() => ({ lang, setLang }), [lang, setLang]);
 
