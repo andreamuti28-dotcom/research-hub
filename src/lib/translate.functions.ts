@@ -1,10 +1,21 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import type { Lang } from "@/hooks/use-language";
 
 const MAX_TRANSLATION_TEXTS = 300;
 const MAX_TEXT_CHARS = 50000;
 const SERVER_CHUNK_SIZE = 30;
 const FALLBACK_CHUNK_CHARS = 3500;
+
+const TARGET_NAMES: Record<Lang, string> = {
+  it: "Italian",
+  en: "English",
+  es: "Spanish",
+  de: "German",
+  zh: "Chinese (Simplified)",
+  ru: "Russian",
+  ar: "Arabic",
+};
 
 type TranslateResult = {
   translations: string[];
