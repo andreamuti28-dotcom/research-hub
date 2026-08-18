@@ -236,25 +236,8 @@ function AdminSettingsPage() {
     },
   });
 
-  if (adminQuery.isLoading) {
-    return (
-      <AdminShell title="Caricamento…">
-        <div className="font-mono text-xs text-surface-dark-foreground/60">
-          Verifica accesso…
-        </div>
-      </AdminShell>
-    );
-  }
 
-  if (!adminQuery.data?.isAdmin) {
-    return (
-      <AdminShell title="Accesso non autorizzato">
-        <p className="text-surface-dark-foreground/70">
-          Solo gli admin possono modificare il sito.
-        </p>
-      </AdminShell>
-    );
-  }
+
 
   if (!form) {
     return (
