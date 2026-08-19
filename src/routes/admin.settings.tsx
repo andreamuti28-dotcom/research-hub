@@ -1477,6 +1477,7 @@ function EducationEditor({
       <div className="space-y-4">
         {items.map((it, i) => (
           <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <ReorderBar items={items} index={i} onChange={onChange} />
             <div className="grid grid-cols-[64px_1fr_1fr_auto_auto] gap-2 items-center">
               <div className="w-16 h-16 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
                 {it.logoUrl ? (
