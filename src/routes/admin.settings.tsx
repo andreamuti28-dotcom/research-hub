@@ -1360,6 +1360,64 @@ function ColorField({ value, onChange }: { value: string; onChange: (v: string) 
   );
 }
 
+function moveItem<T>(items: T[], from: number, to: number): T[] {
+  if (to < 0 || to >= items.length || from === to) return items;
+  const next = [...items];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
+  return next;
+}
+
+function ReorderBar<T>({
+  items,
+  index,
+  onChange,
+}: {
+  items: T[];
+  index: number;
+  onChange: (next: T[]) => void;
+}) {
+  const btn =
+    "px-2 py-1 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display disabled:opacity-30 hover:border-background hover:text-background";
+  return (
+    <div className="flex items-center gap-2">
+      <span className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/50">
+        Posizione
+      </span>
+      <select
+        value={index}
+        onChange={(e) => onChange(moveItem(items, index, Number(e.target.value)))}
+        className="bg-transparent border border-surface-dark-muted px-2 py-1 font-mono text-[11px]"
+        aria-label="Posizione nella lista"
+      >
+        {items.map((_, n) => (
+          <option key={n} value={n} className="text-black">
+            {n + 1}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        className={btn}
+        disabled={index === 0}
+        onClick={() => onChange(moveItem(items, index, index - 1))}
+        aria-label="Sposta su"
+      >
+        ↑
+      </button>
+      <button
+        type="button"
+        className={btn}
+        disabled={index === items.length - 1}
+        onClick={() => onChange(moveItem(items, index, index + 1))}
+        aria-label="Sposta giù"
+      >
+        ↓
+      </button>
+    </div>
+  );
+}
+
 function EducationEditor({
   items,
   onChange,
@@ -1419,6 +1477,7 @@ function EducationEditor({
       <div className="space-y-4">
         {items.map((it, i) => (
           <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <ReorderBar items={items} index={i} onChange={onChange} />
             <div className="grid grid-cols-[64px_1fr_1fr_auto_auto] gap-2 items-center">
               <div className="w-16 h-16 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
                 {it.logoUrl ? (
@@ -1565,6 +1624,7 @@ function LanguageEditor({
       <div className="space-y-4">
         {items.map((it, i) => (
           <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <ReorderBar items={items} index={i} onChange={onChange} />
             <div className="grid grid-cols-[80px_72px_1fr_110px_auto] gap-2 items-center">
               <div className="w-20 h-12 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
                 {it.flagUrl ? (
@@ -1748,6 +1808,7 @@ function LogoListEditor({
       <div className="space-y-4">
         {items.map((it, i) => (
           <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <ReorderBar items={items} index={i} onChange={onChange} />
             <div className="grid grid-cols-[64px_1fr_auto_auto] gap-2 items-center">
               <div className="w-16 h-16 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
                 {it.logoUrl ? (
