@@ -1623,6 +1623,7 @@ function LanguageEditor({
       <div className="space-y-4">
         {items.map((it, i) => (
           <div key={i} className="border border-surface-dark-muted/50 rounded-sm p-3 space-y-2">
+            <ReorderBar items={items} index={i} onChange={onChange} />
             <div className="grid grid-cols-[80px_72px_1fr_110px_auto] gap-2 items-center">
               <div className="w-20 h-12 bg-white rounded-sm border border-neutral-300 flex items-center justify-center overflow-hidden">
                 {it.flagUrl ? (
