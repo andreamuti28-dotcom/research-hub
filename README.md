@@ -7,7 +7,7 @@ Sito personale di ricerca: paper, dashboard interattive, report di mercato e new
 | Pezzo | Dove | Note |
 | --- | --- | --- |
 | Codice | GitHub `andreamuti28-dotcom/research-hub` | Branch `main` = produzione |
-| Hosting | Cloudflare Workers, Worker `research-hub` | Deploy automatico a ogni push su `main` (Workers Builds) |
+| Hosting | Cloudflare Workers, Worker `research-hub` | Deploy automatico a ogni push su `main` (Workers Builds). Ogni altro branch genera un'anteprima su `<branch>-research-hub.andrea-muti28.workers.dev` |
 | Dominio | `www.andreamuti.com` (canonico), `andreamuti.com` → 301 su www | DNS su Cloudflare |
 | Database, login, file | Supabase, progetto `uxuxazeboaxcwxtkeiyj` (eu-central-1) | Tabelle con RLS, bucket pubblici `papers` e `site-assets` |
 | Job pianificati | `pg_cron` in Supabase | `papers-auto-publish` ogni 5 minuti, `market-sync-hourly` al minuto 5 di ogni ora |

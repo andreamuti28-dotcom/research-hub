@@ -10,6 +10,10 @@
     { "pattern": "www.andreamuti.com", "custom_domain": true },
     { "pattern": "andreamuti.com", "custom_domain": true }
   ],
+  // No public copy on workers.dev, but every non-main branch still gets its
+  // own preview URL for testing before merging.
+  "workers_dev": false,
+  "preview_urls": true,
   // Public configuration. Secrets (SUPABASE_SERVICE_ROLE_KEY,
   // MARKET_REPORTS_WEBHOOK_SECRET, GEMINI_API_KEY) are set on the Worker in the
   // Cloudflare dashboard and are never committed.
