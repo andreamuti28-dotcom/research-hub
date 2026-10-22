@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import portrait from "@/assets/portrait.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -23,12 +23,12 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Chi sono: formazione, lingue, software & AI e certificazioni di Andrea Muti, ricercatore indipendente in finanza e mercati.",
+          "Chi sono: formazione, lingue e certificazioni di Andrea Muti, ricercatore indipendente in finanza e mercati.",
       },
       { property: "og:title", content: "Dott. Andrea Muti" },
       {
         property: "og:description",
-        content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
+        content: "Formazione, lingue e certificazioni di Andrea Muti.",
       },
       { property: "og:url", content: "https://www.andreamuti.com/about" },
       { property: "og:type", content: "profile" },
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/about")({
       { name: "twitter:title", content: "Dott. Andrea Muti" },
       {
         name: "twitter:description",
-        content: "Formazione, lingue, software e certificazioni di Andrea Muti.",
+        content: "Formazione, lingue e certificazioni di Andrea Muti.",
       },
       ...ogImageMeta(),
     ],
@@ -54,14 +54,40 @@ const EMOJI_FONT =
 // clickable links that open in a new tab.
 const LINK_RE = /(https?:\/\/[^\s]+[^\s.,;:!?)]|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:org|com|net|io|it|eu|ch|dev|app)\b(?:\/[^\s]*[^\s.,;:!?)])?)/gi;
 
+// Also supports [testo](https://...) to link a word to an address.
+const MD_LINK_RE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+
 function withLinks(text: string) {
+  const out: ReactNode[] = [];
+  let last = 0;
+  let k = 0;
+  for (const m of text.matchAll(MD_LINK_RE)) {
+    out.push(...bareLinks(text.slice(last, m.index), k++));
+    out.push(
+      <a
+        key={`md-${k++}`}
+        href={m[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline underline-offset-4 decoration-1 hover:text-primary"
+      >
+        {m[1]}
+      </a>,
+    );
+    last = (m.index ?? 0) + m[0].length;
+  }
+  out.push(...bareLinks(text.slice(last), k++));
+  return out;
+}
+
+function bareLinks(text: string, group: number): ReactNode[] {
   const parts = text.split(LINK_RE);
   return parts.map((part, i) => {
     if (i % 2 === 0) return part;
     const href = /^https?:\/\//i.test(part) ? part : `https://${part}`;
     return (
       <a
-        key={i}
+        key={`${group}-${i}`}
         href={href}
         target="_blank"
         rel="noopener noreferrer"
@@ -179,7 +205,7 @@ function AboutPage() {
           className="py-16 md:py-24"
           style={{ backgroundColor: settings.aboutPanelBg, color: settings.aboutPanelFg }}
         >
-          <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-10">
+          <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-10">
             <PanelColumn title={eduLabel} fg={settings.aboutPanelFg}>
               <ul className="space-y-5">
                 {trEducation.map((e, i) => (
@@ -233,19 +259,6 @@ function AboutPage() {
               </ul>
             </PanelColumn>
 
-            <PanelColumn title={softLabel} fg={settings.aboutPanelFg}>
-              <ul className="space-y-4">
-                {trSoftware.map((s, i) => (
-                  <TooltipItem key={i} description={s.description} settings={settings}>
-                    <LogoRow item={s} maxWidth={settings.aboutLogoMaxWidth} />
-                  </TooltipItem>
-                ))}
-                {settings.aboutSoftware.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
-                )}
-              </ul>
-            </PanelColumn>
-
             <PanelColumn title={certLabel} fg={settings.aboutPanelFg}>
               <ul className="space-y-4">
                 {trCertifications.map((c, i) => (
@@ -274,7 +287,7 @@ function PanelColumn({
 }: {
   title: string;
   fg: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div>
@@ -292,7 +305,7 @@ function TooltipItem({
 }: {
   description: string;
   settings: SiteSettings;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   if (!description || !description.trim()) {
     return <li>{children}</li>;
