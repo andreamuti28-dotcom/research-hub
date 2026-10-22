@@ -1,207 +1,11 @@
-// Server-only helper: fetch a Google Doc through the Lovable connector gateway
-// and convert its JSON body into Markdown that the existing ReactMarkdown
-// renderer can display with the same styling as archived reports.
+// Server-only helper: read the daily market report from a Google Doc.
+//
+// The document must be shared as "Anyone with the link can view": the site
+// then downloads it through Google's public export endpoint, with no OAuth
+// app, connector or API key to maintain. The report is published on the site
+// anyway, so link sharing does not expose anything new.
 
-const GATEWAY_URL = "https://connector-gateway.lovable.dev/google_docs/v1";
-
-type GDocTextStyle = {
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
-  strikethrough?: boolean;
-  link?: { url?: string };
-};
-
-type GDocTextRun = { content?: string; textStyle?: GDocTextStyle };
-
-type GDocParagraphElement = {
-  textRun?: GDocTextRun;
-  inlineObjectElement?: { inlineObjectId?: string };
-};
-
-type GDocParagraph = {
-  elements?: GDocParagraphElement[];
-  paragraphStyle?: {
-    namedStyleType?: string;
-    alignment?: string;
-  };
-  bullet?: { nestingLevel?: number; listId?: string };
-};
-
-type GDocTableCell = { content?: GDocStructuralElement[] };
-type GDocTableRow = { tableCells?: GDocTableCell[] };
-type GDocTable = { tableRows?: GDocTableRow[] };
-
-type GDocStructuralElement = {
-  paragraph?: GDocParagraph;
-  table?: GDocTable;
-  sectionBreak?: unknown;
-};
-
-type GDoc = {
-  title?: string;
-  documentId?: string;
-  body?: { content?: GDocStructuralElement[] };
-};
-
-function escapeMd(s: string): string {
-  // Light escape — avoid breaking markdown but keep the prose intact.
-  return s.replace(/([\\`*_{}\[\]])/g, "\\$1");
-}
-
-function renderTextRun(run: GDocTextRun): string {
-  let text = run.content ?? "";
-  if (!text) return "";
-  // Strip a single trailing newline; paragraph breaks are inserted by the
-  // paragraph walker, not by the text run itself.
-  const hadTrailingNewline = text.endsWith("\n");
-  if (hadTrailingNewline) text = text.slice(0, -1);
-  if (!text) return hadTrailingNewline ? "" : "";
-
-  const style = run.textStyle ?? {};
-  const leading = text.match(/^\s*/)?.[0] ?? "";
-  const trailing = text.match(/\s*$/)?.[0] ?? "";
-  const core = text.slice(leading.length, text.length - trailing.length);
-
-  if (!core) return text;
-
-  let out = escapeMd(core);
-  if (style.bold) out = `**${out}**`;
-  if (style.italic) out = `*${out}*`;
-  if (style.strikethrough) out = `~~${out}~~`;
-  if (style.link?.url) out = `[${out}](${style.link.url})`;
-
-  return `${leading}${out}${trailing}`;
-}
-
-function renderParagraphInline(elements: GDocParagraphElement[]): string {
-  let out = "";
-  for (const el of elements) {
-    if (el.textRun) out += renderTextRun(el.textRun);
-    // inline images intentionally omitted (Docs returns transient URIs)
-  }
-  return out;
-}
-
-function renderParagraph(p: GDocParagraph): string {
-  const inline = renderParagraphInline(p.elements ?? []).trim();
-  if (!inline) return "";
-
-  const style = p.paragraphStyle?.namedStyleType ?? "NORMAL_TEXT";
-  const bullet = p.bullet;
-
-  if (bullet) {
-    const indent = "  ".repeat(Math.max(0, bullet.nestingLevel ?? 0));
-    return `${indent}- ${inline}`;
-  }
-
-  switch (style) {
-    case "TITLE":
-      return `# ${inline}`;
-    case "SUBTITLE":
-      return `## ${inline}`;
-    case "HEADING_1":
-      return `## ${inline}`;
-    case "HEADING_2":
-      return `### ${inline}`;
-    case "HEADING_3":
-      return `#### ${inline}`;
-    case "HEADING_4":
-    case "HEADING_5":
-    case "HEADING_6":
-      return `##### ${inline}`;
-    default:
-      return inline;
-  }
-}
-
-function renderTable(t: GDocTable): string {
-  const rows = t.tableRows ?? [];
-  if (rows.length === 0) return "";
-  const cellText = (cell: GDocTableCell): string => {
-    const parts: string[] = [];
-    for (const el of cell.content ?? []) {
-      if (el.paragraph) {
-        const txt = renderParagraphInline(el.paragraph.elements ?? []).trim();
-        if (txt) parts.push(txt);
-      }
-    }
-    return parts.join(" ").replace(/\|/g, "\\|");
-  };
-  const lines: string[] = [];
-  rows.forEach((row, idx) => {
-    const cells = (row.tableCells ?? []).map(cellText);
-    lines.push(`| ${cells.join(" | ")} |`);
-    if (idx === 0) {
-      lines.push(`| ${cells.map(() => "---").join(" | ")} |`);
-    }
-  });
-  return lines.join("\n");
-}
-
-export function googleDocToMarkdown(doc: GDoc): string {
-  const blocks: string[] = [];
-  for (const el of doc.body?.content ?? []) {
-    if (el.paragraph) {
-      const rendered = renderParagraph(el.paragraph);
-      if (rendered) blocks.push(rendered);
-    } else if (el.table) {
-      const rendered = renderTable(el.table);
-      if (rendered) blocks.push(rendered);
-    }
-  }
-  // Merge consecutive bullet lines into the same block (no blank line between
-  // items), separate everything else by a blank line.
-  const out: string[] = [];
-  let prevWasBullet = false;
-  for (const b of blocks) {
-    const isBullet = /^\s*- /.test(b);
-    if (out.length === 0) {
-      out.push(b);
-    } else if (isBullet && prevWasBullet) {
-      out[out.length - 1] += `\n${b}`;
-    } else {
-      out.push(b);
-    }
-    prevWasBullet = isBullet;
-  }
-  return out.join("\n\n").trim();
-}
-
-function googleDocToPlainText(doc: GDoc): string {
-  const blocks: string[] = [];
-  const renderRun = (r: GDocTextRun): string => {
-    let t = r.content ?? "";
-    if (t.endsWith("\n")) t = t.slice(0, -1);
-    return t;
-  };
-  const renderPara = (p: GDocParagraph): string => {
-    const text = (p.elements ?? [])
-      .map((el) => (el.textRun ? renderRun(el.textRun) : ""))
-      .join("");
-    if (p.bullet) {
-      const indent = "  ".repeat(Math.max(0, p.bullet.nestingLevel ?? 0));
-      return `${indent}• ${text}`;
-    }
-    return text;
-  };
-  for (const el of doc.body?.content ?? []) {
-    if (el.paragraph) {
-      blocks.push(renderPara(el.paragraph));
-    } else if (el.table) {
-      for (const row of el.table.tableRows ?? []) {
-        const cells = (row.tableCells ?? []).map((c) =>
-          (c.content ?? [])
-            .map((sub) => (sub.paragraph ? renderPara(sub.paragraph) : ""))
-            .join(" ")
-            .trim(),
-        );
-        blocks.push(cells.join("\t"));
-      }
-    }
-  }
-  return blocks.join("\n").replace(/\n{3,}/g, "\n\n").trim();
-}
+const EXPORT_BASE = "https://docs.google.com/document/d";
 
 export type FetchedGoogleDoc = {
   documentId: string;
@@ -209,34 +13,74 @@ export type FetchedGoogleDoc = {
   text: string;
 };
 
-export async function fetchGoogleDocAsText(documentId: string): Promise<FetchedGoogleDoc> {
-  const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
-  if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY non configurato");
-  const GOOGLE_DOCS_API_KEY = process.env.GOOGLE_DOCS_API_KEY;
-  if (!GOOGLE_DOCS_API_KEY) throw new Error("GOOGLE_DOCS_API_KEY non configurato (collega Google Docs)");
+/** Accepts a bare document id or a full Google Docs URL. */
+export function extractDocumentId(input: string): string {
+  const trimmed = input.trim();
+  const fromUrl = trimmed.match(/\/document\/d\/([a-zA-Z0-9_-]{20,})/);
+  return fromUrl ? fromUrl[1] : trimmed;
+}
 
-  const cleanId = documentId.trim();
+/** Document title from `Content-Disposition: attachment; filename="..."`. */
+function titleFromDisposition(header: string | null): string | null {
+  if (!header) return null;
+  const star = header.match(/filename\*=UTF-8''([^;]+)/i);
+  const plain = header.match(/filename="([^"]+)"/i);
+  let name: string | null = null;
+  try {
+    name = star ? decodeURIComponent(star[1]) : plain ? plain[1] : null;
+  } catch {
+    name = plain ? plain[1] : null;
+  }
+  return name ? name.replace(/\.(md|txt)$/i, "").trim() || null : null;
+}
+
+async function exportDoc(id: string, format: "md" | "txt"): Promise<Response> {
+  return fetch(`${EXPORT_BASE}/${id}/export?format=${format}`, {
+    redirect: "follow",
+    headers: { Accept: "text/plain, text/markdown, */*" },
+  });
+}
+
+function normalize(text: string): string {
+  return text
+    .replace(/^﻿/, "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+export async function fetchGoogleDocAsText(documentId: string): Promise<FetchedGoogleDoc> {
+  const cleanId = extractDocumentId(documentId);
   if (!/^[a-zA-Z0-9_-]{20,}$/.test(cleanId)) {
     throw new Error("ID Google Doc non valido");
   }
 
-  const res = await fetch(`${GATEWAY_URL}/documents/${cleanId}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": GOOGLE_DOCS_API_KEY,
-      Accept: "application/json",
-    },
-  });
-  const body = await res.text();
-  if (!res.ok) {
-    throw new Error(`Google Docs API ${res.status}: ${body.slice(0, 500)}`);
+  // Markdown keeps headings, lists and tables; plain text is the fallback.
+  let res = await exportDoc(cleanId, "md");
+  if (!res.ok && res.status !== 401 && res.status !== 403 && res.status !== 404) {
+    res = await exportDoc(cleanId, "txt");
   }
-  const doc = JSON.parse(body) as GDoc;
+
+  if (res.status === 401 || res.status === 403) {
+    throw new Error(
+      "Il Google Doc non è accessibile: condividilo con \"Chiunque abbia il link\" in sola lettura.",
+    );
+  }
+  if (res.status === 404) throw new Error("Google Doc non trovato: controlla l'ID.");
+  if (!res.ok) throw new Error(`Esportazione Google Doc fallita (HTTP ${res.status}).`);
+
+  const contentType = res.headers.get("content-type") ?? "";
+  const body = await res.text();
+  // A private document can also answer 200 with Google's sign-in page.
+  if (contentType.includes("text/html") || /^\s*<!doctype html/i.test(body)) {
+    throw new Error(
+      "Il Google Doc non è accessibile: condividilo con \"Chiunque abbia il link\" in sola lettura.",
+    );
+  }
+
   return {
-    documentId: doc.documentId ?? cleanId,
-    title: (doc.title ?? "Report giornaliero").trim() || "Report giornaliero",
-    text: googleDocToMarkdown(doc),
+    documentId: cleanId,
+    title: titleFromDisposition(res.headers.get("content-disposition")) ?? "Report giornaliero",
+    text: normalize(body),
   };
 }
-

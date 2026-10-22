@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { fetchGoogleDocAsText } from "./google-docs.server";
+import { extractDocumentId, fetchGoogleDocAsText } from "./google-docs.server";
 
 const REPORT_TITLE = "Report giornaliero";
 
@@ -84,7 +84,7 @@ export const updateMarketSyncConfig = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin
       .from("site_settings")
       .update({
-        market_doc_id: data.marketDocId,
+        market_doc_id: extractDocumentId(data.marketDocId),
         market_sync_schedule: data.marketSyncSchedule,
       })
       .eq("singleton", true);

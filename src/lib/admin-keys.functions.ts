@@ -60,8 +60,8 @@ export const getProjectKeys = createServerFn({ method: "GET" })
       publicKey("VITE_SUPABASE_PROJECT_ID", projectId, "ID del progetto backend."),
       publicKey("SUPABASE_URL", env.SUPABASE_URL ?? null, "URL backend (lato server)."),
       publicKey("SUPABASE_PUBLISHABLE_KEY", env.SUPABASE_PUBLISHABLE_KEY ?? null, "Anon key lato server."),
-      secretKey("SUPABASE_SERVICE_ROLE_KEY", env.SUPABASE_SERVICE_ROLE_KEY, "Chiave admin. Bypassa RLS. Gestibile solo dal gestore dei secret dell'hosting."),
-      secretKey("LOVABLE_API_KEY", env.LOVABLE_API_KEY, "Chiave AI Gateway. Gestibile solo dal gestore dei secret dell'hosting."),
-      secretKey("MARKET_REPORTS_WEBHOOK_SECRET", env.MARKET_REPORTS_WEBHOOK_SECRET, "Secret del webhook report di mercato. Gestibile solo dal gestore dei secret dell'hosting."),
+      secretKey("SUPABASE_SERVICE_ROLE_KEY", env.SUPABASE_SERVICE_ROLE_KEY, "Chiave admin. Bypassa RLS. Si gestisce nei secret del Worker su Cloudflare."),
+      secretKey("GEMINI_API_KEY", env.GEMINI_API_KEY, "Chiave Google Gemini per impaginazione del report e traduzioni di riserva. Facoltativa. Si gestisce nei secret del Worker su Cloudflare."),
+      secretKey("MARKET_REPORTS_WEBHOOK_SECRET", env.MARKET_REPORTS_WEBHOOK_SECRET, "Secret del webhook report di mercato. Si gestisce nei secret del Worker su Cloudflare."),
     ];
   });

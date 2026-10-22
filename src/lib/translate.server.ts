@@ -1,5 +1,6 @@
 import type { Lang } from "@/hooks/use-language";
 import { readCachedTranslations, writeCachedTranslations } from "@/lib/translation-cache.server";
+import { generateJson, isAiConfigured } from "@/lib/ai.server";
 
 const SERVER_CHUNK_SIZE = 30;
 const FALLBACK_CHUNK_CHARS = 1200;
@@ -141,55 +142,30 @@ async function translateWithFallback(
 }
 
 
-async function translateWithAi(
-  texts: string[],
-  target: Lang,
-  apiKey: string,
-): Promise<TranslateResult> {
-  const targetName = TARGET_NAMES[target];
+async function translateWithAi(texts: string[], target: Lang): Promise<TranslateResult> {
+  // Without an AI key the free translation endpoint is the only engine:
+  // keep whatever it produced instead of failing the request.
+  if (!isAiConfigured()) return { translations: texts, fallback: true };
 
+  const targetName = TARGET_NAMES[target];
   const numbered = texts.map((t, i) => `[[${i}]]\n${t}`).join("\n\n[[END]]\n\n");
 
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash-lite",
-      messages: [
-        {
-          role: "system",
-          content: `You are a professional translator. Detect the source language of each input automatically and translate it to ${targetName}. Preserve markdown, LaTeX math ($...$ and $$...$$), line breaks, and tone. If a text is already entirely in ${targetName}, keep it as-is. Always output natural, fluent ${targetName}. Return ONLY a JSON object: {"translations":[{"i":0,"text":"..."}, ...]} with one entry per input in order.`,
-        },
-        {
-          role: "user",
-          content: numbered,
-        },
-      ],
-      response_format: { type: "json_object" },
-    }),
-  });
+  const res = await generateJson(
+    `You are a professional translator. Detect the source language of each input automatically and translate it to ${targetName}. Preserve markdown, LaTeX math ($...$ and $$...$$), line breaks, and tone. If a text is already entirely in ${targetName}, keep it as-is. Always output natural, fluent ${targetName}. Return ONLY a JSON object: {"translations":[{"i":0,"text":"..."}, ...]} with one entry per input in order.`,
+    numbered,
+  );
 
   if (!res.ok) {
-    const txt = await res.text();
-    // Graceful degradation: on credit/rate-limit failures, return originals
+    // Graceful degradation: on quota/rate-limit failures, return originals
     // so the UI stays usable instead of crashing the route.
-    if (res.status === 402 || res.status === 429) {
-      console.warn(`Translation skipped (${res.status}): ${txt.slice(0, 200)}`);
-      return translateWithFallback(texts, target).catch((err) => {
-        console.error("Fallback translation failed:", err);
-        return { translations: texts, fallback: true };
-      });
+    if (res.status === 402 || res.status === 429 || res.status === 0) {
+      console.warn(`AI translation skipped (${res.status}): ${res.error}`);
+      return { translations: texts, fallback: true };
     }
-    throw new Error(`Translation failed: ${res.status} ${txt.slice(0, 200)}`);
+    throw new Error(`Translation failed: ${res.status} ${res.error}`);
   }
-  const json = (await res.json()) as {
-    choices: Array<{ message: { content: string } }>;
-  };
-  const content = json.choices?.[0]?.message?.content ?? "{}";
   let parsed: { translations?: Array<{ i: number; text: string }> } = {};
+  const content = res.text;
   try {
     parsed = JSON.parse(content);
   } catch {
@@ -213,11 +189,7 @@ async function translateWithAi(
   return { translations: out };
 }
 
-async function translateChunk(
-  texts: string[],
-  target: Lang,
-  apiKey: string,
-): Promise<TranslateResult> {
+async function translateChunk(texts: string[], target: Lang): Promise<TranslateResult> {
   const out = [...texts];
   const failed: number[] = [];
 
@@ -240,7 +212,6 @@ async function translateChunk(
       const ai = await translateWithAi(
         indexes.map((i) => texts[i]),
         target,
-        apiKey,
       );
       indexes.forEach((idx, k) => {
         const candidate = ai.translations[k];
@@ -283,7 +254,6 @@ async function translateChunk(
 export async function translateTexts(
   texts: string[],
   target: Lang,
-  apiKey: string,
   opts: { force?: boolean } = {},
 ): Promise<TranslateResult> {
   if (target === "it" && !opts.force) return { translations: texts };
@@ -300,7 +270,7 @@ export async function translateTexts(
       chunks.push(missing.slice(i, i + SERVER_CHUNK_SIZE));
     }
     const results = await mapLimit(chunks, 2, (c) =>
-      translateChunk(c, target, apiKey).catch((err) => {
+      translateChunk(c, target).catch((err) => {
         console.error("Translation chunk failed:", err);
         return { translations: c, fallback: true } satisfies TranslateResult;
       }),

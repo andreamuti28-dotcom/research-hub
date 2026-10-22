@@ -3,5 +3,15 @@
   "name": "research-hub",
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "src/server.ts"
+  "main": "src/server.ts",
+  // Public configuration. Secrets (SUPABASE_SERVICE_ROLE_KEY,
+  // MARKET_REPORTS_WEBHOOK_SECRET, GEMINI_API_KEY) are set on the Worker in the
+  // Cloudflare dashboard and are never committed.
+  "vars": {
+    "SUPABASE_URL": "https://uxuxazeboaxcwxtkeiyj.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_csEj4buIrGqmboRtTRgxMA_uigM0nMq"
+  },
+  // Keep secrets and variables added in the dashboard on every deploy.
+  "keep_vars": true,
+  "observability": { "enabled": true }
 }

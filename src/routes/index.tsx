@@ -114,7 +114,7 @@ function Index() {
   const rawContent = latestReport?.content ?? "";
   const { data: formattedIt } = useQuery({
     queryKey: ["market-report-format-it", latestReport?.id ?? "none"],
-    queryFn: () => formatFn({ data: { text: rawContent } }),
+    queryFn: () => formatFn({ data: { reportId: latestReport!.id } }),
     enabled: rawContent.trim().length > 0,
     staleTime: Infinity,
     gcTime: Infinity,

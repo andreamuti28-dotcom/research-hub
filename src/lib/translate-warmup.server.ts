@@ -80,7 +80,7 @@ const CONCURRENCY = 4;
  * Already-cached texts are skipped, and the remaining work is capped per call
  * so the client can resume instead of holding one long, abortable request.
  */
-export async function warmupLanguage(target: Lang, apiKey: string) {
+export async function warmupLanguage(target: Lang) {
   if (target === "it") return { total: 0, remaining: 0, done: true };
 
   const texts = await collectSiteTexts();
@@ -97,7 +97,7 @@ export async function warmupLanguage(target: Lang, apiKey: string) {
       while (cursor < batches.length) {
         const batch = batches[cursor++];
         try {
-          await translateTexts(batch, target, apiKey);
+          await translateTexts(batch, target);
         } catch (err) {
           console.error("Warmup batch failed:", err);
         }

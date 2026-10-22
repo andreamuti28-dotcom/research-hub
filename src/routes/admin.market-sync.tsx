@@ -130,6 +130,10 @@ function AdminMarketSync() {
               onChange={(e) => setDocId(e.target.value)}
               className="w-full px-3 py-2 bg-surface-dark border border-surface-dark-muted text-background font-mono text-xs focus:outline-none focus:border-primary"
             />
+            <span className="block mt-2 font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
+              Accetta l'ID o il link completo del documento. Il documento va condiviso con
+              "Chiunque abbia il link" in sola lettura.
+            </span>
           </label>
           <label className="block mb-5">
             <span className="block font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/60 mb-2">Pianificazione automatica</span>

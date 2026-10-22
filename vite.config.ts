@@ -1,15 +1,31 @@
-// @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
-// or the app will break with duplicate plugins:
-//   - tanstackStart, viteReact, tailwindcss, tsConfigPaths, cloudflare (build-only),
-//     componentTagger (dev-only), VITE_* env injection, @ path alias, React/TanStack dedupe,
-//     error logger plugins, and sandbox detection (port/host/strictPort).
-// You can pass additional config via defineConfig({ vite: { ... } }) if needed.
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+// Build configuration for TanStack Start on Cloudflare Workers.
+// `vite build` produces dist/client (static assets) and dist/server (the Worker),
+// plus the generated wrangler config that `wrangler deploy` picks up.
+import { defineConfig } from "vite";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import tsConfigPaths from "vite-tsconfig-paths";
 
-// Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-// @cloudflare/vite-plugin builds from this — wrangler.jsonc main alone is insufficient.
 export default defineConfig({
-  tanstackStart: {
-    server: { entry: "server" },
-  },
+  plugins: [
+    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    tsConfigPaths({ projects: ["./tsconfig.json"] }),
+    tailwindcss(),
+    tanstackStart({
+      // src/server.ts wraps the TanStack handler with security headers,
+      // the apex -> www redirect and the branded error page.
+      server: { entry: "server" },
+      // Server-only modules must never end up in the browser bundle.
+      importProtection: {
+        behavior: "error",
+        client: {
+          files: ["**/server/**"],
+          specifiers: ["server-only"],
+        },
+      },
+    }),
+    viteReact(),
+  ],
 });

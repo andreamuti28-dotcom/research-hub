@@ -20,6 +20,7 @@ import {
   type EducationItem,
 } from "@/lib/site-settings.functions";
 import { cropTo4x5Jpeg, cropFaviconPng, cropFaviconPngFromUrl } from "@/lib/image-crop";
+import { SITE_URL } from "@/lib/og";
 import {
   getLatestMarketReport,
   upsertCurrentMarketReport,
@@ -2025,10 +2026,9 @@ function MarketReportEditorPanel() {
 }
 
 function MarketReportsIntegrationPanel() {
-  const webhookUrl =
-    "https://project--34b2a20e-95a6-4f33-89b6-7087554072b8.lovable.app/api/public/market-reports";
+  const webhookUrl = `${SITE_URL}/api/public/market-reports`;
 
-  const appsScript = `// === Lovable — Invio Report Mercati ===
+  const appsScript = `// === andreamuti.com — Invio Report Mercati ===
 // 1) In Apps Script: File > Project properties > Script properties
 //    Aggiungi una property con chiave WEBHOOK_SECRET e valore = MARKET_REPORTS_WEBHOOK_SECRET.
 // 2) Esegui sendDailyMarketReport() una volta a mano per autorizzare lo script.
@@ -2126,9 +2126,10 @@ function sendDailyMarketReport() {
           {"\n"}# in alternativa: x-webhook-secret: &lt;MARKET_REPORTS_WEBHOOK_SECRET&gt;
         </div>
         <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-          Il valore del secret è già configurato lato server (Lovable Cloud →
-          Secrets → <code>MARKET_REPORTS_WEBHOOK_SECRET</code>). Copialo da lì
-          e incollalo come Script Property nello script Google.
+          Il valore del secret è configurato tra i secret del Worker su Cloudflare
+          (Workers &amp; Pages → research-hub → Settings → Variables and Secrets →{" "}
+          <code>MARKET_REPORTS_WEBHOOK_SECRET</code>). Usa lo stesso valore come
+          Script Property nello script Google.
         </p>
       </div>
 

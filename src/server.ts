@@ -141,16 +141,24 @@ function httpToHttpsRedirect(request: Request): Response | null {
 }
 
 
-// The Lovable editor renders the app inside a cross-origin iframe and its dev
-// tooling evaluates strings, so framing/CSP restrictions must not apply there.
+// Canonical host: every page, sitemap and og:url uses https://www.andreamuti.com,
+// so the bare domain permanently redirects there (path and query preserved).
+const APEX_HOST = "andreamuti.com";
+const CANONICAL_HOST = "www.andreamuti.com";
+
+function apexToWwwRedirect(request: Request): Response | null {
+  const url = new URL(request.url);
+  if (url.hostname !== APEX_HOST) return null;
+  url.hostname = CANONICAL_HOST;
+  url.protocol = "https:";
+  url.port = "";
+  return new Response(null, { status: 301, headers: { location: url.toString() } });
+}
+
+// Local development (vite dev) evaluates strings for HMR, so the strict CSP and
+// framing rules are not applied there.
 function isEditorPreview(request: Request): boolean {
-  const host = new URL(request.url).hostname;
-  return (
-    isLocalHost(request) ||
-    host.endsWith(".lovableproject.com") ||
-    host.endsWith("-dev.lovable.app") ||
-    host.startsWith("id-preview--")
-  );
+  return isLocalHost(request);
 }
 
 function withSecurityHeaders(response: Response, request: Request): Response {
@@ -194,7 +202,7 @@ function withSecurityHeaders(response: Response, request: Request): Response {
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
-      const redirect = httpToHttpsRedirect(request);
+      const redirect = httpToHttpsRedirect(request) ?? apexToWwwRedirect(request);
       if (redirect) return redirect;
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
