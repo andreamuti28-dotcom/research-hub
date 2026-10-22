@@ -50,6 +50,29 @@ export const Route = createFileRoute("/about")({
 const EMOJI_FONT =
   '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Twemoji Mozilla","EmojiOne Color","Android Emoji",sans-serif';
 
+// Turns web addresses written in the bio (with or without https://) into
+// clickable links that open in a new tab.
+const LINK_RE = /(https?:\/\/[^\s]+[^\s.,;:!?)]|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:org|com|net|io|it|eu|ch|dev|app)\b(?:\/[^\s]*[^\s.,;:!?)])?)/gi;
+
+function withLinks(text: string) {
+  const parts = text.split(LINK_RE);
+  return parts.map((part, i) => {
+    if (i % 2 === 0) return part;
+    const href = /^https?:\/\//i.test(part) ? part : `https://${part}`;
+    return (
+      <a
+        key={i}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline underline-offset-4 decoration-1 hover:text-primary"
+      >
+        {part}
+      </a>
+    );
+  });
+}
+
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
   const t = useT();
@@ -144,7 +167,7 @@ function AboutPage() {
               <div className="max-w-[60ch] text-base md:text-lg leading-relaxed text-pretty text-justify space-y-4">
                 {bio.split(/\n\n+/).map((para, i) => (
                   <p key={i} className="whitespace-pre-line">
-                    {para}
+                    {withLinks(para)}
                   </p>
                 ))}
               </div>
