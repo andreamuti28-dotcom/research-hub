@@ -4,6 +4,12 @@
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/server.ts",
+  // Production domains. www is canonical; the Worker redirects the bare
+  // domain to www (see src/server.ts).
+  "routes": [
+    { "pattern": "www.andreamuti.com", "custom_domain": true },
+    { "pattern": "andreamuti.com", "custom_domain": true }
+  ],
   // Public configuration. Secrets (SUPABASE_SERVICE_ROLE_KEY,
   // MARKET_REPORTS_WEBHOOK_SECRET, GEMINI_API_KEY) are set on the Worker in the
   // Cloudflare dashboard and are never committed.
