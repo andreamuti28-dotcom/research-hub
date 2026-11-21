@@ -12,7 +12,7 @@ let serverEntryPromise: Promise<ServerEntry> | undefined;
 async function getServerEntry(): Promise<ServerEntry> {
   if (!serverEntryPromise) {
     serverEntryPromise = import("@tanstack/react-start/server-entry").then(
-      (m) => ((m as { default?: ServerEntry }).default ?? (m as unknown as ServerEntry)),
+      (m) => (m as { default?: ServerEntry }).default ?? (m as unknown as ServerEntry),
     );
   }
   return serverEntryPromise;
@@ -140,7 +140,6 @@ function httpToHttpsRedirect(request: Request): Response | null {
   });
 }
 
-
 // Canonical host: every page, sitemap and og:url uses https://www.andreamuti.com,
 // so the bare domain permanently redirects there (path and query preserved).
 const APEX_HOST = "andreamuti.com";
@@ -176,10 +175,7 @@ function withSecurityHeaders(response: Response, request: Request): Response {
     headers.set("X-Frame-Options", "SAMEORIGIN");
   }
   if (shouldSendHsts(request)) {
-    headers.set(
-      "Strict-Transport-Security",
-      "max-age=31536000; includeSubDomains; preload",
-    );
+    headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
   } else {
     headers.delete("Strict-Transport-Security");
   }
@@ -199,6 +195,37 @@ function withSecurityHeaders(response: Response, request: Request): Response {
   });
 }
 
+// Visitor country (and region, e.g. CH-TI) from Cloudflare, set on <html data-visitor-geo>
+// so the client can pick a default language. Nothing is stored.
+declare const HTMLRewriter:
+  | (new () => {
+      on(
+        selector: string,
+        handler: { element(el: { setAttribute(name: string, value: string): void }): void },
+      ): { transform(res: Response): Response };
+    })
+  | undefined;
+
+function withVisitorGeo(response: Response, request: Request): Response {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("text/html") || typeof HTMLRewriter === "undefined") return response;
+  const cf = (request as Request & { cf?: { country?: string; regionCode?: string } }).cf;
+  const country = (cf?.country ?? request.headers.get("cf-ipcountry") ?? "").replace(
+    /[^A-Za-z0-9]/g,
+    "",
+  );
+  const region = (cf?.regionCode ?? "").replace(/[^A-Za-z0-9]/g, "");
+  if (!country) return response;
+  const value = region ? `${country}-${region}` : country;
+  return new HTMLRewriter()
+    .on("html", {
+      element(el) {
+        el.setAttribute("data-visitor-geo", value);
+      },
+    })
+    .transform(response);
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
@@ -207,7 +234,7 @@ export default {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       return withSecurityHeaders(
-        await normalizeCatastrophicSsrResponse(response, request),
+        withVisitorGeo(await normalizeCatastrophicSsrResponse(response, request), request),
         request,
       );
     } catch (error) {
@@ -219,5 +246,3 @@ export default {
     }
   },
 };
-
-
