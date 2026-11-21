@@ -19,10 +19,10 @@ export function SiteFooter() {
             {t("nav.aboutPage")}
           </Link>
           <Link to="/privacy" className="hover:text-foreground transition-colors">
-            Privacy
+            {t("common.privacy")}
           </Link>
           <Link to="/cookie-policy" className="hover:text-foreground transition-colors">
-            Cookie
+            {t("common.cookie")}
           </Link>
           <Link to="/termini" className="hover:text-foreground transition-colors">
             {t("common.terms")}

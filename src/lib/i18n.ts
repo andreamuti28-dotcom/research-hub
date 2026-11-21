@@ -237,6 +237,12 @@ export const i18n = {
     "topic.energy": "Oil, currencies and commodity markets.",
     "about.cta.text": "Want to talk about a paper or a collaboration?",
     "about.cta.button": "Write to me",
+    "home.cred.forbesTitle": "Forbes Italia\nNext Leaders",
+    "home.cred.clubTitle": "Starting Finance\nClub Bicocca",
+    "about.role1.org": "Starting Finance Club Bicocca",
+    "about.role2.org": "Interuniversity Investment Challenge",
+    "about.role3.org": "CCD Economia e Finanza",
+    "about.role4.org": "Forbes Italia Next Leaders",
   },
   it: {
     "common.loading": "Caricamento…",
@@ -473,6 +479,12 @@ export const i18n = {
     "topic.energy": "Petrolio, valute e mercati delle materie prime.",
     "about.cta.text": "Vuoi parlare di un paper o di una collaborazione?",
     "about.cta.button": "Scrivimi",
+    "home.cred.forbesTitle": "Forbes Italia\nNext Leaders",
+    "home.cred.clubTitle": "Starting Finance\nClub Bicocca",
+    "about.role1.org": "Starting Finance Club Bicocca",
+    "about.role2.org": "Interuniversity Investment Challenge",
+    "about.role3.org": "CCD Economia e Finanza",
+    "about.role4.org": "Forbes Italia Next Leaders",
   },
   es: {
     "common.loading": "Cargando…",
@@ -709,6 +721,12 @@ export const i18n = {
     "topic.energy": "Petróleo, divisas y mercados de materias primas.",
     "about.cta.text": "¿Quieres hablar de un artículo o de una colaboración?",
     "about.cta.button": "Escríbeme",
+    "home.cred.forbesTitle": "Forbes Italia\nNext Leaders",
+    "home.cred.clubTitle": "Starting Finance\nClub Bicocca",
+    "about.role1.org": "Starting Finance Club Bicocca",
+    "about.role2.org": "Interuniversity Investment Challenge",
+    "about.role3.org": "CCD Economia e Finanza",
+    "about.role4.org": "Forbes Italia Next Leaders",
   },
   de: {
     "common.loading": "Lädt…",
@@ -945,6 +963,12 @@ export const i18n = {
     "topic.energy": "Öl, Währungen und Rohstoffmärkte.",
     "about.cta.text": "Möchten Sie über eine Arbeit oder eine Zusammenarbeit sprechen?",
     "about.cta.button": "Schreiben Sie mir",
+    "home.cred.forbesTitle": "Forbes Italia\nNext Leaders",
+    "home.cred.clubTitle": "Starting Finance\nClub Bicocca",
+    "about.role1.org": "Starting Finance Club Bicocca",
+    "about.role2.org": "Interuniversity Investment Challenge",
+    "about.role3.org": "CCD Economia e Finanza",
+    "about.role4.org": "Forbes Italia Next Leaders",
   },
   zh: {
     "common.loading": "正在加载…",
@@ -1181,6 +1205,12 @@ export const i18n = {
     "topic.energy": "石油、货币与大宗商品市场。",
     "about.cta.text": "想讨论某篇论文或合作吗？",
     "about.cta.button": "联系我",
+    "home.cred.forbesTitle": "Forbes Italia\nNext Leaders",
+    "home.cred.clubTitle": "Starting Finance\nClub Bicocca",
+    "about.role1.org": "Starting Finance Club Bicocca",
+    "about.role2.org": "Interuniversity Investment Challenge",
+    "about.role3.org": "CCD Economia e Finanza",
+    "about.role4.org": "Forbes Italia Next Leaders",
   },
   ru: {
     "common.loading": "Загрузка…",
@@ -1417,6 +1447,12 @@ export const i18n = {
     "topic.energy": "Нефть, валюты и сырьевые рынки.",
     "about.cta.text": "Хотите обсудить работу или сотрудничество?",
     "about.cta.button": "Написать мне",
+    "home.cred.forbesTitle": "Forbes Italia\nNext Leaders",
+    "home.cred.clubTitle": "Starting Finance\nClub Bicocca",
+    "about.role1.org": "Starting Finance Club Bicocca",
+    "about.role2.org": "Interuniversity Investment Challenge",
+    "about.role3.org": "CCD Economia e Finanza",
+    "about.role4.org": "Forbes Italia Next Leaders",
   },
   ar: {
     "common.loading": "جارٍ التحميل…",
@@ -1653,6 +1689,12 @@ export const i18n = {
     "topic.energy": "النفط والعملات وأسواق السلع.",
     "about.cta.text": "هل تريد مناقشة ورقة بحثية أو تعاون؟",
     "about.cta.button": "راسلني",
+    "home.cred.forbesTitle": "Forbes Italia\nNext Leaders",
+    "home.cred.clubTitle": "Starting Finance\nClub Bicocca",
+    "about.role1.org": "Starting Finance Club Bicocca",
+    "about.role2.org": "Interuniversity Investment Challenge",
+    "about.role3.org": "CCD Economia e Finanza",
+    "about.role4.org": "Forbes Italia Next Leaders",
   },
 } as const;
 
@@ -1660,9 +1702,31 @@ type Key = keyof (typeof i18n)["en"];
 
 export const I18N_KEYS = Object.keys(i18n.en) as Key[];
 
+const TEMPLATE_ARGS = ["{0}", "{1}", "{2}", "{3}"];
+
+/**
+ * Default text for a key. Keys whose value is a function (texts with numbers
+ * or names inside) are returned as a template with {0}, {1}… placeholders, so
+ * the admin can edit them like any other label.
+ */
 export function getDefaultString(lang: "it" | "en" | "es" | "de" | "zh" | "ru" | "ar", key: string): string | null {
   const entry = (i18n[lang] as Record<string, unknown>)[key];
-  return typeof entry === "string" ? entry : null;
+  if (typeof entry === "string") return entry;
+  if (typeof entry === "function") {
+    try {
+      return (entry as (...a: unknown[]) => string)(...TEMPLATE_ARGS);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+function fillTemplate(template: string, args: unknown[]): string {
+  return template.replace(/\{(\d)\}/g, (m, i: string) => {
+    const v = args[Number(i)];
+    return v === undefined ? m : String(v);
+  });
 }
 
 export function useT() {
@@ -1673,7 +1737,7 @@ export function useT() {
     ...args: (typeof i18n)["en"][K] extends (...a: infer A) => string ? A : []
   ): string {
     const override = i18nOverrides?.[key as string]?.[lang];
-    if (typeof override === "string" && override.length > 0) return override;
+    if (typeof override === "string" && override.length > 0) return fillTemplate(override, args);
     const entry = (i18n[lang] as Record<Key, unknown>)[key];
     if (typeof entry === "function") return (entry as (...a: unknown[]) => string)(...args);
     return entry as string;

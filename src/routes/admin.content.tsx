@@ -52,6 +52,10 @@ const SECTION_LABELS: Record<string, string> = {
   about: "About",
   lang: "Lingue",
   langToggle: "Toggle lingua",
+  topic: "Temi (descrizioni in Home)",
+  theme: "Tema chiaro/scuro",
+  common: "Testi comuni",
+  dashboard: "Dashboard",
 };
 
 // Tema editabile: token semantici principali del sito
@@ -78,12 +82,12 @@ function AdminContent() {
   const updateFn = useServerFn(updateSiteOverrides);
 
   // Editable state, seeded from current settings
-  const [i18n, setI18n] = useState<Record<string, Partial<Record<Lang, string>>>>(
-    () => ({ ...(settings.i18nOverrides ?? {}) }),
-  );
-  const [theme, setTheme] = useState<Record<string, string>>(
-    () => ({ ...(settings.themeOverrides ?? {}) }),
-  );
+  const [i18n, setI18n] = useState<Record<string, Partial<Record<Lang, string>>>>(() => ({
+    ...(settings.i18nOverrides ?? {}),
+  }));
+  const [theme, setTheme] = useState<Record<string, string>>(() => ({
+    ...(settings.themeOverrides ?? {}),
+  }));
   const [filter, setFilter] = useState("");
 
   const groups = useMemo(() => groupKeys(I18N_KEYS as unknown as string[]), []);
@@ -102,8 +106,7 @@ function AdminContent() {
   }, [papers]);
 
   const mutation = useMutation({
-    mutationFn: () =>
-      updateFn({ data: { i18nOverrides: i18n, themeOverrides: theme } }),
+    mutationFn: () => updateFn({ data: { i18nOverrides: i18n, themeOverrides: theme } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: siteSettingsQuery.queryKey });
     },
@@ -151,9 +154,11 @@ function AdminContent() {
   return (
     <AdminShell title="Contenuti & Tema">
       <p className="text-surface-dark-foreground/70 max-w-prose mb-8 text-sm">
-        Modifica le etichette del sito (italiano e inglese) e i colori globali.
-        Lascia vuoto un campo per ripristinare il valore predefinito. Le modifiche
-        diventano visibili a tutti gli utenti dopo il salvataggio.
+        Modifica tutti i testi del sito, in ogni lingua, e i colori globali. Lascia vuoto un campo
+        per ripristinare il valore predefinito. Nei testi con
+        {"{0}"}, {"{1}"}… il segnaposto viene sostituito da un numero o da una data (per esempio il
+        numero di paper): lascialo dove vuoi che compaia. Le modifiche diventano visibili a tutti
+        gli utenti dopo il salvataggio.
       </p>
 
       {/* Save bar */}
@@ -259,8 +264,8 @@ function AdminContent() {
           </h2>
         </div>
         <p className="text-surface-dark-foreground/60 text-xs mb-4 max-w-prose">
-          Ogni paper usa il colore del suo primo tag per la linea in alto nella card.
-          Lascia vuoto per usare il colore predefinito.
+          Ogni paper usa il colore del suo primo tag per la linea in alto nella card. Lascia vuoto
+          per usare il colore predefinito.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {tags.map((tag) => {
@@ -320,7 +325,7 @@ function AdminContent() {
       <section>
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
           <h2 className="font-display text-xs sm:text-sm uppercase tracking-widest text-surface-dark-foreground/70">
-            Etichette del sito · IT / EN
+            Testi del sito · tutte le lingue
           </h2>
           <button
             type="button"
@@ -344,14 +349,17 @@ function AdminContent() {
             const visible = keys.filter((k) => {
               if (!filtered) return true;
               if (k.toLowerCase().includes(filtered)) return true;
-              return LANGUAGES.some(
-                (l) => (getDefaultString(l, k) ?? "").toLowerCase().includes(filtered),
+              return LANGUAGES.some((l) =>
+                (getDefaultString(l, k) ?? "").toLowerCase().includes(filtered),
               );
             });
             if (visible.length === 0) return null;
 
             return (
-              <div key={section} className="border border-surface-dark-muted bg-surface-dark-muted/20">
+              <div
+                key={section}
+                className="border border-surface-dark-muted bg-surface-dark-muted/20"
+              >
                 <div className="px-4 py-3 border-b border-surface-dark-muted bg-surface-dark-muted/40">
                   <h3 className="font-display text-[11px] uppercase tracking-widest text-background">
                     {SECTION_LABELS[section] ?? section}
@@ -368,7 +376,10 @@ function AdminContent() {
                     }
                     const ov = i18n[key] ?? {};
                     return (
-                      <div key={key} className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div
+                        key={key}
+                        className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+                      >
                         <div className="sm:col-span-2 lg:col-span-3 font-mono text-[10px] text-surface-dark-foreground/40 break-all">
                           {key}
                         </div>

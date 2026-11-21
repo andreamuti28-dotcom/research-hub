@@ -95,10 +95,10 @@ function bareLinks(text: string, group: number): ReactNode[] {
 }
 
 const ROLES = [
-  { key: "role1", org: "Starting Finance Club Bicocca", icon: "users" },
-  { key: "role2", org: "Interuniversity Investment Challenge", icon: "trophy" },
-  { key: "role3", org: "CCD Economia e Finanza", icon: "landmark" },
-  { key: "role4", org: "Forbes Italia Next Leaders", icon: "pen" },
+  { key: "role1", icon: "users" },
+  { key: "role2", icon: "trophy" },
+  { key: "role3", icon: "landmark" },
+  { key: "role4", icon: "pen" },
 ] as const;
 
 function RoleIcon({ name }: { name: (typeof ROLES)[number]["icon"] }) {
@@ -272,7 +272,7 @@ function AboutPage() {
                         {logo ? (
                           <img
                             src={logo}
-                            alt={r.org}
+                            alt={tk(`about.${r.key}.org`)}
                             className="max-h-24 max-w-[80%] object-contain"
                             loading="lazy"
                           />
@@ -286,7 +286,7 @@ function AboutPage() {
                         {tk(`about.${r.key}.role`)}
                       </p>
                       <h3 className="mt-1.5 font-editorial text-[22px] font-medium leading-tight">
-                        {r.org}
+                        {tk(`about.${r.key}.org`)}
                       </h3>
                       <p className="mt-2.5 text-[15px] leading-relaxed text-muted-foreground font-display">
                         {tk(`about.${r.key}.desc`)}

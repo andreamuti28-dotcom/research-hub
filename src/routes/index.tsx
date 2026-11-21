@@ -270,20 +270,16 @@ function Index() {
               rel="noreferrer noopener"
               className="group py-7 sm:px-6 border-b sm:border-b-0 sm:border-r border-brand-line"
             >
-              <p className="font-editorial text-[22px] font-medium leading-tight group-hover:text-gold transition-colors">
-                Forbes Italia
-                <br />
-                Next Leaders
+              <p className="font-editorial text-[22px] font-medium leading-tight whitespace-pre-line group-hover:text-gold transition-colors">
+                {t("home.cred.forbesTitle")}
               </p>
               <p className="mt-1.5 text-sm text-brand-muted font-display">
                 {t("home.cred.forbes")}
               </p>
             </a>
             <div className="py-7 sm:pl-6">
-              <p className="font-editorial text-[22px] font-medium leading-tight">
-                Starting Finance
-                <br />
-                Club Bicocca
+              <p className="font-editorial text-[22px] font-medium leading-tight whitespace-pre-line">
+                {t("home.cred.clubTitle")}
               </p>
               <p className="mt-1.5 text-sm text-brand-muted font-display">{t("home.cred.club")}</p>
             </div>
