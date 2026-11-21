@@ -33,10 +33,14 @@ export function MarketReportCard({
   // The report opens with "# headline" and often an italic standfirst: the
   // headline becomes the card title, the standfirst its teaser.
   const headlineMatch = content.match(/^\s*#\s+([^\n]+)\n+/);
-  const headline = headlineMatch ? headlineMatch[1].trim() : "";
+  // A headline that swallowed the "SOMMARIO:" label is split back in two.
+  const [headlineRaw, inlineStandfirst] = (headlineMatch ? headlineMatch[1] : "").split(
+    /\s+SOMMARIO\s*:\s*/i,
+  );
+  const headline = (headlineRaw ?? "").replace(/^TITOLO\s*:\s*/i, "").trim();
   const body = headlineMatch ? content.slice(headlineMatch[0].length) : content;
   const standfirst = body.match(/^\s*[*_]([^*_\n]{20,})[*_]\s*(\n|$)/);
-  const excerpt = standfirst ? standfirst[1].trim() : excerptOf(body);
+  const excerpt = inlineStandfirst?.trim() || (standfirst ? standfirst[1].trim() : excerptOf(body));
   const title = headline || t("home.report.title");
 
   return (
@@ -53,7 +57,9 @@ export function MarketReportCard({
           {date}
         </span>
       </div>
-      <h3 className="mt-3.5 font-editorial text-xl font-medium leading-tight">{title}</h3>
+      <h3 className="mt-3.5 font-editorial text-xl font-medium leading-tight line-clamp-3">
+        {title}
+      </h3>
       <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground font-display line-clamp-6">
         {excerpt}
       </p>
