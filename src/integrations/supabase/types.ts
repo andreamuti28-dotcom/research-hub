@@ -233,6 +233,7 @@ export type Database = {
           forbes_url: string | null
           header_bg: string
           hero_intro: string
+          hero_kicker: string
           hero_logo_dark_url: string | null
           hero_logo_light_url: string | null
           hero_title: string
@@ -292,6 +293,7 @@ export type Database = {
           forbes_url?: string | null
           header_bg?: string
           hero_intro?: string
+          hero_kicker?: string
           hero_logo_dark_url?: string | null
           hero_logo_light_url?: string | null
           hero_title?: string
@@ -351,6 +353,7 @@ export type Database = {
           forbes_url?: string | null
           header_bg?: string
           hero_intro?: string
+          hero_kicker?: string
           hero_logo_dark_url?: string | null
           hero_logo_light_url?: string | null
           hero_title?: string

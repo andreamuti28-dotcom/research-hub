@@ -13,6 +13,7 @@ const DEFAULTS: SiteSettings = {
   heroVideoUrl: null,
   heroIntro:
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
+  heroKicker: "",
   heroLogoLightUrl: null,
   heroLogoDarkUrl: null,
   forbesUrl: "",

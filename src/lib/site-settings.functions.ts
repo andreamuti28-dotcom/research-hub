@@ -23,7 +23,12 @@ export type LanguageItem = {
   description: string;
 };
 export type LogoItem = { name: string; logoUrl: string | null; description: string };
-export type EducationItem = { name: string; detail: string; description: string; logoUrl: string | null };
+export type EducationItem = {
+  name: string;
+  detail: string;
+  description: string;
+  logoUrl: string | null;
+};
 export type HobbyItem = { name: string; icon: string };
 
 export type SiteSettings = {
@@ -31,6 +36,7 @@ export type SiteSettings = {
   heroTitle: string;
   heroVideoUrl: string | null;
   heroIntro: string;
+  heroKicker: string;
   heroLogoLightUrl: string | null;
   heroLogoDarkUrl: string | null;
   forbesUrl: string;
@@ -77,14 +83,13 @@ export type SiteSettings = {
   themeOverrides: Record<string, string>;
 };
 
-
 const DEFAULTS: SiteSettings = {
   name: "Andrea Muti",
-  heroTitle:
-    "Esplorando l'intersezione tra Etica Digitale e Infrastrutture.",
+  heroTitle: "Esplorando l'intersezione tra Etica Digitale e Infrastrutture.",
   heroVideoUrl: null,
   heroIntro:
     "Sono un ricercatore indipendente basato a Milano. Mi occupo di come le architetture software influenzano il comportamento sociale. Questo spazio è il mio archivio di paper, saggi e riflessioni tecniche.",
+  heroKicker: "Finanza quantitativa · Risk management · Derivati",
   heroLogoLightUrl: null,
   heroLogoDarkUrl: null,
   forbesUrl: "",
@@ -164,7 +169,6 @@ function coerceThemeOverrides(v: unknown): Record<string, string> {
   return out;
 }
 
-
 function coerceLanguages(v: unknown): LanguageItem[] {
   if (!Array.isArray(v)) return [];
   return v
@@ -182,7 +186,6 @@ function coerceLanguages(v: unknown): LanguageItem[] {
     })
     .filter((x): x is LanguageItem => x !== null);
 }
-
 
 function coerceLogos(v: unknown): LogoItem[] {
   if (!Array.isArray(v)) return [];
@@ -241,6 +244,7 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       heroTitle: str(d.hero_title, DEFAULTS.heroTitle),
       heroVideoUrl: (d.hero_video_url as string | null) ?? null,
       heroIntro: str(d.hero_intro, DEFAULTS.heroIntro),
+      heroKicker: typeof d.hero_kicker === "string" ? d.hero_kicker : DEFAULTS.heroKicker,
       heroLogoLightUrl: (d.hero_logo_light_url as string | null) ?? null,
       heroLogoDarkUrl: (d.hero_logo_dark_url as string | null) ?? null,
       forbesUrl: typeof d.forbes_url === "string" ? d.forbes_url : "",
@@ -251,12 +255,14 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       featuredDashboardIds: Array.isArray(
         (d as { featured_dashboard_ids?: string[] | null }).featured_dashboard_ids,
       )
-        ? ((d as { featured_dashboard_ids: string[] }).featured_dashboard_ids).slice(0, 3)
+        ? (d as { featured_dashboard_ids: string[] }).featured_dashboard_ids.slice(0, 3)
         : [],
       homeFeaturedLabel: str(d.home_featured_label, DEFAULTS.homeFeaturedLabel),
       homeMarketLabel: str(d.home_market_label, DEFAULTS.homeMarketLabel),
       homeMarketEnabled:
-        typeof d.home_market_enabled === "boolean" ? d.home_market_enabled : DEFAULTS.homeMarketEnabled,
+        typeof d.home_market_enabled === "boolean"
+          ? d.home_market_enabled
+          : DEFAULTS.homeMarketEnabled,
       homeMarketDisclaimer: str(d.home_market_disclaimer, DEFAULTS.homeMarketDisclaimer),
       homeMarketImageUrl: (d.home_market_image_url as string | null) ?? null,
       archiveDisclaimer: str(d.archive_disclaimer, DEFAULTS.archiveDisclaimer),
@@ -268,19 +274,23 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(
       faviconPosX: clampInt(d.favicon_pos_x, 0, 100, DEFAULTS.faviconPosX),
       faviconPosY: clampInt(d.favicon_pos_y, 0, 100, DEFAULTS.faviconPosY),
 
-
-
       aboutRole: str(d.about_role, DEFAULTS.aboutRole),
       aboutBio: str(d.about_bio, DEFAULTS.aboutBio),
       aboutKicker: str(d.about_kicker, DEFAULTS.aboutKicker),
       aboutEducationLabel: str(d.about_education_label, DEFAULTS.aboutEducationLabel),
       aboutLanguagesLabel: str(d.about_languages_label, DEFAULTS.aboutLanguagesLabel),
       aboutSoftwareLabel: str(d.about_software_label, DEFAULTS.aboutSoftwareLabel),
-      aboutCertificationsLabel: str(d.about_certifications_label, DEFAULTS.aboutCertificationsLabel),
+      aboutCertificationsLabel: str(
+        d.about_certifications_label,
+        DEFAULTS.aboutCertificationsLabel,
+      ),
       aboutPanelBg: str(d.about_panel_bg, DEFAULTS.aboutPanelBg),
       aboutPanelFg: str(d.about_panel_fg, DEFAULTS.aboutPanelFg),
       aboutLanguagesBarColor: str(d.about_languages_bar_color, DEFAULTS.aboutLanguagesBarColor),
-      aboutLanguagesBarTrackColor: str(d.about_languages_bar_track_color, DEFAULTS.aboutLanguagesBarTrackColor),
+      aboutLanguagesBarTrackColor: str(
+        d.about_languages_bar_track_color,
+        DEFAULTS.aboutLanguagesBarTrackColor,
+      ),
       aboutLogoMaxWidth: clampInt(d.about_logo_max_width, 16, 200, DEFAULTS.aboutLogoMaxWidth),
       aboutPortraitPosX: clampInt(d.about_portrait_pos_x, 0, 100, DEFAULTS.aboutPortraitPosX),
       aboutPortraitPosY: clampInt(d.about_portrait_pos_y, 0, 100, DEFAULTS.aboutPortraitPosY),
@@ -327,6 +337,7 @@ const updateSchema = z.object({
   heroTitle: z.string().trim().min(1).max(500),
   heroVideoUrl: z.string().trim().url().max(2000).nullable().optional(),
   heroIntro: z.string().trim().min(1).max(2000),
+  heroKicker: z.string().trim().max(300).default(""),
   heroLogoLightUrl: z.string().trim().url().max(1000).nullable().optional(),
   heroLogoDarkUrl: z.string().trim().url().max(1000).nullable().optional(),
   forbesUrl: z.union([z.string().trim().url().max(500), z.literal("")]).default(""),
@@ -348,8 +359,6 @@ const updateSchema = z.object({
   faviconOriginalUrl: z.string().trim().url().max(1000).nullable().optional(),
   faviconPosX: z.number().int().min(0).max(100).default(50),
   faviconPosY: z.number().int().min(0).max(100).default(50),
-
-
 
   aboutRole: z.string().trim().min(1).max(120),
   aboutBio: z.string().trim().min(1).max(5000),
@@ -375,15 +384,15 @@ const updateSchema = z.object({
   i18nOverrides: z
     .record(
       z.string().min(1).max(120),
-      z.record(
-        z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
-        z.string().max(2000),
-      ),
+      z.record(z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]), z.string().max(2000)),
     )
     .default({}),
   themeOverrides: z
     .record(
-      z.string().regex(/^--[a-z0-9-]+$/i).max(60),
+      z
+        .string()
+        .regex(/^--[a-z0-9-]+$/i)
+        .max(60),
       z.string().trim().min(1).max(200),
     )
     .default({}),
@@ -405,6 +414,7 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       hero_title: data.heroTitle,
       hero_video_url: data.heroVideoUrl ?? null,
       hero_intro: data.heroIntro,
+      hero_kicker: data.heroKicker,
       hero_logo_light_url: data.heroLogoLightUrl ?? null,
       hero_logo_dark_url: data.heroLogoDarkUrl ?? null,
       forbes_url: data.forbesUrl || null,
@@ -426,8 +436,6 @@ export const updateSiteSettings = createServerFn({ method: "POST" })
       favicon_original_url: data.faviconOriginalUrl ?? null,
       favicon_pos_x: data.faviconPosX,
       favicon_pos_y: data.faviconPosY,
-
-
 
       about_role: data.aboutRole,
       about_bio: data.aboutBio,
@@ -481,7 +489,10 @@ const overridesSchema = z.object({
     .default({}),
   themeOverrides: z
     .record(
-      z.string().regex(/^--[a-z0-9-]+$/i).max(60),
+      z
+        .string()
+        .regex(/^--[a-z0-9-]+$/i)
+        .max(60),
       z.string().trim().min(1).max(200),
     )
     .default({}),
@@ -528,9 +539,7 @@ export const uploadSitePortrait = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
 
-    const encoded = data.base64.includes(",")
-      ? data.base64.split(",").pop()
-      : data.base64;
+    const encoded = data.base64.includes(",") ? data.base64.split(",").pop() : data.base64;
     if (!encoded) throw new Error("Immagine non valida.");
 
     const binary = atob(encoded);
@@ -543,17 +552,13 @@ export const uploadSitePortrait = createServerFn({ method: "POST" })
         .replace(/^-+|-+$/g, "") || "homepage-photo";
     const path = `homepage/${Date.now()}-${safeName}.jpg`;
 
-    const { error } = await supabaseAdmin.storage
-      .from("site-assets")
-      .upload(path, bytes.buffer, {
-        contentType: data.mimeType,
-        upsert: false,
-      });
+    const { error } = await supabaseAdmin.storage.from("site-assets").upload(path, bytes.buffer, {
+      contentType: data.mimeType,
+      upsert: false,
+    });
     if (error) throw new Error(error.message);
 
-    const { data: publicData } = supabaseAdmin.storage
-      .from("site-assets")
-      .getPublicUrl(path);
+    const { data: publicData } = supabaseAdmin.storage.from("site-assets").getPublicUrl(path);
 
     return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
   });
@@ -578,9 +583,7 @@ export const uploadSiteFavicon = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
 
-    const encoded = data.base64.includes(",")
-      ? data.base64.split(",").pop()
-      : data.base64;
+    const encoded = data.base64.includes(",") ? data.base64.split(",").pop() : data.base64;
     if (!encoded) throw new Error("Immagine non valida.");
 
     const binary = atob(encoded);
@@ -594,27 +597,18 @@ export const uploadSiteFavicon = createServerFn({ method: "POST" })
         .replace(/^-+|-+$/g, "") || "favicon";
     const path = `favicon/${data.kind}-${Date.now()}-${safeName}.${ext}`;
 
-    const { error } = await supabaseAdmin.storage
-      .from("site-assets")
-      .upload(path, bytes.buffer, {
-        contentType: data.mimeType,
-        upsert: false,
-      });
+    const { error } = await supabaseAdmin.storage.from("site-assets").upload(path, bytes.buffer, {
+      contentType: data.mimeType,
+      upsert: false,
+    });
     if (error) throw new Error(error.message);
 
-    const { data: publicData } = supabaseAdmin.storage
-      .from("site-assets")
-      .getPublicUrl(path);
+    const { data: publicData } = supabaseAdmin.storage.from("site-assets").getPublicUrl(path);
 
     return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
   });
 
-const ALLOWED_LOGO_MIME = [
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-  "image/svg+xml",
-] as const;
+const ALLOWED_LOGO_MIME = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"] as const;
 const MIME_EXT: Record<string, string> = {
   "image/png": "png",
   "image/jpeg": "jpg",
@@ -635,9 +629,7 @@ export const uploadSiteLogo = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
 
-    const encoded = data.base64.includes(",")
-      ? data.base64.split(",").pop()
-      : data.base64;
+    const encoded = data.base64.includes(",") ? data.base64.split(",").pop() : data.base64;
     if (!encoded) throw new Error("Immagine non valida.");
 
     const binary = atob(encoded);
@@ -651,17 +643,13 @@ export const uploadSiteLogo = createServerFn({ method: "POST" })
         .replace(/^-+|-+$/g, "") || "logo";
     const path = `${data.folder}/${Date.now()}-${safeName}.${ext}`;
 
-    const { error } = await supabaseAdmin.storage
-      .from("site-assets")
-      .upload(path, bytes.buffer, {
-        contentType: data.mimeType,
-        upsert: false,
-      });
+    const { error } = await supabaseAdmin.storage.from("site-assets").upload(path, bytes.buffer, {
+      contentType: data.mimeType,
+      upsert: false,
+    });
     if (error) throw new Error(error.message);
 
-    const { data: publicData } = supabaseAdmin.storage
-      .from("site-assets")
-      .getPublicUrl(path);
+    const { data: publicData } = supabaseAdmin.storage.from("site-assets").getPublicUrl(path);
 
     return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
   });
@@ -684,9 +672,7 @@ export const uploadMarketReportImage = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => uploadMarketImageSchema.parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const encoded = data.base64.includes(",")
-      ? data.base64.split(",").pop()
-      : data.base64;
+    const encoded = data.base64.includes(",") ? data.base64.split(",").pop() : data.base64;
     if (!encoded) throw new Error("Immagine non valida.");
     const binary = atob(encoded);
     const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
@@ -702,9 +688,6 @@ export const uploadMarketReportImage = createServerFn({ method: "POST" })
       .from("site-assets")
       .upload(path, bytes.buffer, { contentType: data.mimeType, upsert: false });
     if (error) throw new Error(error.message);
-    const { data: publicData } = supabaseAdmin.storage
-      .from("site-assets")
-      .getPublicUrl(path);
+    const { data: publicData } = supabaseAdmin.storage.from("site-assets").getPublicUrl(path);
     return { publicUrl: `${publicData.publicUrl}?v=${Date.now()}` };
   });
-

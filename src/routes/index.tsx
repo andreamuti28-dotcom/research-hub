@@ -112,7 +112,12 @@ function Index() {
     gcTime: Infinity,
   });
   const formattedItText = formattedIt?.text ?? rawContent;
-  const [marketDisclaimer] = useTranslated([settings.homeMarketDisclaimer]);
+  const [marketDisclaimer, heroKicker, heroTagline, heroBio] = useTranslated([
+    settings.homeMarketDisclaimer,
+    settings.heroKicker,
+    settings.heroTitle,
+    settings.heroIntro,
+  ]);
   const [reportContentTranslated] = useTranslatedLive([formattedItText]);
   const reportContent = formatReportLocal(
     lang === "it" ? formattedItText : reportContentTranslated,
@@ -223,17 +228,19 @@ function Index() {
             />
           </div>
           <div className="flex-[999_1_520px] min-w-0">
-            <p className="am-in text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
-              {t("home.hero.kicker")}
-            </p>
+            {heroKicker && (
+              <p className="am-in text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
+                {heroKicker}
+              </p>
+            )}
             <h1 className="am-in am-d1 mt-4 font-editorial font-medium text-6xl sm:text-7xl lg:text-[84px] leading-none tracking-[-0.015em]">
               {settings.name}
             </h1>
             <p className="am-in am-d2 mt-5 font-editorial italic text-2xl sm:text-[26px] leading-snug text-[#e6eeea] max-w-[640px]">
-              {t("home.hero.tagline")}
+              {heroTagline}
             </p>
             <p className="am-in am-d3 mt-5 text-[17px] leading-relaxed text-brand-muted max-w-[620px] font-display">
-              {t("home.hero.bio")}
+              {heroBio}
             </p>
             <div className="am-in am-d4 flex flex-wrap gap-3 mt-8 font-display">
               <Link

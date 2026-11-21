@@ -21,10 +21,7 @@ import {
 } from "@/lib/site-settings.functions";
 import { cropTo4x5Jpeg, cropFaviconPng, cropFaviconPngFromUrl } from "@/lib/image-crop";
 import { SITE_URL } from "@/lib/og";
-import {
-  getLatestMarketReport,
-  upsertCurrentMarketReport,
-} from "@/lib/market-reports.functions";
+import { getLatestMarketReport, upsertCurrentMarketReport } from "@/lib/market-reports.functions";
 
 export const Route = createFileRoute("/admin/settings")({
   head: () => ({
@@ -50,6 +47,7 @@ type FormState = {
   heroTitle: string;
   heroVideoUrl: string | null;
   heroIntro: string;
+  heroKicker: string;
   heroLogoLightUrl: string | null;
   heroLogoDarkUrl: string | null;
   forbesUrl: string;
@@ -71,8 +69,6 @@ type FormState = {
   faviconOriginalUrl: string | null;
   faviconPosX: number;
   faviconPosY: number;
-
-
 
   aboutRole: string;
   aboutBio: string;
@@ -177,6 +173,7 @@ function AdminSettingsPage() {
         heroTitle: s.heroTitle,
         heroVideoUrl: s.heroVideoUrl,
         heroIntro: s.heroIntro,
+        heroKicker: s.heroKicker,
         heroLogoLightUrl: s.heroLogoLightUrl,
         heroLogoDarkUrl: s.heroLogoDarkUrl,
         forbesUrl: s.forbesUrl,
@@ -198,8 +195,6 @@ function AdminSettingsPage() {
         faviconOriginalUrl: s.faviconOriginalUrl,
         faviconPosX: s.faviconPosX,
         faviconPosY: s.faviconPosY,
-
-
 
         aboutRole: s.aboutRole,
         aboutBio: s.aboutBio,
@@ -236,9 +231,6 @@ function AdminSettingsPage() {
       setTimeout(() => setSaved(false), 2500);
     },
   });
-
-
-
 
   if (!form) {
     return (
@@ -304,9 +296,7 @@ function AdminSettingsPage() {
           base64: croppedBase64,
         },
       });
-      setForm((f) =>
-        f ? { ...f, faviconOriginalUrl: originalUrl, faviconUrl: croppedUrl } : f,
-      );
+      setForm((f) => (f ? { ...f, faviconOriginalUrl: originalUrl, faviconUrl: croppedUrl } : f));
     } catch (e) {
       setFaviconError(e instanceof Error ? e.message : "Upload favicon fallito");
     } finally {
@@ -404,17 +394,14 @@ function AdminSettingsPage() {
       if (!file.type.startsWith("video/")) {
         throw new Error("Formato non supportato: carica un file video.");
       }
-      const ext = (file.name.split(".").pop() || "mp4")
-        .toLowerCase()
-        .replace(/[^a-z0-9]/g, "") || "mp4";
+      const ext =
+        (file.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "") || "mp4";
       const path = `hero-video/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error } = await supabase.storage
-        .from("site-assets")
-        .upload(path, file, {
-          contentType: file.type || "video/mp4",
-          upsert: false,
-          cacheControl: "3600",
-        });
+      const { error } = await supabase.storage.from("site-assets").upload(path, file, {
+        contentType: file.type || "video/mp4",
+        upsert: false,
+        cacheControl: "3600",
+      });
       if (error) throw new Error(error.message);
       const { data: pub } = supabase.storage.from("site-assets").getPublicUrl(path);
       const publicUrl = `${pub.publicUrl}?v=${Date.now()}`;
@@ -426,7 +413,6 @@ function AdminSettingsPage() {
       setHeroVideoBusy(false);
     }
   };
-
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -459,7 +445,9 @@ function AdminSettingsPage() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/40 text-center px-2">
-                  Nessuna foto<br />caricata
+                  Nessuna foto
+                  <br />
+                  caricata
                 </div>
               )}
             </div>
@@ -481,7 +469,11 @@ function AdminSettingsPage() {
                   disabled={uploading}
                   className="px-4 py-2 bg-background text-foreground font-display text-[11px] font-bold uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors disabled:opacity-50"
                 >
-                  {uploading ? "Caricamento…" : form.portraitUrl ? "Sostituisci foto" : "Carica foto"}
+                  {uploading
+                    ? "Caricamento…"
+                    : form.portraitUrl
+                      ? "Sostituisci foto"
+                      : "Carica foto"}
                 </button>
                 {form.portraitUrl && (
                   <button
@@ -497,7 +489,8 @@ function AdminSettingsPage() {
                 <div className="font-mono text-[11px] text-destructive">{uploadError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                L'immagine viene ritagliata in un cerchio. Trascina il punto focale sulla griglia per scegliere cosa mostrare.
+                L'immagine viene ritagliata in un cerchio. Trascina il punto focale sulla griglia
+                per scegliere cosa mostrare.
               </p>
             </div>
           </div>
@@ -530,7 +523,9 @@ function AdminSettingsPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/40 text-center px-2">
-                    Nessuna<br />favicon
+                    Nessuna
+                    <br />
+                    favicon
                   </div>
                 )}
               </div>
@@ -584,9 +579,7 @@ function AdminSettingsPage() {
                   <button
                     type="button"
                     onClick={() =>
-                      setForm((f) =>
-                        f ? { ...f, faviconUrl: null, faviconOriginalUrl: null } : f,
-                      )
+                      setForm((f) => (f ? { ...f, faviconUrl: null, faviconOriginalUrl: null } : f))
                     }
                     className="px-4 py-2 border border-surface-dark-muted font-display text-[11px] font-bold uppercase tracking-wider hover:border-destructive hover:text-destructive transition-colors"
                   >
@@ -598,9 +591,9 @@ function AdminSettingsPage() {
                 <div className="font-mono text-[11px] text-destructive">{faviconError}</div>
               )}
               <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-                La favicon viene ritagliata in un quadrato 256×256. Sposta il punto focale e
-                premi <strong>Applica ritaglio</strong> per rigenerarla. Salva poi le impostazioni
-                per pubblicarla.
+                La favicon viene ritagliata in un quadrato 256×256. Sposta il punto focale e premi{" "}
+                <strong>Applica ritaglio</strong> per rigenerarla. Salva poi le impostazioni per
+                pubblicarla.
               </p>
             </div>
           </div>
@@ -623,7 +616,8 @@ function AdminSettingsPage() {
             Video principale (home)
           </h2>
           <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-            Sostituisce il titolo nella home. Il video parte in autoplay, muto, in loop. Nessun limite di peso — formati consigliati: MP4 / WebM.
+            Sostituisce il titolo nella home. Il video parte in autoplay, muto, in loop. Nessun
+            limite di peso — formati consigliati: MP4 / WebM.
           </p>
           {form.heroVideoUrl ? (
             <div className="border border-surface-dark-muted bg-black/40 overflow-hidden">
@@ -664,8 +658,8 @@ function AdminSettingsPage() {
               {heroVideoBusy
                 ? "Caricamento…"
                 : form.heroVideoUrl
-                ? "Sostituisci video"
-                : "Carica video"}
+                  ? "Sostituisci video"
+                  : "Carica video"}
             </button>
             {form.heroVideoUrl && (
               <button
@@ -677,9 +671,7 @@ function AdminSettingsPage() {
               </button>
             )}
           </div>
-          {heroVideoError && (
-            <p className="font-mono text-[11px] text-red-400">{heroVideoError}</p>
-          )}
+          {heroVideoError && <p className="font-mono text-[11px] text-red-400">{heroVideoError}</p>}
           {heroVideoBusy && (
             <p className="font-mono text-[10px] uppercase tracking-widest text-surface-dark-foreground/50">
               Upload in corso… non chiudere la pagina.
@@ -704,7 +696,17 @@ function AdminSettingsPage() {
             />
           </Field>
 
-          <Field label="Titolo di fallback (mostrato solo se non è impostato un video)">
+          <Field label="Home · etichetta sopra il nome (es. Finanza quantitativa · Risk management · Derivati)">
+            <input
+              type="text"
+              value={form.heroKicker}
+              onChange={(e) => setForm({ ...form, heroKicker: e.target.value })}
+              className={inputCls}
+              maxLength={300}
+            />
+          </Field>
+
+          <Field label="Home · frase in corsivo sotto il nome">
             <textarea
               value={form.heroTitle}
               onChange={(e) => setForm({ ...form, heroTitle: e.target.value })}
@@ -714,8 +716,7 @@ function AdminSettingsPage() {
             />
           </Field>
 
-
-          <Field label="Bio / introduzione">
+          <Field label="Home · bio breve sotto la frase">
             <textarea
               value={form.heroIntro}
               onChange={(e) => setForm({ ...form, heroIntro: e.target.value })}
@@ -758,7 +759,11 @@ function AdminSettingsPage() {
                   disabled={heroLogoBusy !== null}
                   className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
                 >
-                  {heroLogoBusy === "light" ? "Caricamento…" : form.heroLogoLightUrl ? "Sostituisci" : "Carica logo"}
+                  {heroLogoBusy === "light"
+                    ? "Caricamento…"
+                    : form.heroLogoLightUrl
+                      ? "Sostituisci"
+                      : "Carica logo"}
                 </button>
                 {form.heroLogoLightUrl && (
                   <button
@@ -806,7 +811,11 @@ function AdminSettingsPage() {
                   disabled={heroLogoBusy !== null}
                   className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/60 px-4 py-2 hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
                 >
-                  {heroLogoBusy === "dark" ? "Caricamento…" : form.heroLogoDarkUrl ? "Sostituisci" : "Carica logo"}
+                  {heroLogoBusy === "dark"
+                    ? "Caricamento…"
+                    : form.heroLogoDarkUrl
+                      ? "Sostituisci"
+                      : "Carica logo"}
                 </button>
                 {form.heroLogoDarkUrl && (
                   <button
@@ -907,8 +916,8 @@ function AdminSettingsPage() {
               Dashboard interattive in evidenza (homepage)
             </h2>
             <p className="font-mono text-[10px] text-surface-dark-foreground/50 mt-2 leading-relaxed">
-              Seleziona fino a 3 dashboard da mostrare in home. Tutte le altre restano
-              disponibili nell'archivio.
+              Seleziona fino a 3 dashboard da mostrare in home. Tutte le altre restano disponibili
+              nell'archivio.
             </p>
           </div>
           {[0, 1, 2].map((slot) => {
@@ -1023,15 +1032,13 @@ function AdminSettingsPage() {
                   {marketImageBusy
                     ? "Caricamento…"
                     : form.homeMarketImageUrl
-                    ? "Sostituisci immagine"
-                    : "Carica immagine"}
+                      ? "Sostituisci immagine"
+                      : "Carica immagine"}
                 </button>
                 {form.homeMarketImageUrl && (
                   <button
                     type="button"
-                    onClick={() =>
-                      setForm((f) => (f ? { ...f, homeMarketImageUrl: null } : f))
-                    }
+                    onClick={() => setForm((f) => (f ? { ...f, homeMarketImageUrl: null } : f))}
                     className="font-display text-xs font-bold uppercase tracking-widest border-2 border-surface-dark-foreground/30 text-surface-dark-foreground/70 px-4 py-2 hover:border-red-500 hover:text-red-500 transition-colors"
                   >
                     Rimuovi
@@ -1096,10 +1103,7 @@ function AdminSettingsPage() {
           </Field>
           <MarketReportEditorPanel />
           <MarketReportsIntegrationPanel />
-
         </section>
-
-
 
         {/* About Me */}
         <section className="border border-surface-dark-muted p-6 space-y-6">
@@ -1235,7 +1239,9 @@ function AdminSettingsPage() {
               Tooltip (al passaggio del mouse)
             </h3>
             <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-              Compaiono quando l'utente passa il mouse sopra le voci della formazione, lingue, software e certificazioni. Lascia vuoto il campo "tooltip" di un elemento per nasconderlo.
+              Compaiono quando l'utente passa il mouse sopra le voci della formazione, lingue,
+              software e certificazioni. Lascia vuoto il campo "tooltip" di un elemento per
+              nasconderlo.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Field label="Sfondo tooltip">
@@ -1264,7 +1270,6 @@ function AdminSettingsPage() {
             onChange={(items) => setForm({ ...form, aboutEducation: items })}
             uploadLogo={uploadLogo}
           />
-
 
           <LanguageEditor
             items={form.aboutLanguages}
@@ -1874,9 +1879,7 @@ function LogoListEditor({
       {err && <div className="font-mono text-[11px] text-destructive">{err}</div>}
       <button
         type="button"
-        onClick={() =>
-          onChange([...items, { name: "", logoUrl: null, description: "" }])
-        }
+        onClick={() => onChange([...items, { name: "", logoUrl: null, description: "" }])}
         className="px-3 py-1.5 border border-surface-dark-muted text-[10px] uppercase tracking-widest font-display font-bold hover:border-background hover:text-background"
       >
         + Aggiungi
@@ -1947,8 +1950,8 @@ function MarketReportEditorPanel() {
           Report mercati — modifica manuale
         </h3>
         <p className="font-mono text-[11px] text-surface-dark-foreground/60 leading-relaxed">
-          Modifica direttamente il report attuale (quello mostrato in home).
-          Sovrascrive il contenuto ricevuto da Google Apps Script.
+          Modifica direttamente il report attuale (quello mostrato in home). Sovrascrive il
+          contenuto ricevuto da Google Apps Script.
         </p>
       </div>
 
@@ -2015,9 +2018,7 @@ function MarketReportEditorPanel() {
                 Salvato
               </span>
             )}
-            {error && (
-              <span className="font-mono text-[10px] text-destructive">{error}</span>
-            )}
+            {error && <span className="font-mono text-[10px] text-destructive">{error}</span>}
           </div>
         </>
       )}
@@ -2095,11 +2096,10 @@ function sendDailyMarketReport() {
           Integrazione Google Apps Script
         </h3>
         <p className="font-mono text-[11px] text-surface-dark-foreground/60 leading-relaxed">
-          L'endpoint riceve un report al giorno e lo mostra in tempo reale nella
-          home. Formato preferito del campo <code>content</code>: <strong>testo
-          semplice</strong> con ritorni a capo (i newline vengono preservati).
-          Il Markdown viene mostrato come testo grezzo — non è interpretato.
-          Lunghezza massima 200.000 caratteri.
+          L'endpoint riceve un report al giorno e lo mostra in tempo reale nella home. Formato
+          preferito del campo <code>content</code>: <strong>testo semplice</strong> con ritorni a
+          capo (i newline vengono preservati). Il Markdown viene mostrato come testo grezzo — non è
+          interpretato. Lunghezza massima 200.000 caratteri.
         </p>
       </div>
 
@@ -2126,10 +2126,10 @@ function sendDailyMarketReport() {
           {"\n"}# in alternativa: x-webhook-secret: &lt;MARKET_REPORTS_WEBHOOK_SECRET&gt;
         </div>
         <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-          Il valore del secret è configurato tra i secret del Worker su Cloudflare
-          (Workers &amp; Pages → research-hub → Settings → Variables and Secrets →{" "}
-          <code>MARKET_REPORTS_WEBHOOK_SECRET</code>). Usa lo stesso valore come
-          Script Property nello script Google.
+          Il valore del secret è configurato tra i secret del Worker su Cloudflare (Workers &amp;
+          Pages → research-hub → Settings → Variables and Secrets →{" "}
+          <code>MARKET_REPORTS_WEBHOOK_SECRET</code>). Usa lo stesso valore come Script Property
+          nello script Google.
         </p>
       </div>
 
@@ -2175,18 +2175,16 @@ function sendDailyMarketReport() {
           onFocus={(e) => e.currentTarget.select()}
         />
         <p className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-          Passi: 1) script.google.com → Nuovo progetto → incolla.{" "}
-          2) Impostazioni progetto → Proprietà script → aggiungi{" "}
-          <code>WEBHOOK_SECRET</code>. 3) Esegui una volta per autorizzare.{" "}
-          4) Trigger → Aggiungi: <code>sendDailyMarketReport</code>, time-driven,
-          ogni giorno all'orario desiderato.
+          Passi: 1) script.google.com → Nuovo progetto → incolla. 2) Impostazioni progetto →
+          Proprietà script → aggiungi <code>WEBHOOK_SECRET</code>. 3) Esegui una volta per
+          autorizzare. 4) Trigger → Aggiungi: <code>sendDailyMarketReport</code>, time-driven, ogni
+          giorno all'orario desiderato.
         </p>
       </div>
 
       <div className="font-mono text-[10px] text-surface-dark-foreground/50 leading-relaxed">
-        Risposte: <code>201</code> = creato · <code>401</code> = secret errato ·
-        <code>400</code> = JSON o payload non valido · <code>503</code> = secret
-        mancante lato server.
+        Risposte: <code>201</code> = creato · <code>401</code> = secret errato ·<code>400</code> =
+        JSON o payload non valido · <code>503</code> = secret mancante lato server.
       </div>
     </div>
   );
