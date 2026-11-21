@@ -6,12 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { siteSettingsQuery } from "@/hooks/use-site-settings";
 import { useTranslated } from "@/hooks/use-translated";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { SiteSettings, LanguageItem } from "@/lib/site-settings.functions";
 import { useT } from "@/lib/i18n";
 import { ogImageMeta } from "@/lib/og";
@@ -42,8 +37,7 @@ export const Route = createFileRoute("/about")({
     ],
     links: [{ rel: "canonical", href: "https://www.andreamuti.com/about" }],
   }),
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(siteSettingsQuery),
+  loader: ({ context }) => context.queryClient.ensureQueryData(siteSettingsQuery),
   component: AboutPage,
 });
 
@@ -52,7 +46,8 @@ const EMOJI_FONT =
 
 // Turns web addresses written in the bio (with or without https://) into
 // clickable links that open in a new tab.
-const LINK_RE = /(https?:\/\/[^\s]+[^\s.,;:!?)]|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:org|com|net|io|it|eu|ch|dev|app)\b(?:\/[^\s]*[^\s.,;:!?)])?)/gi;
+const LINK_RE =
+  /(https?:\/\/[^\s]+[^\s.,;:!?)]|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:org|com|net|io|it|eu|ch|dev|app)\b(?:\/[^\s]*[^\s.,;:!?)])?)/gi;
 
 // Also supports [testo](https://...) to link a word to an address.
 const MD_LINK_RE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
@@ -99,6 +94,58 @@ function bareLinks(text: string, group: number): ReactNode[] {
   });
 }
 
+const ROLES = [
+  { key: "role1", org: "Starting Finance Club Bicocca", icon: "users" },
+  { key: "role2", org: "Interuniversity Investment Challenge", icon: "trophy" },
+  { key: "role3", org: "CCD Economia e Finanza", icon: "landmark" },
+  { key: "role4", org: "Forbes Italia Next Leaders", icon: "pen" },
+] as const;
+
+function RoleIcon({ name }: { name: (typeof ROLES)[number]["icon"] }) {
+  const common = {
+    width: 44,
+    height: 44,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "var(--gold)",
+    strokeWidth: 1.5,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true,
+  };
+  if (name === "users")
+    return (
+      <svg {...common}>
+        <circle cx="9" cy="8" r="3.5" />
+        <path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5" />
+        <circle cx="17" cy="9" r="2.5" />
+        <path d="M16 14.6c2.6.2 4.6 1.9 5.3 4.9" />
+      </svg>
+    );
+  if (name === "trophy")
+    return (
+      <svg {...common}>
+        <path d="M8 4h8v5a4 4 0 0 1-8 0V4Z" />
+        <path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4" />
+        <path d="M12 13v4M8.5 20h7M10 17h4" />
+      </svg>
+    );
+  if (name === "landmark")
+    return (
+      <svg {...common}>
+        <path d="M3 9.5 12 4l9 5.5" />
+        <path d="M5 10v7M9.5 10v7M14.5 10v7M19 10v7" />
+        <path d="M3 20h18" />
+      </svg>
+    );
+  return (
+    <svg {...common}>
+      <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z" />
+      <path d="M13.5 6.5l4 4" />
+    </svg>
+  );
+}
+
 function AboutPage() {
   const { data: settings } = useSuspenseQuery(siteSettingsQuery);
   const t = useT();
@@ -108,17 +155,15 @@ function AboutPage() {
     settings.aboutKicker,
     settings.aboutEducationLabel,
     settings.aboutLanguagesLabel,
-    settings.aboutSoftwareLabel,
     settings.aboutCertificationsLabel,
   ];
   const panelFlat = [
     ...settings.aboutEducation.flatMap((e) => [e.name, e.detail ?? "", e.description ?? ""]),
     ...settings.aboutLanguages.flatMap((l) => [l.name, "", l.description ?? ""]),
-    ...settings.aboutSoftware.flatMap((s) => [s.name, "", s.description ?? ""]),
     ...settings.aboutCertifications.flatMap((c) => [c.name, "", c.description ?? ""]),
   ];
   const all = useTranslated([...baseLabels, ...panelFlat]);
-  const [bio, role, kicker, eduLabel, langLabel, softLabel, certLabel] = all;
+  const [bio, role, kicker, eduLabel, langLabel, certLabel] = all;
   let cursor = baseLabels.length;
   const take = (n: number) => {
     const slice = all.slice(cursor, cursor + n);
@@ -133,28 +178,26 @@ function AboutPage() {
     const [name, , description] = take(3);
     return { ...l, name, description };
   });
-  const trSoftware = settings.aboutSoftware.map((s) => {
-    const [name, , description] = take(3);
-    return { ...s, name, description };
-  });
   const trCertifications = settings.aboutCertifications.map((c) => {
     const [name, , description] = take(3);
     return { ...c, name, description };
   });
   const portraitSrc = settings.portraitUrl ?? portrait;
+  const tk = t as unknown as (k: string) => string;
 
   return (
     <TooltipProvider delayDuration={150}>
       <div className="min-h-screen flex flex-col">
         <SiteHeader />
 
-        <section className="bg-background py-16 md:py-24">
-          <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-[320px_1fr] gap-10 md:gap-16 items-start">
-            <div className="flex flex-col items-center gap-5">
+        {/* ---------- Hero ---------- */}
+        <section className="bg-brand text-brand-fg">
+          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-14 pb-16 md:pt-16 md:pb-[72px] flex flex-wrap gap-10 md:gap-14 items-start">
+            <div className="flex-[0_1_320px] min-w-[240px]">
               <img
                 src={portraitSrc}
                 alt={t("about.portraitAlt", settings.name)}
-                className="w-64 h-64 md:w-72 md:h-72 rounded-full object-cover bg-surface"
+                className="am-fadein am-d1 w-full aspect-[4/5] object-cover rounded-2xl border border-brand-line bg-brand-2"
                 style={{
                   objectPosition: `${settings.aboutPortraitPosX}% ${settings.aboutPortraitPosY}%`,
                 }}
@@ -164,8 +207,7 @@ function AboutPage() {
                   href={settings.linkedinUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label={t("common.linkedin")}
-                  className="group inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-foreground text-background hover:bg-primary transition-colors shadow-sm"
+                  className="am-btn am-in am-d4 mt-5 inline-flex items-center gap-2.5 h-[46px] px-5 rounded-md bg-gold text-[#14171c] font-display text-sm font-bold"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -176,21 +218,21 @@ function AboutPage() {
                   >
                     <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z" />
                   </svg>
-                  <span className="font-display text-[11px] font-bold uppercase tracking-widest">
-                    {t("common.linkedin")}
-                  </span>
+                  {t("common.linkedin")}
                 </a>
               )}
             </div>
-            <div className="animate-fade-up">
-              <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
+            <div className="flex-[999_1_520px] min-w-0">
+              <p className="am-in text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
                 {kicker}
-              </div>
-              <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tighter italic mb-3">
+              </p>
+              <h1 className="am-in am-d1 mt-3.5 font-editorial font-medium text-5xl sm:text-[64px] leading-[1.02]">
                 {settings.name}
               </h1>
-              <p className="text-muted-foreground text-lg mb-6">{role}</p>
-              <div className="max-w-[60ch] text-base md:text-lg leading-relaxed text-pretty text-justify space-y-4">
+              <p className="am-in am-d2 mt-3.5 font-editorial italic text-2xl text-[#e6eeea]">
+                {role}
+              </p>
+              <div className="am-in am-d3 mt-6 max-w-[680px] space-y-4 text-[17px] leading-[1.7] text-brand-muted font-display text-pretty">
                 {bio.split(/\n\n+/).map((para, i) => (
                   <p key={i} className="whitespace-pre-line">
                     {withLinks(para)}
@@ -201,100 +243,187 @@ function AboutPage() {
           </div>
         </section>
 
-        <section
-          className="py-16 md:py-24"
-          style={{ backgroundColor: settings.aboutPanelBg, color: settings.aboutPanelFg }}
-        >
-          <div className="max-w-7xl mx-auto px-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-10">
-            <PanelColumn title={eduLabel} fg={settings.aboutPanelFg}>
-              <ul className="space-y-5">
+        <section className="bg-sage">
+          {/* ---------- Roles ---------- */}
+          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-[72px] pb-10">
+            <h2 className="am-reveal font-editorial font-medium text-[40px] leading-tight">
+              {t("about.rolesTitle")}
+            </h2>
+            <div className="am-stagger grid gap-5 mt-8 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+              {ROLES.map((r) => {
+                const isForbes = r.key === "role4";
+                const logo = isForbes ? settings.heroLogoLightUrl : null;
+                const inner = (
+                  <>
+                    <div className="h-[150px] overflow-hidden">
+                      <div
+                        className={`am-img h-full flex items-center justify-center ${
+                          logo ? "bg-white" : "bg-brand"
+                        }`}
+                        style={
+                          logo
+                            ? undefined
+                            : {
+                                backgroundImage:
+                                  "radial-gradient(circle at 20% 20%, rgb(226 196 106 / 0.18), transparent 55%), radial-gradient(circle at 85% 90%, rgb(140 201 173 / 0.18), transparent 50%)",
+                              }
+                        }
+                      >
+                        {logo ? (
+                          <img
+                            src={logo}
+                            alt={r.org}
+                            className="max-h-24 max-w-[80%] object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <RoleIcon name={r.icon} />
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-6 pt-5">
+                      <p className="text-[13px] font-semibold text-primary font-display">
+                        {tk(`about.${r.key}.role`)}
+                      </p>
+                      <h3 className="mt-1.5 font-editorial text-[22px] font-medium leading-tight">
+                        {r.org}
+                      </h3>
+                      <p className="mt-2.5 text-[15px] leading-relaxed text-muted-foreground font-display">
+                        {tk(`about.${r.key}.desc`)}
+                      </p>
+                    </div>
+                  </>
+                );
+                return isForbes && settings.forbesUrl ? (
+                  <a
+                    key={r.key}
+                    href={settings.forbesUrl}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="am-card am-lift block bg-background text-foreground rounded-2xl overflow-hidden"
+                  >
+                    {inner}
+                  </a>
+                ) : (
+                  <article
+                    key={r.key}
+                    className="am-card am-lift bg-background rounded-2xl overflow-hidden"
+                  >
+                    {inner}
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ---------- Education, languages, certifications ---------- */}
+          <div className="am-stagger max-w-[1240px] mx-auto px-6 sm:px-8 pt-10 pb-20 grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))] items-start">
+            <div className="bg-background rounded-2xl p-7">
+              <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary font-display mb-2">
+                {eduLabel}
+              </h2>
+              <ul>
                 {trEducation.map((e, i) => (
                   <TooltipItem key={i} description={e.description} settings={settings}>
-                    <div className="flex items-start gap-3">
-                      {e.logoUrl && (
-                        <div
-                          className="about-logo shrink-0 aspect-square flex items-center justify-center overflow-hidden mt-0.5"
-                          style={{
-                            maxWidth: `${settings.aboutLogoMaxWidth}px`,
-                            width: `${settings.aboutLogoMaxWidth}px`,
-                          }}
-                        >
+                    <div className="am-row flex gap-4 items-center py-3.5 border-b border-border">
+                      <div className="am-logo shrink-0 w-[52px] h-[52px] rounded-xl bg-white border border-sage-line flex items-center justify-center overflow-hidden p-1.5">
+                        {e.logoUrl ? (
                           <img
                             src={e.logoUrl}
-                            alt={e.name}
+                            alt=""
                             className="w-full h-full object-contain"
                             loading="lazy"
                           />
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <div className="font-display text-sm font-bold leading-snug">
-                          {e.name}
-                        </div>
+                        ) : (
+                          <span className="font-editorial text-base font-semibold text-brand">
+                            {e.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0 font-display">
+                        <p className="text-[15px] font-semibold leading-snug">{e.name}</p>
                         {e.detail && (
-                          <div className="font-mono text-[11px] opacity-80 mt-1 leading-relaxed">
-                            {e.detail}
-                          </div>
+                          <p className="mt-0.5 text-sm text-muted-foreground">{e.detail}</p>
                         )}
                       </div>
                     </div>
                   </TooltipItem>
                 ))}
                 {settings.aboutEducation.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
+                  <li className="text-sm text-muted-foreground">{t("common.notAvailable")}</li>
                 )}
               </ul>
-            </PanelColumn>
+            </div>
 
-            <PanelColumn title={langLabel} fg={settings.aboutPanelFg}>
-              <ul className="space-y-5">
+            <div className="bg-background rounded-2xl p-7">
+              <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary font-display mb-2">
+                {langLabel}
+              </h2>
+              <ul>
                 {trLanguages.map((l, i) => (
                   <TooltipItem key={i} description={l.description} settings={settings}>
-                    <LanguageRow item={l} settings={settings} />
+                    <LanguageRow item={l} />
                   </TooltipItem>
                 ))}
                 {settings.aboutLanguages.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
+                  <li className="text-sm text-muted-foreground">{t("common.notAvailable")}</li>
                 )}
               </ul>
-            </PanelColumn>
+            </div>
 
-            <PanelColumn title={certLabel} fg={settings.aboutPanelFg}>
-              <ul className="space-y-4">
+            <div className="bg-background rounded-2xl p-7">
+              <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary font-display mb-4">
+                {certLabel}
+              </h2>
+              <ul className="grid grid-cols-3 gap-3">
                 {trCertifications.map((c, i) => (
                   <TooltipItem key={i} description={c.description} settings={settings}>
-                    <LogoRow item={c} maxWidth={settings.aboutLogoMaxWidth} />
+                    <div className="am-tile h-full flex flex-col items-center gap-2 text-center py-3.5 px-1.5 rounded-xl border border-border">
+                      <div className="am-logo w-[52px] h-[52px] rounded-xl bg-white flex items-center justify-center overflow-hidden p-1">
+                        {c.logoUrl ? (
+                          <img
+                            src={c.logoUrl}
+                            alt=""
+                            className="w-full h-full object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <span className="font-editorial text-sm font-semibold text-brand">
+                            {c.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-xs leading-snug font-display">{c.name}</span>
+                    </div>
                   </TooltipItem>
                 ))}
                 {settings.aboutCertifications.length === 0 && (
-                  <li className="font-mono text-xs opacity-70">{t("common.notAvailable")}</li>
+                  <li className="col-span-3 text-sm text-muted-foreground">
+                    {t("common.notAvailable")}
+                  </li>
                 )}
               </ul>
-            </PanelColumn>
+            </div>
           </div>
+
+          {settings.contactEmail && (
+            <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pb-20">
+              <div className="am-reveal bg-brand text-brand-fg rounded-2xl p-8 flex flex-wrap justify-between items-center gap-5">
+                <p className="font-editorial text-[26px] leading-snug">{t("about.cta.text")}</p>
+                <a
+                  href={`mailto:${settings.contactEmail}`}
+                  className="am-btn inline-flex items-center h-12 px-6 rounded-md bg-gold text-[#14171c] font-bold text-[15px] font-display"
+                >
+                  {t("about.cta.button")}
+                </a>
+              </div>
+            </div>
+          )}
         </section>
 
         <SiteFooter />
       </div>
     </TooltipProvider>
-  );
-}
-
-function PanelColumn({
-  title,
-  fg,
-  children,
-}: {
-  title: string;
-  fg: string;
-  children: ReactNode;
-}) {
-  return (
-    <div>
-      <h2 className="font-display text-2xl font-bold tracking-tight mb-2">{title}</h2>
-      <div className="w-12 h-px opacity-60 mb-8" style={{ backgroundColor: fg }} />
-      {children}
-    </div>
   );
 }
 
@@ -307,19 +436,14 @@ function TooltipItem({
   settings: SiteSettings;
   children: ReactNode;
 }) {
-  if (!description || !description.trim()) {
-    return <li>{children}</li>;
-  }
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
+  const hasDescription = Boolean(description && description.trim());
 
   useEffect(() => {
     if (!open) return;
     const closeOnTouchOutside = (e: TouchEvent) => {
-      if (
-        triggerRef.current &&
-        !triggerRef.current.contains(e.target as Node)
-      ) {
+      if (triggerRef.current && !triggerRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     };
@@ -327,13 +451,17 @@ function TooltipItem({
     return () => document.removeEventListener("touchstart", closeOnTouchOutside);
   }, [open]);
 
+  if (!hasDescription) {
+    return <li>{children}</li>;
+  }
+
   return (
     <li>
       <Tooltip open={open} onOpenChange={setOpen}>
         <TooltipTrigger asChild>
           <div
             ref={triggerRef}
-            className="cursor-help"
+            className="cursor-help h-full rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             tabIndex={0}
             onMouseEnter={() => setOpen(true)}
             onMouseLeave={() => setOpen(false)}
@@ -360,74 +488,34 @@ function TooltipItem({
   );
 }
 
-function LanguageRow({ item, settings }: { item: LanguageItem; settings: SiteSettings }) {
+function LanguageRow({ item }: { item: LanguageItem }) {
   return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2 min-w-0">
+    <div className="am-row py-4 border-b border-border font-display">
+      <div className="flex items-center gap-3.5">
         {item.flagUrl ? (
           <img
             src={item.flagUrl}
             alt=""
-            className="w-6 h-4 object-cover rounded-sm shrink-0"
+            className="am-logo w-9 h-6 object-cover rounded-[3px] shrink-0"
             loading="lazy"
           />
         ) : item.flag ? (
           <span
-            className="text-xl leading-none shrink-0"
+            className="am-logo text-2xl leading-none shrink-0"
             style={{ fontFamily: EMOJI_FONT }}
             aria-hidden
           >
             {item.flag}
           </span>
         ) : null}
-        <span className="font-display text-xs font-bold uppercase tracking-widest truncate">
-          {item.name}
-        </span>
+        <span className="flex-1 min-w-0 text-[15px] font-semibold truncate">{item.name}</span>
+        <span className="text-sm text-muted-foreground tabular-nums">{item.level}%</span>
       </div>
-      <div
-        className="h-2 rounded-full overflow-hidden"
-        style={{ backgroundColor: settings.aboutLanguagesBarTrackColor }}
-      >
+      <div className="mt-2.5 h-1.5 rounded-full bg-sage overflow-hidden">
         <div
-          className="h-full rounded-full transition-all"
-          style={{
-            width: `${item.level}%`,
-            backgroundColor: settings.aboutLanguagesBarColor,
-          }}
+          className="am-bar h-full rounded-full bg-primary"
+          style={{ width: `${item.level}%` }}
         />
-      </div>
-    </div>
-  );
-}
-
-function LogoRow({
-  item,
-  maxWidth,
-}: {
-  item: { name: string; logoUrl: string | null };
-  maxWidth: number;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <div
-        className="about-logo shrink-0 aspect-square flex items-center justify-center overflow-hidden"
-        style={{ maxWidth: `${maxWidth}px`, width: `${maxWidth}px` }}
-      >
-        {item.logoUrl ? (
-          <img
-            src={item.logoUrl}
-            alt={item.name}
-            className="w-full h-full object-contain"
-            loading="lazy"
-          />
-        ) : (
-          <span className="font-display text-xs font-bold opacity-70">
-            {item.name.charAt(0).toUpperCase()}
-          </span>
-        )}
-      </div>
-      <div className="font-display text-sm font-bold leading-snug">
-        {item.name}
       </div>
     </div>
   );

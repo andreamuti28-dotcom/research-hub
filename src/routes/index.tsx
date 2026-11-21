@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { useEffect, useMemo } from "react";
+import portrait from "@/assets/portrait.jpg";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PaperRow } from "@/components/PaperRow";
@@ -21,18 +20,12 @@ import { formatMarketReportLayout } from "@/lib/format-layout.functions";
 import { formatReportLocal } from "@/lib/format-report-local";
 import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
-import { FinancialNewsSection } from "@/components/FinancialNewsSection";
+import { MarketReportCard } from "@/components/MarketReportCard";
+import { InterestMini } from "@/components/InterestMini";
+import { useCountUp } from "@/hooks/use-motion";
+import { formatDate } from "@/data/papers";
+import { tagSlug } from "@/lib/paper-tags";
 import { ogImageMeta } from "@/lib/og";
-
-const HERO_INTRO_IT =
-  "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.";
-const HERO_INTRO_EN =
-  "Economics and Finance student. I publish technical analysis on risk management, derivatives, crypto, financial markets and geopolitics.";
-const HERO_TITLE_FIXED = "Andrea Muti - Finanza";
-const HOME_FEATURED_LABEL_IT = "Pubblicazioni in evidenza";
-const HOME_FEATURED_LABEL_EN = "Featured publications";
-const HOME_MARKET_LABEL_IT = "Analisi dei Mercati Finanziari";
-const HOME_MARKET_LABEL_EN = "Financial Market Analysis";
 
 const papersQuery = {
   queryKey: ["papers", "published"] as const,
@@ -106,10 +99,9 @@ function Index() {
   const t = useT();
   const { lang } = useLanguage();
   const dateLocale = t("common.monthLocale");
-  // Always format the raw Italian Google Doc into markdown first, regardless
-  // of the current UI language. This way EN translation receives already-
-  // structured markdown (headings, lists, blank lines) instead of a wall of
-  // uppercase text.
+
+  // Market report: format the raw Italian Google Doc into markdown first, then
+  // translate it for the other languages (same pipeline as before).
   const formatFn = useServerFn(formatMarketReportLayout);
   const rawContent = latestReport?.content ?? "";
   const { data: formattedIt } = useQuery({
@@ -120,73 +112,32 @@ function Index() {
     gcTime: Infinity,
   });
   const formattedItText = formattedIt?.text ?? rawContent;
-  const [
-    heroTitle,
-    heroIntro,
-    marketDisclaimer,
-    marketLabel,
-    featuredLabel,
-  ] = useTranslated([
-    settings.heroTitle,
-    settings.heroIntro,
-    settings.homeMarketDisclaimer,
-    settings.homeMarketLabel,
-    settings.homeFeaturedLabel,
-  ]);
-  const [reportTitle, reportContentTranslated] = useTranslatedLive([
-    latestReport?.title ?? "",
-    formattedItText,
-  ]);
-  const reportContentRaw = lang === "it" ? formattedItText : reportContentTranslated;
-  const reportContent = formatReportLocal(reportContentRaw);
-  const localizedHeroIntro =
-    lang === "it" ? HERO_INTRO_IT : lang === "en" ? HERO_INTRO_EN : heroIntro;
-  const isDefaultFeaturedLabel =
-    settings.homeFeaturedLabel.trim().toLowerCase() === HOME_FEATURED_LABEL_IT.toLowerCase();
-  const isDefaultMarketLabel =
-    settings.homeMarketLabel.trim().toLowerCase() === HOME_MARKET_LABEL_IT.toLowerCase();
-  const localizedFeaturedLabel =
-    lang === "en" && isDefaultFeaturedLabel ? HOME_FEATURED_LABEL_EN : featuredLabel;
-  const localizedMarketLabel =
-    lang === "en" && isDefaultMarketLabel ? HOME_MARKET_LABEL_EN : marketLabel;
-  
-  
-  const [group, setGroupState] = useState<"featured" | "live">("featured");
-  const [sub, setSub] = useState<"publications" | "dashboards" | "markets" | "news">(
-    "publications",
+  const [marketDisclaimer] = useTranslated([settings.homeMarketDisclaimer]);
+  const [reportContentTranslated] = useTranslatedLive([formattedItText]);
+  const reportContent = formatReportLocal(
+    lang === "it" ? formattedItText : reportContentTranslated,
   );
-  const setGroup = (g: "featured" | "live") => {
-    setGroupState(g);
-    setSub(g === "featured" ? "publications" : settings.homeMarketEnabled ? "markets" : "news");
-  };
-  const featuredSubTabs = [
-    { key: "publications" as const, label: t("home.sub.papers") },
-    { key: "dashboards" as const, label: t("home.sub.dashboards") },
-  ] as const;
-  const liveSubTabs = [
-    ...(settings.homeMarketEnabled
-      ? [
-          {
-            key: "markets" as const,
-            label: t("home.sub.markets"),
-          },
-        ]
-      : []),
-    { key: "news" as const, label: t("home.sub.news") },
-  ] as const;
+  const reportDate = latestReport
+    ? new Date(latestReport.reportDate).toLocaleDateString(dateLocale, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "";
 
-
-  const dashboardsLabel = t("archive.tab.dashboards");
-  const dashboardsBadge = t("dashboard.badge");
-  const dashboardsOpenLabel = t("dashboard.open");
+  // Dashboards: the mini compound-interest widget plus a short list.
   const routableDashboards = dashboards.filter((d) => dashboardPath(d.component_key));
-  const selectedDashboards = settings.featuredDashboardIds
+  const featuredDashboards = settings.featuredDashboardIds
     .map((id) => routableDashboards.find((d) => d.id === id))
     .filter((d): d is (typeof routableDashboards)[number] => Boolean(d));
-  const visibleDashboards = (
-    selectedDashboards.length > 0 ? selectedDashboards : routableDashboards
-  ).slice(0, 3);
-  const visibleDashboardLabels = useDashboardLabels(visibleDashboards);
+  const listDashboards = [
+    ...featuredDashboards,
+    ...routableDashboards.filter((d) => !featuredDashboards.includes(d)),
+  ]
+    .filter((d) => d.component_key !== "interesse-composto")
+    .slice(0, 5);
+  const listDashboardLabels = useDashboardLabels(listDashboards);
+  const interestPath = dashboardPath("interesse-composto");
 
   useEffect(() => {
     const channel = supabase
@@ -231,337 +182,283 @@ function Index() {
     }
   }, [consent]);
 
-  const featured = settings.featuredPaperIds
-    .map((id) => papers.find((p) => p.id === id))
-    .filter((p): p is (typeof papers)[number] => Boolean(p));
-  // Latest 3 papers in chronological order (newest first), including featured.
-  const latest = [...papers]
-    .sort((a, b) => (a.publishedDate < b.publishedDate ? 1 : -1))
-    .slice(0, 3);
+  // Papers: newest first (the server already sorts by effective date).
+  const latestPaper = papers[0];
+  const recentPapers = papers.slice(1, 6);
+  const [latestTitle, latestAbstract] = useTranslated([
+    latestPaper?.title ?? "",
+    latestPaper?.abstract ?? "",
+  ]);
+  const paperCount = useCountUp(papers.length);
+
+  // Topics: every tag in use, most frequent first.
+  const topics = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const p of papers) for (const tag of p.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }, [papers]);
+  const topicDesc = (tag: string) => {
+    const key = `topic.${tagSlug(tag)}`;
+    const value = (t as unknown as (k: string) => string | undefined)(key);
+    return typeof value === "string" ? value : "";
+  };
+
+  const portraitSrc = settings.portraitUrl ?? portrait;
 
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <section className="max-w-6xl mx-auto px-6 pt-10 md:pt-16 pb-12 md:pb-16 w-full">
-        <h1 className="sr-only">{HERO_TITLE_FIXED}</h1>
-        <div className="animate-fade-up grid md:grid-cols-12 gap-8 md:gap-12 items-stretch">
-          <div className="md:col-span-7">
-            <div className="relative w-full overflow-hidden border border-border bg-surface aspect-video">
-              {settings.heroVideoUrl && (
-                <video
-                  key={settings.heroVideoUrl}
-                  src={settings.heroVideoUrl}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="auto"
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              )}
-
-
-            </div>
-
+      {/* ---------- Hero: profile ---------- */}
+      <section className="bg-brand text-brand-fg">
+        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-14 pb-16 md:pt-[72px] md:pb-[88px] flex flex-wrap gap-10 md:gap-16 items-center">
+          <div className="flex-[0_1_380px] min-w-[240px] am-fadein am-d1">
+            <img
+              src={portraitSrc}
+              alt={t("about.portraitAlt", settings.name)}
+              className="w-full aspect-[4/5] object-cover rounded-2xl border border-brand-line bg-brand-2"
+              style={{
+                objectPosition: `${settings.aboutPortraitPosX}% ${settings.aboutPortraitPosY}%`,
+              }}
+            />
           </div>
-          <div className="md:col-span-5 flex flex-col h-full md:pl-6 md:border-l md:border-border md:pt-2">
-            <div className="text-base md:text-lg leading-relaxed text-pretty md:text-justify text-muted-foreground space-y-4">
-              <p className="whitespace-pre-line">{localizedHeroIntro}</p>
-            </div>
-            {(settings.heroLogoLightUrl || settings.heroLogoDarkUrl) && (
-              <div className="mt-6 md:mt-8 flex justify-center">
-                {settings.heroLogoLightUrl && (
-                  <img
-                    src={settings.heroLogoLightUrl}
-                    alt={`${HERO_TITLE_FIXED} logo`}
-                    className="block dark:hidden max-h-20 md:max-h-32 w-auto object-contain mx-auto mix-blend-multiply"
-                    loading="lazy"
-                  />
-                )}
-                {settings.heroLogoDarkUrl && (
-                  <img
-                    src={settings.heroLogoDarkUrl}
-                    alt={`${HERO_TITLE_FIXED} logo`}
-                    className="hidden dark:block max-h-20 md:max-h-32 w-auto object-contain mx-auto mix-blend-screen"
-                    loading="lazy"
-                  />
-                )}
-              </div>
-            )}
-            <div className="mt-auto pt-6 md:pt-8 flex flex-nowrap items-stretch w-full gap-2 sm:gap-3">
+          <div className="flex-[999_1_520px] min-w-0">
+            <p className="am-in text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
+              {t("home.hero.kicker")}
+            </p>
+            <h1 className="am-in am-d1 mt-4 font-editorial font-medium text-6xl sm:text-7xl lg:text-[84px] leading-none tracking-[-0.015em]">
+              {settings.name}
+            </h1>
+            <p className="am-in am-d2 mt-5 font-editorial italic text-2xl sm:text-[26px] leading-snug text-[#e6eeea] max-w-[640px]">
+              {t("home.hero.tagline")}
+            </p>
+            <p className="am-in am-d3 mt-5 text-[17px] leading-relaxed text-brand-muted max-w-[620px] font-display">
+              {t("home.hero.bio")}
+            </p>
+            <div className="am-in am-d4 flex flex-wrap gap-3 mt-8 font-display">
               <Link
                 to="/archivio"
-                className="flex-1 inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 bg-foreground text-background font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-primary transition-colors whitespace-nowrap"
+                className="am-btn inline-flex items-center h-[50px] px-6 rounded-md bg-gold text-[#14171c] font-bold text-[15px]"
               >
-                {t("home.ctaReadPapers")}
+                {t("home.hero.cta")}
               </Link>
-              <a
-                href={settings.forbesUrl || "#"}
-                target={settings.forbesUrl ? "_blank" : undefined}
-                rel="noreferrer noopener"
-                className="flex-1 inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-foreground text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors whitespace-nowrap"
-              >
-                Forbes
-              </a>
+              {settings.linkedinUrl && (
+                <a
+                  href={settings.linkedinUrl}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="am-btn inline-flex items-center h-[50px] px-6 rounded-md border border-[#7fa494] text-brand-fg font-semibold text-[15px] hover:border-brand-fg"
+                >
+                  {t("common.linkedin")}
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
 
-              <a
-                href={settings.linkedinUrl}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="flex-1 inline-flex items-center justify-center px-2.5 sm:px-4 py-2 sm:py-2.5 border border-border text-foreground font-display text-[9px] sm:text-[11px] font-bold uppercase tracking-wider hover:border-foreground transition-colors whitespace-nowrap"
-              >
-                {t("home.ctaLinkedin")}
-              </a>
+        <div className="border-t border-brand-line">
+          <div className="am-in am-d5 max-w-[1240px] mx-auto px-6 sm:px-8 grid grid-cols-1 sm:grid-cols-3">
+            <div className="py-7 sm:pr-6 border-b sm:border-b-0 sm:border-r border-brand-line">
+              <p className="font-editorial text-[40px] font-medium leading-none tabular-nums">
+                {paperCount}
+              </p>
+              <p className="mt-2 text-sm text-brand-muted font-display">{t("home.cred.papers")}</p>
+            </div>
+            <a
+              href={settings.forbesUrl || undefined}
+              target={settings.forbesUrl ? "_blank" : undefined}
+              rel="noreferrer noopener"
+              className="group py-7 sm:px-6 border-b sm:border-b-0 sm:border-r border-brand-line"
+            >
+              <p className="font-editorial text-[22px] font-medium leading-tight group-hover:text-gold transition-colors">
+                Forbes Italia
+                <br />
+                Next Leaders
+              </p>
+              <p className="mt-1.5 text-sm text-brand-muted font-display">
+                {t("home.cred.forbes")}
+              </p>
+            </a>
+            <div className="py-7 sm:pl-6">
+              <p className="font-editorial text-[22px] font-medium leading-tight">
+                Starting Finance
+                <br />
+                Club Bicocca
+              </p>
+              <p className="mt-1.5 text-sm text-brand-muted font-display">{t("home.cred.club")}</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="market-section" className="border-t border-border bg-background scroll-mt-20">
-        <div className="max-w-6xl mx-auto px-6 py-10 md:py-14">
-          {/* Primary categories side-by-side */}
-          <div className="grid grid-cols-2 gap-4 items-center border-b border-border pb-4">
-            <button
-              type="button"
-              onClick={() => setGroup("featured")}
-              aria-pressed={group === "featured"}
-              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 hover:scale-105 active:scale-105 ${
-                group === "featured"
-                  ? "text-3xl md:text-4xl text-foreground"
-                  : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
-              }`}
-            >
-              {t("home.tab.featured")}
-            </button>
+      {/* ---------- Latest paper + daily market report ---------- */}
+      <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-20 pb-10 flex flex-wrap gap-8">
+        {latestPaper && (
+          <Link
+            to="/paper/$slug"
+            params={{ slug: latestPaper.slug }}
+            className="am-reveal group flex-[999_1_560px] min-w-0 block border-t-[3px] border-primary pt-6 text-foreground"
+          >
+            <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-primary font-display">
+              {t("home.latest.kicker", formatDate(latestPaper.publishedDate, lang))}
+            </p>
+            <h2 className="mt-3.5 font-editorial font-medium text-4xl md:text-[40px] leading-[1.15] group-hover:text-primary transition-colors">
+              {latestTitle}
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-muted-foreground max-w-[680px] font-display line-clamp-4">
+              {latestAbstract}
+            </p>
+            <p className="mt-5 text-[15px] text-muted-foreground font-display">
+              {latestPaper.tags.join(" · ")} ·{" "}
+              <span className="font-semibold text-primary">
+                {t("paper.readOnline")} <span className="am-arrow">→</span>
+              </span>
+            </p>
+          </Link>
+        )}
+        {settings.homeMarketEnabled && latestReport && (
+          <MarketReportCard
+            className="am-reveal flex-[1_1_380px] min-w-0"
+            date={reportDate}
+            content={reportContent}
+            disclaimer={marketDisclaimer}
+          />
+        )}
+      </section>
 
-            <button
-              type="button"
-              onClick={() => setGroup("live")}
-              aria-pressed={group === "live"}
-              className={`text-center whitespace-nowrap font-display font-bold tracking-tighter italic transition-all duration-300 hover:scale-105 active:scale-105 ${
-                group === "live"
-                  ? "text-3xl md:text-4xl text-foreground"
-                  : "text-xl md:text-2xl text-foreground/70 hover:text-foreground"
-              }`}
-            >
-              {t("home.tab.live")}
-            </button>
-          </div>
-
-          {/* Sub categories in two centered cells */}
-          <div className="grid grid-cols-2 gap-4 mt-6">
-            <div
-              className={`flex flex-wrap items-center justify-center gap-x-4 gap-y-2 transition-opacity duration-300 ${
-                group === "featured" ? "opacity-100" : "opacity-45 hover:opacity-80"
-              }`}
-            >
-              {featuredSubTabs.map((s) => {
-                const active = sub === s.key;
-                return (
-                  <button
-                    key={s.key}
-                    type="button"
-                    onClick={() => {
-                      setGroup("featured");
-                      setSub(s.key);
-                    }}
-                    aria-pressed={active}
-                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-all pb-1 border-b hover:scale-110 active:scale-110 ${
-                      active
-                        ? "text-foreground border-muted-foreground"
-                        : "text-muted-foreground border-transparent hover:text-foreground"
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
-            <div
-              className={`flex flex-wrap items-center justify-center gap-x-4 gap-y-2 transition-opacity duration-300 ${
-                group === "live" ? "opacity-100" : "opacity-45 hover:opacity-80"
-              }`}
-            >
-              {liveSubTabs.map((s) => {
-                const active = sub === s.key;
-                return (
-                  <button
-                    key={s.key}
-                    type="button"
-                    onClick={() => {
-                      setGroup("live");
-                      setSub(s.key);
-                    }}
-                    aria-pressed={active}
-                    className={`font-mono text-[10px] md:text-[11px] uppercase tracking-widest transition-all pb-1 border-b hover:scale-110 active:scale-110 ${
-                      active
-                        ? "text-foreground border-muted-foreground"
-                        : "text-muted-foreground border-transparent hover:text-foreground"
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="mt-8 animate-fade-up" key={`${group}-${sub}`}>
-            {sub === "publications" &&
-              (featured.length > 0 ? (
-                <div>
-                  <div className="space-y-px bg-border border border-border">
-                    {featured.map((p) => (
-                      <PaperRow key={p.id} paper={p} />
-                    ))}
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <Link
-                      to="/archivio"
-                      className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
-                    >
-                      {t("home.seeArchive")}
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
-                  {t("home.empty")}
-                </div>
-              ))}
-
-            {sub === "dashboards" &&
-              (visibleDashboards.length > 0 ? (
-                <div>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {visibleDashboards.map((d, di) => {
-                      const path = dashboardPath(d.component_key)!;
-                      const title = visibleDashboardLabels[di]?.title ?? d.title;
-                      const desc = visibleDashboardLabels[di]?.description ?? d.description;
-                      return (
-                        <Link
-                          key={d.id}
-                          to={path}
-                          className="group block border border-border bg-surface p-6 hover:border-primary transition-colors"
-                        >
-                          <div className="flex items-center gap-2 mb-3">
-                            <span className="inline-flex items-center font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-400 text-black">
-                              {dashboardsBadge}
-                            </span>
-                          </div>
-                          <h3 className="font-display text-lg font-bold tracking-tight mb-2 group-hover:text-primary transition-colors">
-                            {title}
-                          </h3>
-                          {desc && (
-                            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                              {desc}
-                            </p>
-                          )}
-                          <span className="font-display text-[11px] font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 group-hover:text-primary group-hover:border-primary transition-all">
-                            {dashboardsOpenLabel} →
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                  <div className="mt-4 flex justify-end">
-                    <Link
-                      to="/archivio"
-                      search={{ tab: "dashboards" }}
-                      className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
-                    >
-                      {t("home.seeArchive")}
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
-                  {t("home.empty")}
-                </div>
-              ))}
-
-            {sub === "markets" && (
-              <div>
-                {latestReport ? (
-                  <article className="border border-border bg-surface p-6 md:p-8">
-                    <div className="flex flex-wrap items-baseline gap-3 mb-4">
-                      <h3 className="font-display text-xl font-bold tracking-tight">
-                        {reportTitle}
-                      </h3>
-                      <time className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
-                        {new Date(latestReport.reportDate).toLocaleDateString(dateLocale, {
-                          day: "2-digit",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </time>
-                    </div>
-                    {settings.homeMarketImageUrl && (
-                      <div className="mb-6 -mx-6 md:-mx-8 border-y border-border bg-background">
-                        <img
-                          src={settings.homeMarketImageUrl}
-                          alt=""
-                          className="block w-full max-h-72 md:max-h-96 object-cover"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                    <div className="market-report-prose text-foreground">
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{reportContent}</ReactMarkdown>
-                    </div>
-                  </article>
-                ) : (
-                  <div className="border border-border p-10 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-surface">
-                    {t("home.noReport")}
-                  </div>
-                )}
-                {marketDisclaimer && marketDisclaimer.trim() && (
-                  <p className="mt-4 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                    {marketDisclaimer}
+      {/* ---------- Topics ---------- */}
+      {topics.length > 0 && (
+        <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-14 pb-10">
+          <h2 className="am-reveal font-editorial font-medium text-[40px] leading-tight">
+            {t("home.themes.title")}
+          </h2>
+          <div className="am-stagger grid gap-5 mt-7 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
+            {topics.map(([tag, count]) => (
+              <Link
+                key={tag}
+                to="/archivio"
+                search={{ tag }}
+                className="am-lift block p-6 rounded-xl border border-sage-line bg-background text-foreground"
+              >
+                <h3 className="font-display text-lg font-bold">{tag}</h3>
+                {topicDesc(tag) && (
+                  <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground font-display">
+                    {topicDesc(tag)}
                   </p>
                 )}
+                <p className="mt-3 text-sm font-semibold text-primary font-display">
+                  {t("home.themes.count", count)} <span className="am-arrow">→</span>
+                </p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- Interactive dashboards ---------- */}
+      {routableDashboards.length > 0 && (
+        <section className="bg-brand text-brand-fg mt-10">
+          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-20">
+            <div className="flex flex-wrap justify-between items-end gap-6">
+              <div className="am-reveal">
+                <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
+                  {t("home.dash.kicker", routableDashboards.length)}
+                </p>
+                <h2 className="mt-3 font-editorial font-medium text-5xl leading-[1.1]">
+                  {t("home.dash.title")}
+                </h2>
+                <p className="mt-3.5 text-[17px] leading-relaxed text-brand-muted max-w-[620px] font-display">
+                  {t("home.dash.intro")}
+                </p>
               </div>
-            )}
-
-            {sub === "news" && <FinancialNewsSection embedded />}
-          </div>
-        </div>
-      </section>
-
-
-      <section className="border-t border-border bg-surface py-20 md:py-24">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="mb-12 md:mb-16">
-            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-3">
-              {t("home.latestKicker")}
+              <Link
+                to="/archivio"
+                search={{ tab: "dashboards" }}
+                className="am-btn inline-flex items-center h-12 px-6 rounded-md border border-[#7fa494] text-brand-fg font-semibold text-[15px] font-display hover:border-brand-fg"
+              >
+                {t("home.dash.all")}&nbsp;<span className="am-arrow">→</span>
+              </Link>
             </div>
-            <h2 className="text-3xl font-display font-bold tracking-tighter">
-              {t("home.latestTitle")}
-            </h2>
-          </div>
 
-          {latest.length === 0 ? (
-            <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground bg-background">
-              {t("home.empty")}
-            </div>
-          ) : (
-            <div>
-              <div className="space-y-px bg-border border border-border">
-                {latest.map((p) => (
-                  <PaperRow key={p.id} paper={p} />
+            <div className="flex flex-wrap gap-6 mt-10">
+              <div className="am-reveal flex-[999_1_560px] min-w-0">
+                <InterestMini href={interestPath} />
+              </div>
+              <div className="am-stagger flex-[1_1_360px] min-w-0 flex flex-col gap-3">
+                {listDashboards.map((d, i) => (
+                  <Link
+                    key={d.id}
+                    to={dashboardPath(d.component_key)!}
+                    className="am-lift flex gap-4 items-center p-5 rounded-xl border border-brand-line text-brand-fg hover:bg-brand-2"
+                  >
+                    <span className="shrink-0 w-11 h-11 rounded-[10px] bg-brand-2 flex items-center justify-center">
+                      <svg
+                        aria-hidden="true"
+                        width="22"
+                        height="22"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="var(--gold)"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 20h18" />
+                        <path d="M6 16v-4" />
+                        <path d="M11 16V8" />
+                        <path d="M16 16v-6" />
+                        <path d="M20 16V5" />
+                      </svg>
+                    </span>
+                    <span className="min-w-0 font-display">
+                      <span className="block text-base font-semibold">
+                        {listDashboardLabels[i]?.title ?? d.title}
+                      </span>
+                      {(listDashboardLabels[i]?.description ?? d.description) && (
+                        <span className="block mt-0.5 text-sm leading-snug text-brand-muted line-clamp-2">
+                          {listDashboardLabels[i]?.description ?? d.description}
+                        </span>
+                      )}
+                    </span>
+                  </Link>
                 ))}
               </div>
-              <div className="mt-4 flex justify-end">
-                <Link
-                  to="/archivio"
-                  className="inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-widest border-b-2 border-foreground pb-1 hover:text-primary hover:border-primary transition-all"
-                >
-                  {t("home.seeArchive")}
-                </Link>
-              </div>
             </div>
-          )}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- Recent research ---------- */}
+      {recentPapers.length > 0 && (
+        <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-16 pb-16">
+          <div className="flex flex-wrap justify-between items-baseline gap-6">
+            <h2 className="am-reveal font-editorial font-medium text-[40px] leading-tight">
+              {t("home.recent.title")}
+            </h2>
+            <Link
+              to="/archivio"
+              className="text-[15px] font-semibold text-primary font-display hover:underline underline-offset-4"
+            >
+              {t("home.recent.all", papers.length)} <span className="am-arrow">→</span>
+            </Link>
+          </div>
+          <div className="am-stagger mt-2">
+            {recentPapers.map((p) => (
+              <PaperRow key={p.id} paper={p} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- Path to the About page ---------- */}
+      <section className="bg-sage">
+        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-14 flex justify-center">
+          <Link
+            to="/about"
+            className="am-btn inline-flex items-center h-14 px-8 rounded-md bg-brand text-brand-fg font-bold text-base font-display"
+          >
+            {t("home.path.cta")}&nbsp;<span className="am-arrow">→</span>
+          </Link>
         </div>
       </section>
 

@@ -8,10 +8,7 @@ import { LanguageFlags } from "@/components/Flag";
 import { estimateReadingMinutes } from "@/lib/paper-reading";
 import { tagAccentColor } from "@/lib/paper-tags";
 
-
-
-
-function truncate(text: string, max = 160) {
+function truncate(text: string, max = 190) {
   if (text.length <= max) return text;
   const cut = text.slice(0, max);
   const lastSpace = cut.lastIndexOf(" ");
@@ -31,50 +28,47 @@ export function PaperRow({ paper }: { paper: Paper }) {
         ? t("lang.en")
         : t("lang.both");
   return (
-    <article className="group relative bg-background p-6 md:p-8 flex flex-col transition-colors hover:bg-surface">
-      {/* Linea elegante da margine a margine */}
-      <span
-        aria-hidden="true"
-        className="block h-[3px] w-full rounded-full mb-4"
-        style={{ background: accent }}
-      />
-
-      <span
-        className="absolute top-8 right-6 md:top-10 md:right-8 leading-none select-none"
-        title={langLabel}
-        aria-label={`${t("paper.languageLabel")}: ${langLabel}`}
-      >
-        <LanguageFlags language={paper.language} className="inline-block w-5 md:w-6 h-auto align-middle" />
-      </span>
-
-      <div className="font-mono text-xs text-muted-foreground uppercase whitespace-nowrap pr-16">
-        {formatDate(paper.publishedDate, lang)}
-      </div>
-      <div className="font-mono text-xs text-primary uppercase tracking-tighter mt-1 mb-5">
-        {paper.tags.map((tag) => `#${tag}`).join(" ")}
+    <article className="group flex flex-wrap gap-x-12 gap-y-3 py-7 border-b border-border">
+      <div className="basis-36 shrink-0 pt-1 flex sm:flex-col items-center sm:items-start gap-3 text-sm text-muted-foreground font-display">
+        <span>{formatDate(paper.publishedDate, lang)}</span>
+        <span title={langLabel} aria-label={`${t("paper.languageLabel")}: ${langLabel}`}>
+          <LanguageFlags
+            language={paper.language}
+            className="inline-block w-5 h-auto align-middle"
+          />
+        </span>
       </div>
 
-      <div className="flex-1">
-        <Link to="/paper/$slug" params={{ slug: paper.slug }} className="block">
-          <h3 className="text-2xl font-display font-bold tracking-tight mb-4 group-hover:text-primary transition-colors text-balance pr-16">
-            {title}
-          </h3>
-        </Link>
-        <p className="text-muted-foreground max-w-[65ch] mb-3 leading-relaxed text-justify">
-          {truncate(abstract)}
-        </p>
-        <Link
-          to="/paper/$slug"
-          params={{ slug: paper.slug }}
-          className="inline-block mb-6 font-display text-[11px] font-bold uppercase tracking-wider text-primary hover:underline"
-        >
-          {t("paper.readMore")}
-        </Link>
-        <div className="flex flex-wrap gap-3 font-display text-[11px] font-bold uppercase tracking-wider">
+      <div className="flex-[999_1_480px] min-w-0">
+        <h3 className="font-editorial text-[1.55rem] leading-tight font-medium text-balance">
           <Link
             to="/paper/$slug"
             params={{ slug: paper.slug }}
-            className="px-4 py-2 bg-foreground text-background hover:bg-primary transition-colors"
+            className="text-foreground hover:text-primary transition-colors"
+          >
+            {title}
+          </Link>
+        </h3>
+        <p className="mt-2.5 text-base leading-relaxed text-muted-foreground max-w-[72ch] font-display">
+          {truncate(abstract)}
+        </p>
+      </div>
+
+      <div className="basis-48 shrink-0 flex flex-col gap-2 text-sm font-display text-muted-foreground">
+        <span className="inline-flex items-center gap-2 font-semibold text-primary">
+          <span
+            aria-hidden="true"
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{ background: accent }}
+          />
+          {paper.tags.join(" · ")}
+        </span>
+        <span>{t("paper.readingTime", minutes)}</span>
+        <span className="flex gap-3">
+          <Link
+            to="/paper/$slug"
+            params={{ slug: paper.slug }}
+            className="font-semibold text-primary hover:underline underline-offset-4"
           >
             {t("paper.readOnline")}
           </Link>
@@ -83,18 +77,13 @@ export function PaperRow({ paper }: { paper: Paper }) {
               to="/paper/$slug"
               params={{ slug: paper.slug }}
               hash="pdf-reader"
-              className="px-4 py-2 border border-foreground text-foreground hover:bg-foreground hover:text-background transition-colors"
+              className="font-semibold text-primary hover:underline underline-offset-4"
             >
               {t("paper.pdf")}
             </Link>
           )}
-        </div>
-      </div>
-
-      <div className="mt-6 font-mono text-xs text-muted-foreground text-left">
-        {t("paper.readingTime", minutes)}
+        </span>
       </div>
     </article>
   );
-
 }

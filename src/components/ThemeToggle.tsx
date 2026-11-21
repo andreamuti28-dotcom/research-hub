@@ -2,7 +2,7 @@ import { useTheme, type ThemeChoice } from "@/hooks/use-theme";
 import { Moon, Sun } from "lucide-react";
 import { useT } from "@/lib/i18n";
 
-export function ThemeToggle() {
+export function ThemeToggle({ onBrand = false }: { onBrand?: boolean }) {
   const { theme, setTheme } = useTheme();
   const t = useT();
   const next: ThemeChoice = theme === "light" ? "dark" : "light";
@@ -15,9 +15,17 @@ export function ThemeToggle() {
       onClick={() => setTheme(next)}
       aria-label={t("theme.label", currentLabel, nextLabel)}
       title={t("theme.title", currentLabel, nextLabel)}
-      className="inline-flex items-center justify-center w-8 h-8 rounded-xs border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+      className={`inline-flex items-center justify-center w-9 h-9 rounded-md border transition-colors ${
+        onBrand
+          ? "border-brand-fg/30 text-brand-muted hover:text-brand-fg hover:border-brand-fg/70"
+          : "border-border text-muted-foreground hover:text-foreground hover:border-foreground"
+      }`}
     >
-      {theme === "light" ? <Sun className="w-4 h-4" strokeWidth={2} /> : <Moon className="w-4 h-4" strokeWidth={2} />}
+      {theme === "light" ? (
+        <Sun className="w-4 h-4" strokeWidth={2} />
+      ) : (
+        <Moon className="w-4 h-4" strokeWidth={2} />
+      )}
     </button>
   );
 }

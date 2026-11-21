@@ -18,6 +18,7 @@ import { ogImageMeta } from "@/lib/og";
 
 const archiveSearchSchema = z.object({
   tab: z.enum(["papers", "dashboards"]).optional().catch("papers"),
+  tag: z.string().max(80).optional().catch(undefined),
 });
 
 const papersQuery = {
@@ -98,20 +99,16 @@ function Archivio() {
   const archiveDashboardLabels = useDashboardLabels(archiveDashboards);
   const [archiveDisclaimer] = useTranslated([settings.archiveDisclaimer]);
   const [query, setQuery] = useState("");
-  const [tag, setTag] = useState<string>("");
+  const [tag, setTag] = useState<string>(search.tag ?? "");
   const [year, setYear] = useState<string>("");
   const [sort, setSort] = useState<SortKey>("recent");
 
   useEffect(() => {
     const channel = supabase
       .channel("archive-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "papers" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["papers"] });
-        },
-      )
+      .on("postgres_changes", { event: "*", schema: "public", table: "papers" }, () => {
+        queryClient.invalidateQueries({ queryKey: ["papers"] });
+      })
       .subscribe();
     const interval = window.setInterval(() => {
       queryClient.invalidateQueries({ queryKey: ["papers"] });
@@ -129,9 +126,9 @@ function Archivio() {
 
   const allYears = useMemo(
     () =>
-      Array.from(
-        new Set(papers.map((p) => new Date(p.publishedDate).getFullYear())),
-      ).sort((a, b) => b - a),
+      Array.from(new Set(papers.map((p) => new Date(p.publishedDate).getFullYear()))).sort(
+        (a, b) => b - a,
+      ),
     [papers],
   );
 
@@ -139,8 +136,7 @@ function Archivio() {
     const q = query.trim().toLowerCase();
     const result = papers.filter((p) => {
       if (tag && !p.tags.includes(tag)) return false;
-      if (year && String(new Date(p.publishedDate).getFullYear()) !== year)
-        return false;
+      if (year && String(new Date(p.publishedDate).getFullYear()) !== year) return false;
       if (!q) return true;
       return (
         p.title.toLowerCase().includes(q) ||
@@ -160,20 +156,14 @@ function Archivio() {
               +new Date(b.publishedDate) - +new Date(a.publishedDate),
           );
         } else {
-          sorted.sort(
-            (a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate),
-          );
+          sorted.sort((a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate));
         }
         break;
       case "recent":
-        sorted.sort(
-          (a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate),
-        );
+        sorted.sort((a, b) => +new Date(b.publishedDate) - +new Date(a.publishedDate));
         break;
       case "oldest":
-        sorted.sort(
-          (a, b) => +new Date(a.publishedDate) - +new Date(b.publishedDate),
-        );
+        sorted.sort((a, b) => +new Date(a.publishedDate) - +new Date(b.publishedDate));
         break;
       case "title":
         sorted.sort((a, b) => a.title.localeCompare(b.title, "it"));
@@ -197,74 +187,122 @@ function Archivio() {
 
   const hasFilters = query || tag || year || sort !== "recent";
 
+  const SPARKS = [
+    "M4 44 L24 36 L44 40 L64 24 L84 28 L104 12 L116 16",
+    "M4 40 L24 42 L44 30 L64 34 L84 18 L104 20 L116 8",
+    "M4 48 L30 44 L56 38 L82 28 L104 16 L116 6",
+    "M4 20 L24 28 L44 22 L64 36 L84 30 L104 42 L116 38",
+  ];
+  const chip = (active: boolean) =>
+    `am-btn h-10 px-4 rounded-full border text-sm font-medium font-display ${
+      active
+        ? "bg-brand text-brand-fg border-brand dark:bg-primary dark:text-primary-foreground dark:border-primary"
+        : "bg-background text-foreground border-border hover:border-foreground"
+    }`;
+  const selectCls =
+    "h-10 bg-background border border-border rounded-md px-3 text-sm font-display focus:outline-none focus:ring-2 focus:ring-primary/40";
+
   return (
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <section className="max-w-6xl mx-auto px-6 py-16 md:py-24 w-full">
-        <div className="mb-10 md:mb-12 animate-fade-up text-center">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold tracking-tighter italic">
-            {t("archive.title")}
+      <section className="bg-brand text-brand-fg">
+        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-14 pb-12">
+          <h1 className="am-in font-editorial font-medium text-5xl sm:text-[56px] leading-tight">
+            {t("nav.archive")}
           </h1>
-        </div>
-
-        <div className="flex flex-wrap gap-px bg-border border border-border mb-8">
-          <button
-            type="button"
-            onClick={() => setTab("papers")}
-            aria-pressed={tab === "papers"}
-            className={`flex-1 min-w-[140px] px-4 py-3 font-display text-[11px] font-bold uppercase tracking-widest transition-colors ${
-              tab === "papers"
-                ? "bg-foreground text-background"
-                : "bg-background text-muted-foreground hover:text-foreground"
-            }`}
+          <p className="am-in am-d1 mt-3 text-[17px] text-brand-muted font-display">
+            {t("archive.introBoth", papers.length, archiveDashboards.length)}
+          </p>
+          <div
+            role="tablist"
+            aria-label={t("nav.archive")}
+            className="am-in am-d2 inline-flex gap-1 mt-7 p-1 rounded-[10px] bg-brand-2 font-display"
           >
-            {t("home.sub.papers")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("dashboards")}
-            aria-pressed={tab === "dashboards"}
-            className={`flex-1 min-w-[140px] px-4 py-3 font-display text-[11px] font-bold uppercase tracking-widest transition-colors ${
-              tab === "dashboards"
-                ? "bg-foreground text-background"
-                : "bg-background text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {t("archive.tab.dashboards")}
-          </button>
-        </div>
-
-        {tab === "papers" ? (
-          <>
-            <p className="max-w-[55ch] text-base text-muted-foreground leading-relaxed text-justify mb-6">
-              {t("archive.intro", papers.length)}
-            </p>
-            <div className="flex flex-col gap-3 mb-6">
+            {(
+              [
+                ["papers", `${t("archive.tab.papers")} · ${papers.length}`],
+                ["dashboards", `${t("archive.tab.dashboards")} · ${archiveDashboards.length}`],
+              ] as const
+            ).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={tab === key}
+                onClick={() => setTab(key)}
+                className={`am-btn h-11 px-4 sm:px-5 rounded-lg text-sm sm:text-[15px] font-semibold ${
+                  tab === key
+                    ? "bg-background text-foreground"
+                    : "text-brand-fg hover:bg-brand-line"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {tab === "papers" && (
+            <div className="am-in am-d3 mt-7 max-w-[760px] flex items-center gap-3 h-14 px-4 rounded-lg bg-background text-foreground">
+              <svg
+                aria-hidden="true"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-4-4" />
+              </svg>
+              <label htmlFor="archive-search" className="sr-only">
+                {t("archive.searchPlaceholder")}
+              </label>
               <input
-                type="text"
+                id="archive-search"
+                type="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("archive.searchPlaceholder")}
-                className="bg-background border border-border px-4 py-2.5 text-sm font-display focus:outline-none focus:ring-1 focus:ring-primary w-full"
+                className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[17px] font-display"
               />
-              <div className="flex flex-wrap gap-3">
-                <select
-                  value={tag}
-                  onChange={(e) => setTag(e.target.value)}
-                  className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-8 pb-20">
+        {tab === "papers" ? (
+          <>
+            <div className="flex flex-wrap justify-between items-center gap-4">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  aria-pressed={!tag}
+                  onClick={() => setTag("")}
+                  className={chip(!tag)}
                 >
-                  <option value="">{t("archive.allTags")}</option>
-                  {allTags.map((tg) => (
-                    <option key={tg} value={tg}>
-                      #{tg}
-                    </option>
-                  ))}
-                </select>
+                  {t("archive.allTopics")}
+                </button>
+                {allTags.map((tg) => (
+                  <button
+                    key={tg}
+                    type="button"
+                    aria-pressed={tag === tg}
+                    onClick={() => setTag(tg)}
+                    className={chip(tag === tg)}
+                  >
+                    {tg}
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
                 <select
+                  aria-label={t("archive.allYears")}
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
-                  className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
+                  className={selectCls}
                 >
                   <option value="">{t("archive.allYears")}</option>
                   {allYears.map((y) => (
@@ -274,9 +312,10 @@ function Archivio() {
                   ))}
                 </select>
                 <select
+                  aria-label={t("archive.sort.recent")}
                   value={sort}
                   onChange={(e) => setSort(e.target.value as SortKey)}
-                  className="bg-background border border-border px-3 py-2 text-xs font-display focus:outline-none focus:ring-1 focus:ring-primary"
+                  className={selectCls}
                 >
                   <option value="relevance">{t("archive.sort.relevance")}</option>
                   <option value="recent">{t("archive.sort.recent")}</option>
@@ -285,8 +324,9 @@ function Archivio() {
                 </select>
                 {hasFilters && (
                   <button
+                    type="button"
                     onClick={resetFilters}
-                    className="px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-muted-foreground hover:text-foreground border border-transparent hover:border-border transition-colors"
+                    className="am-btn h-10 px-3 text-sm text-muted-foreground hover:text-foreground font-display"
                   >
                     {t("archive.reset")}
                   </button>
@@ -294,27 +334,27 @@ function Archivio() {
               </div>
             </div>
 
-            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
+            <p className="mt-5 text-sm text-muted-foreground font-display">
               {t("archive.results", filtered.length)}
-            </div>
+            </p>
 
             {filtered.length === 0 ? (
-              <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <div className="mt-6 rounded-xl border border-border p-12 text-center text-muted-foreground font-display">
                 {t("archive.empty")}
               </div>
             ) : (
               <>
-                <div className="space-y-px bg-border border border-border">
+                <div key={`${tag}|${year}|${sort}`} className="am-list">
                   {shown.map((p) => (
                     <PaperRow key={p.id} paper={p} />
                   ))}
                 </div>
                 {visible < filtered.length && (
-                  <div className="mt-6 flex justify-center">
+                  <div className="mt-8 flex justify-center">
                     <button
                       type="button"
                       onClick={() => setVisible((v) => v + PAGE_SIZE)}
-                      className="px-6 py-3 border border-foreground font-display text-[11px] font-bold uppercase tracking-widest hover:bg-foreground hover:text-background transition-colors"
+                      className="am-btn h-12 px-6 rounded-md border border-brand text-brand dark:border-primary dark:text-primary font-semibold text-[15px] font-display"
                     >
                       {t("archive.loadMore")} ({filtered.length - visible})
                     </button>
@@ -322,51 +362,63 @@ function Archivio() {
                 )}
               </>
             )}
-          </>
-        ) : (
-          <>
-            <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
-              {archiveDashboards.length}{" "}
-              {t("archive.dashboardLabel")}
-            </div>
-            {archiveDashboards.length === 0 ? (
-              <div className="border border-border p-12 text-center font-mono text-xs uppercase tracking-widest text-muted-foreground">
-                {t("archive.noDashboards")}
-              </div>
-            ) : (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {archiveDashboards.map((d, di) => {
-                  const path = dashboardPath(d.component_key)!;
-                  const title = archiveDashboardLabels[di]?.title ?? d.title;
-                  const desc = archiveDashboardLabels[di]?.description ?? d.description;
-                  return (
-                    <Link
-                      key={d.id}
-                      to={path}
-                      className="group block border border-border bg-surface p-6 hover:border-primary transition-colors"
-                    >
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="inline-flex items-center font-mono text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-400 text-black">
-                          {t("dashboard.badge")}
-                        </span>
-                      </div>
-                      <h2 className="font-display text-lg font-bold tracking-tight mb-2 group-hover:text-primary transition-colors">
-                        {title}
-                      </h2>
-                      {desc && (
-                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                          {desc}
-                        </p>
-                      )}
-                      <span className="font-display text-[11px] font-bold uppercase tracking-widest border-b-2 border-foreground pb-0.5 group-hover:text-primary group-hover:border-primary transition-all">
-                        {t("dashboard.open")} →
-                      </span>
-                    </Link>
-                  );
-                })}
-              </div>
+            {archiveDisclaimer && archiveDisclaimer.trim() && (
+              <p className="mt-10 text-xs text-muted-foreground font-display">
+                {archiveDisclaimer}
+              </p>
             )}
           </>
+        ) : archiveDashboards.length === 0 ? (
+          <div className="rounded-xl border border-border p-12 text-center text-muted-foreground font-display">
+            {t("archive.noDashboards")}
+          </div>
+        ) : (
+          <div className="am-list grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+            {archiveDashboards.map((d, di) => {
+              const path = dashboardPath(d.component_key)!;
+              const title = archiveDashboardLabels[di]?.title ?? d.title;
+              const desc = archiveDashboardLabels[di]?.description ?? d.description;
+              return (
+                <Link
+                  key={d.id}
+                  to={path}
+                  className="am-lift am-card flex flex-col rounded-2xl border border-sage-line overflow-hidden bg-background text-foreground"
+                >
+                  <span className="h-[120px] bg-sage flex items-center justify-center overflow-hidden">
+                    <svg
+                      className="am-img"
+                      aria-hidden="true"
+                      width="120"
+                      height="56"
+                      viewBox="0 0 120 56"
+                      fill="none"
+                    >
+                      <path
+                        d={SPARKS[di % SPARKS.length]}
+                        stroke="var(--primary)"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                  <span className="p-5 pb-6 font-display">
+                    <span className="block font-editorial text-[21px] font-medium leading-snug">
+                      {title}
+                    </span>
+                    {desc && (
+                      <span className="block mt-2 text-[15px] leading-relaxed text-muted-foreground">
+                        {desc}
+                      </span>
+                    )}
+                    <span className="block mt-3.5 text-sm font-semibold text-primary">
+                      {t("dashboard.open")} <span className="am-arrow">→</span>
+                    </span>
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         )}
       </section>
 

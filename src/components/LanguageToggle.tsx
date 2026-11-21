@@ -13,7 +13,7 @@ const LANG_LABELS: Record<Lang, string> = {
   ar: "العربية",
 };
 
-export function LanguageToggle() {
+export function LanguageToggle({ onBrand = false }: { onBrand?: boolean }) {
   const { lang, setLang } = useLanguage();
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -38,13 +38,17 @@ export function LanguageToggle() {
         onClick={() => setOpen((v) => !v)}
         aria-label={t("langToggle.label", LANG_LABELS[lang])}
         title={t("langToggle.label", LANG_LABELS[lang])}
-        className="inline-flex items-center justify-center gap-1.5 w-auto px-2 h-8 rounded-xs border border-border text-muted-foreground hover:text-foreground hover:border-foreground transition-colors"
+        className={`inline-flex items-center justify-center gap-1.5 w-auto px-2.5 h-9 rounded-md border transition-colors ${
+          onBrand
+            ? "border-brand-fg/30 text-brand-muted hover:text-brand-fg hover:border-brand-fg/70"
+            : "border-border text-muted-foreground hover:text-foreground hover:border-foreground"
+        }`}
       >
         <LanguageFlags language={lang} className="w-5 h-auto" />
         <span className="text-xs font-medium hidden sm:inline">{LANG_LABELS[lang]}</span>
       </button>
       {open && (
-        <div className="absolute right-0 mt-1 min-w-[10rem] rounded-md border border-border bg-popover shadow-lg z-50 overflow-hidden">
+        <div className="absolute right-0 mt-1 min-w-[10rem] rounded-md border border-border bg-popover text-popover-foreground shadow-lg z-50 overflow-hidden">
           {LANGUAGES.map((l) => (
             <button
               key={l}
