@@ -16,14 +16,14 @@ export function SiteHeader() {
       className="sticky top-0 z-50 bg-brand text-brand-fg border-b border-brand-line"
       style={headerBg ? { backgroundColor: headerBg } : undefined}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 h-16 sm:h-[72px] flex items-center justify-between gap-3">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-8 h-14 sm:h-[60px] flex items-center justify-between gap-3">
         <Link
           to="/"
-          className="font-editorial text-lg sm:text-2xl font-semibold truncate min-w-0 text-brand-fg hover:text-gold transition-colors"
+          className="font-editorial text-lg sm:text-xl font-semibold truncate min-w-0 text-brand-fg hover:text-gold transition-colors"
         >
           {name}
         </Link>
-        <div className="flex gap-3 sm:gap-7 items-center text-[13px] sm:text-[15px] font-display shrink-0">
+        <div className="flex gap-3 sm:gap-7 items-center text-[13px] sm:text-sm font-display shrink-0">
           <Link
             to="/"
             className={NAV_LINK}

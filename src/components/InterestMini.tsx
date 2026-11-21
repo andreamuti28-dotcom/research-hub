@@ -26,11 +26,11 @@ export function InterestMini({ href }: { href: string | null }) {
   const rateLabel = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(rate) + "%";
 
   return (
-    <div className="bg-background text-foreground rounded-2xl p-7 sm:p-8">
+    <div className="bg-background text-foreground rounded-2xl p-6 sm:p-7">
       <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-primary font-display">
         {t("home.dash.try")}
       </p>
-      <h3 className="mt-2 font-editorial text-[28px] font-medium leading-tight">
+      <h3 className="mt-2 font-editorial text-[22px] font-medium leading-tight">
         {t("home.dash.miniTitle")}
       </h3>
 

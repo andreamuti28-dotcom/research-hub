@@ -216,8 +216,8 @@ function Index() {
 
       {/* ---------- Hero: profile ---------- */}
       <section className="bg-brand text-brand-fg">
-        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-14 pb-16 md:pt-[72px] md:pb-[88px] flex flex-wrap gap-10 md:gap-16 items-center">
-          <div className="flex-[0_1_380px] min-w-[240px] am-fadein am-d1">
+        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-10 pb-12 md:pt-12 md:pb-14 flex flex-wrap gap-8 md:gap-12 items-center">
+          <div className="flex-[0_1_270px] min-w-[200px] am-fadein am-d1">
             <img
               src={portraitSrc}
               alt={t("about.portraitAlt", settings.name)}
@@ -233,19 +233,19 @@ function Index() {
                 {heroKicker}
               </p>
             )}
-            <h1 className="am-in am-d1 mt-4 font-editorial font-medium text-6xl sm:text-7xl lg:text-[84px] leading-none tracking-[-0.015em]">
+            <h1 className="am-in am-d1 mt-4 font-editorial font-medium text-[40px] sm:text-[52px] lg:text-[58px] leading-none tracking-[-0.015em]">
               {settings.name}
             </h1>
-            <p className="am-in am-d2 mt-5 font-editorial italic text-2xl sm:text-[26px] leading-snug text-[#e6eeea] max-w-[640px]">
+            <p className="am-in am-d2 mt-5 font-editorial italic text-xl sm:text-[20px] leading-snug text-[#e6eeea] max-w-[640px]">
               {heroTagline}
             </p>
-            <p className="am-in am-d3 mt-5 text-[17px] leading-relaxed text-brand-muted max-w-[620px] font-display">
+            <p className="am-in am-d3 mt-5 text-[15.5px] leading-relaxed text-brand-muted max-w-[620px] font-display">
               {heroBio}
             </p>
             <div className="am-in am-d4 flex flex-wrap gap-3 mt-8 font-display">
               <Link
                 to="/archivio"
-                className="am-btn inline-flex items-center h-[50px] px-6 rounded-md bg-gold text-[#14171c] font-bold text-[15px]"
+                className="am-btn inline-flex items-center h-11 px-6 rounded-md bg-gold text-[#14171c] font-bold text-[15px]"
               >
                 {t("home.hero.cta")}
               </Link>
@@ -254,7 +254,7 @@ function Index() {
                   href={settings.linkedinUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="am-btn inline-flex items-center h-[50px] px-6 rounded-md border border-[#7fa494] text-brand-fg font-semibold text-[15px] hover:border-brand-fg"
+                  className="am-btn inline-flex items-center h-11 px-6 rounded-md border border-[#7fa494] text-brand-fg font-semibold text-[15px] hover:border-brand-fg"
                 >
                   {t("common.linkedin")}
                 </a>
@@ -265,8 +265,8 @@ function Index() {
 
         <div className="border-t border-brand-line">
           <div className="am-in am-d5 max-w-[1240px] mx-auto px-6 sm:px-8 grid grid-cols-1 sm:grid-cols-3">
-            <div className="py-7 sm:pr-6 border-b sm:border-b-0 sm:border-r border-brand-line">
-              <p className="font-editorial text-[40px] font-medium leading-none tabular-nums">
+            <div className="py-5 sm:pr-6 border-b sm:border-b-0 sm:border-r border-brand-line">
+              <p className="font-editorial text-[30px] font-medium leading-none tabular-nums">
                 {paperCount}
               </p>
               <p className="mt-2 text-sm text-brand-muted font-display">{t("home.cred.papers")}</p>
@@ -275,17 +275,17 @@ function Index() {
               href={settings.forbesUrl || undefined}
               target={settings.forbesUrl ? "_blank" : undefined}
               rel="noreferrer noopener"
-              className="group py-7 sm:px-6 border-b sm:border-b-0 sm:border-r border-brand-line"
+              className="group py-5 sm:px-6 border-b sm:border-b-0 sm:border-r border-brand-line"
             >
-              <p className="font-editorial text-[22px] font-medium leading-tight whitespace-pre-line group-hover:text-gold transition-colors">
+              <p className="font-editorial text-[18px] font-medium leading-tight whitespace-pre-line group-hover:text-gold transition-colors">
                 {t("home.cred.forbesTitle")}
               </p>
               <p className="mt-1.5 text-sm text-brand-muted font-display">
                 {t("home.cred.forbes")}
               </p>
             </a>
-            <div className="py-7 sm:pl-6">
-              <p className="font-editorial text-[22px] font-medium leading-tight whitespace-pre-line">
+            <div className="py-5 sm:pl-6">
+              <p className="font-editorial text-[18px] font-medium leading-tight whitespace-pre-line">
                 {t("home.cred.clubTitle")}
               </p>
               <p className="mt-1.5 text-sm text-brand-muted font-display">{t("home.cred.club")}</p>
@@ -295,7 +295,7 @@ function Index() {
       </section>
 
       {/* ---------- Latest paper + daily market report ---------- */}
-      <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-20 pb-10 flex flex-wrap gap-8">
+      <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-14 pb-10 flex flex-wrap gap-8">
         {latestPaper && (
           <Link
             to="/paper/$slug"
@@ -305,10 +305,10 @@ function Index() {
             <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-primary font-display">
               {t("home.latest.kicker", formatDate(latestPaper.publishedDate, lang))}
             </p>
-            <h2 className="mt-3.5 font-editorial font-medium text-4xl md:text-[40px] leading-[1.15] group-hover:text-primary transition-colors">
+            <h2 className="mt-3.5 font-editorial font-medium text-3xl md:text-[30px] leading-[1.15] group-hover:text-primary transition-colors">
               {latestTitle}
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-muted-foreground max-w-[680px] font-display line-clamp-4">
+            <p className="mt-3 text-base leading-relaxed text-muted-foreground max-w-[680px] font-display line-clamp-4">
               {latestAbstract}
             </p>
             <p className="mt-5 text-[15px] text-muted-foreground font-display">
@@ -332,7 +332,7 @@ function Index() {
       {/* ---------- Topics ---------- */}
       {topics.length > 0 && (
         <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-14 pb-10">
-          <h2 className="am-reveal font-editorial font-medium text-[40px] leading-tight">
+          <h2 className="am-reveal font-editorial font-medium text-[30px] leading-tight">
             {t("home.themes.title")}
           </h2>
           <div className="am-stagger grid gap-5 mt-7 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
@@ -360,17 +360,17 @@ function Index() {
 
       {/* ---------- Interactive dashboards ---------- */}
       {routableDashboards.length > 0 && (
-        <section className="bg-brand text-brand-fg mt-10">
-          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-20">
+        <section className="bg-brand text-brand-fg mt-8">
+          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-14">
             <div className="flex flex-wrap justify-between items-end gap-6">
               <div className="am-reveal">
                 <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
                   {t("home.dash.kicker", routableDashboards.length)}
                 </p>
-                <h2 className="mt-3 font-editorial font-medium text-5xl leading-[1.1]">
+                <h2 className="mt-3 font-editorial font-medium text-[34px] leading-[1.1]">
                   {t("home.dash.title")}
                 </h2>
-                <p className="mt-3.5 text-[17px] leading-relaxed text-brand-muted max-w-[620px] font-display">
+                <p className="mt-3.5 text-[15.5px] leading-relaxed text-brand-muted max-w-[620px] font-display">
                   {t("home.dash.intro")}
                 </p>
               </div>
@@ -383,7 +383,7 @@ function Index() {
               </Link>
             </div>
 
-            <div className="flex flex-wrap gap-6 mt-10">
+            <div className="flex flex-wrap gap-6 mt-8">
               <div className="am-reveal flex-[999_1_560px] min-w-0">
                 <InterestMini href={interestPath} />
               </div>
@@ -433,9 +433,9 @@ function Index() {
 
       {/* ---------- Recent research ---------- */}
       {recentPapers.length > 0 && (
-        <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-16 pb-16">
+        <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-12 pb-12">
           <div className="flex flex-wrap justify-between items-baseline gap-6">
-            <h2 className="am-reveal font-editorial font-medium text-[40px] leading-tight">
+            <h2 className="am-reveal font-editorial font-medium text-[30px] leading-tight">
               {t("home.recent.title")}
             </h2>
             <Link
@@ -455,10 +455,10 @@ function Index() {
 
       {/* ---------- Path to the About page ---------- */}
       <section className="bg-sage">
-        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-14 flex justify-center">
+        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-10 flex justify-center">
           <Link
             to="/about"
-            className="am-btn inline-flex items-center h-14 px-8 rounded-md bg-brand text-brand-fg font-bold text-base font-display"
+            className="am-btn inline-flex items-center h-12 px-8 rounded-md bg-brand text-brand-fg font-bold text-base font-display"
           >
             {t("home.path.cta")}&nbsp;<span className="am-arrow">→</span>
           </Link>

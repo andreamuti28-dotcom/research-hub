@@ -34,7 +34,7 @@ export function MarketReportCard({
   const excerpt = excerptOf(body);
 
   return (
-    <div className={`bg-sage rounded-xl p-7 flex flex-col ${className}`}>
+    <div className={`bg-sage rounded-xl p-6 flex flex-col ${className}`}>
       <div className="flex items-center justify-between gap-3">
         <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-primary font-display">
           {t("home.report.kicker")}
@@ -47,7 +47,7 @@ export function MarketReportCard({
           {date}
         </span>
       </div>
-      <h3 className="mt-3.5 font-editorial text-2xl font-medium leading-tight">
+      <h3 className="mt-3.5 font-editorial text-xl font-medium leading-tight">
         {t("home.report.title")}
       </h3>
       <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground font-display line-clamp-6">
@@ -69,12 +69,12 @@ export function MarketReportCard({
               className="am-dialog relative mx-auto my-6 sm:my-16 w-[min(880px,calc(100%-24px))] rounded-2xl bg-background text-foreground shadow-2xl focus:outline-none"
               aria-describedby={undefined}
             >
-              <div className="flex items-start justify-between gap-4 px-6 sm:px-10 pt-8 pb-5 border-b border-border">
+              <div className="flex items-start justify-between gap-4 px-6 sm:px-10 pt-6 pb-5 border-b border-border">
                 <div>
                   <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-primary font-display">
                     {t("home.report.kicker")} · {date}
                   </p>
-                  <Dialog.Title className="mt-2 font-editorial text-3xl sm:text-[34px] font-medium leading-tight">
+                  <Dialog.Title className="mt-2 font-editorial text-2xl sm:text-[28px] font-medium leading-tight">
                     {t("home.report.title")}
                   </Dialog.Title>
                 </div>

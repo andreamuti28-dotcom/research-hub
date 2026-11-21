@@ -207,11 +207,11 @@ function Archivio() {
       <SiteHeader />
 
       <section className="bg-brand text-brand-fg">
-        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-14 pb-12">
-          <h1 className="am-in font-editorial font-medium text-5xl sm:text-[56px] leading-tight">
+        <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-10 pb-9">
+          <h1 className="am-in font-editorial font-medium text-4xl sm:text-[40px] leading-tight">
             {t("nav.archive")}
           </h1>
-          <p className="am-in am-d1 mt-3 text-[17px] text-brand-muted font-display">
+          <p className="am-in am-d1 mt-3 text-[15.5px] text-brand-muted font-display">
             {t("archive.introBoth", papers.length, archiveDashboards.length)}
           </p>
           <div
@@ -242,7 +242,7 @@ function Archivio() {
             ))}
           </div>
           {tab === "papers" && (
-            <div className="am-in am-d3 mt-7 max-w-[760px] flex items-center gap-3 h-14 px-4 rounded-lg bg-background text-foreground">
+            <div className="am-in am-d3 mt-7 max-w-[760px] flex items-center gap-3 h-12 px-4 rounded-lg bg-background text-foreground">
               <svg
                 aria-hidden="true"
                 width="20"
@@ -265,14 +265,14 @@ function Archivio() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("archive.searchPlaceholder")}
-                className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[17px] font-display"
+                className="flex-1 min-w-0 bg-transparent border-0 outline-none text-[15.5px] font-display"
               />
             </div>
           )}
         </div>
       </section>
 
-      <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-8 pb-20">
+      <section className="max-w-[1240px] w-full mx-auto px-6 sm:px-8 pt-6 pb-14">
         {tab === "papers" ? (
           <>
             <div className="flex flex-wrap justify-between items-center gap-4">
@@ -363,9 +363,7 @@ function Archivio() {
               </>
             )}
             {archiveDisclaimer && archiveDisclaimer.trim() && (
-              <p className="mt-10 text-xs text-muted-foreground font-display">
-                {archiveDisclaimer}
-              </p>
+              <p className="mt-8 text-xs text-muted-foreground font-display">{archiveDisclaimer}</p>
             )}
           </>
         ) : archiveDashboards.length === 0 ? (
@@ -403,7 +401,7 @@ function Archivio() {
                     </svg>
                   </span>
                   <span className="p-5 pb-6 font-display">
-                    <span className="block font-editorial text-[21px] font-medium leading-snug">
+                    <span className="block font-editorial text-[18px] font-medium leading-snug">
                       {title}
                     </span>
                     {desc && (

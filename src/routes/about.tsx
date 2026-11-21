@@ -192,8 +192,8 @@ function AboutPage() {
 
         {/* ---------- Hero ---------- */}
         <section className="bg-brand text-brand-fg">
-          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-14 pb-16 md:pt-16 md:pb-[72px] flex flex-wrap gap-10 md:gap-14 items-start">
-            <div className="flex-[0_1_320px] min-w-[240px]">
+          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-10 pb-12 md:pt-12 md:pb-14 flex flex-wrap gap-8 md:gap-10 items-start">
+            <div className="flex-[0_1_250px] min-w-[200px]">
               <img
                 src={portraitSrc}
                 alt={t("about.portraitAlt", settings.name)}
@@ -207,7 +207,7 @@ function AboutPage() {
                   href={settings.linkedinUrl}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="am-btn am-in am-d4 mt-5 inline-flex items-center gap-2.5 h-[46px] px-5 rounded-md bg-gold text-[#14171c] font-display text-sm font-bold"
+                  className="am-btn am-in am-d4 mt-5 inline-flex items-center gap-2.5 h-11 px-5 rounded-md bg-gold text-[#14171c] font-display text-sm font-bold"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -226,13 +226,13 @@ function AboutPage() {
               <p className="am-in text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
                 {kicker}
               </p>
-              <h1 className="am-in am-d1 mt-3.5 font-editorial font-medium text-5xl sm:text-[64px] leading-[1.02]">
+              <h1 className="am-in am-d1 mt-3.5 font-editorial font-medium text-4xl sm:text-[46px] leading-[1.02]">
                 {settings.name}
               </h1>
-              <p className="am-in am-d2 mt-3.5 font-editorial italic text-2xl text-[#e6eeea]">
+              <p className="am-in am-d2 mt-3.5 font-editorial italic text-xl text-[#e6eeea]">
                 {role}
               </p>
-              <div className="am-in am-d3 mt-6 max-w-[680px] space-y-4 text-[17px] leading-[1.7] text-brand-muted font-display text-pretty">
+              <div className="am-in am-d3 mt-6 max-w-[680px] space-y-4 text-[15.5px] leading-[1.7] text-brand-muted font-display text-pretty">
                 {bio.split(/\n\n+/).map((para, i) => (
                   <p key={i} className="whitespace-pre-line">
                     {withLinks(para)}
@@ -245,8 +245,8 @@ function AboutPage() {
 
         <section className="bg-sage">
           {/* ---------- Roles ---------- */}
-          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-[72px] pb-10">
-            <h2 className="am-reveal font-editorial font-medium text-[40px] leading-tight">
+          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pt-12 pb-10">
+            <h2 className="am-reveal font-editorial font-medium text-[30px] leading-tight">
               {t("about.rolesTitle")}
             </h2>
             <div className="am-stagger grid gap-5 mt-8 [grid-template-columns:repeat(auto-fit,minmax(260px,1fr))]">
@@ -285,7 +285,7 @@ function AboutPage() {
                       <p className="text-[13px] font-semibold text-primary font-display">
                         {tk(`about.${r.key}.role`)}
                       </p>
-                      <h3 className="mt-1.5 font-editorial text-[22px] font-medium leading-tight">
+                      <h3 className="mt-1.5 font-editorial text-[18px] font-medium leading-tight">
                         {tk(`about.${r.key}.org`)}
                       </h3>
                       <p className="mt-2.5 text-[15px] leading-relaxed text-muted-foreground font-display">
@@ -317,8 +317,8 @@ function AboutPage() {
           </div>
 
           {/* ---------- Education, languages, certifications ---------- */}
-          <div className="am-stagger max-w-[1240px] mx-auto px-6 sm:px-8 pt-10 pb-20 grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))] items-start">
-            <div className="bg-background rounded-2xl p-7">
+          <div className="am-stagger max-w-[1240px] mx-auto px-6 sm:px-8 pt-10 pb-14 grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))] items-start">
+            <div className="bg-background rounded-2xl p-6">
               <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary font-display mb-2">
                 {eduLabel}
               </h2>
@@ -355,7 +355,7 @@ function AboutPage() {
               </ul>
             </div>
 
-            <div className="bg-background rounded-2xl p-7">
+            <div className="bg-background rounded-2xl p-6">
               <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary font-display mb-2">
                 {langLabel}
               </h2>
@@ -371,7 +371,7 @@ function AboutPage() {
               </ul>
             </div>
 
-            <div className="bg-background rounded-2xl p-7">
+            <div className="bg-background rounded-2xl p-6">
               <h2 className="text-[13px] font-bold uppercase tracking-[0.08em] text-primary font-display mb-4">
                 {certLabel}
               </h2>
@@ -407,9 +407,9 @@ function AboutPage() {
           </div>
 
           {settings.contactEmail && (
-            <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pb-20">
+            <div className="max-w-[1240px] mx-auto px-6 sm:px-8 pb-14">
               <div className="am-reveal bg-brand text-brand-fg rounded-2xl p-8 flex flex-wrap justify-between items-center gap-5">
-                <p className="font-editorial text-[26px] leading-snug">{t("about.cta.text")}</p>
+                <p className="font-editorial text-[21px] leading-snug">{t("about.cta.text")}</p>
                 <a
                   href={`mailto:${settings.contactEmail}`}
                   className="am-btn inline-flex items-center h-12 px-6 rounded-md bg-gold text-[#14171c] font-bold text-[15px] font-display"

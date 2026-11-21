@@ -28,7 +28,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
         ? t("lang.en")
         : t("lang.both");
   return (
-    <article className="group flex flex-wrap gap-x-12 gap-y-3 py-7 border-b border-border">
+    <article className="group flex flex-wrap gap-x-12 gap-y-3 py-5 border-b border-border">
       <div className="basis-36 shrink-0 pt-1 flex sm:flex-col items-center sm:items-start gap-3 text-sm text-muted-foreground font-display">
         <span>{formatDate(paper.publishedDate, lang)}</span>
         <span title={langLabel} aria-label={`${t("paper.languageLabel")}: ${langLabel}`}>
@@ -40,7 +40,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
       </div>
 
       <div className="flex-[999_1_480px] min-w-0">
-        <h3 className="font-editorial text-[1.55rem] leading-tight font-medium text-balance">
+        <h3 className="font-editorial text-[1.25rem] leading-tight font-medium text-balance">
           <Link
             to="/paper/$slug"
             params={{ slug: paper.slug }}
