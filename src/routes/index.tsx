@@ -18,6 +18,7 @@ import { useDashboardLabels } from "@/hooks/use-dashboard-labels";
 import { useServerFn } from "@tanstack/react-start";
 import { formatMarketReportLayout } from "@/lib/format-layout.functions";
 import { formatReportLocal } from "@/lib/format-report-local";
+import { unescapeMarkdown } from "@/lib/markdown-escape";
 import { useLanguage } from "@/hooks/use-language";
 import { useConsent } from "@/hooks/use-consent";
 import { MarketReportCard } from "@/components/MarketReportCard";
@@ -120,7 +121,7 @@ function Index() {
   ]);
   const [reportContentTranslated] = useTranslatedLive([formattedItText]);
   const reportContent = formatReportLocal(
-    lang === "it" ? formattedItText : reportContentTranslated,
+    unescapeMarkdown(lang === "it" ? formattedItText : reportContentTranslated),
   );
   const reportDate = latestReport
     ? new Date(latestReport.reportDate).toLocaleDateString(dateLocale, {

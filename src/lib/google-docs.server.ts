@@ -5,6 +5,8 @@
 // app, connector or API key to maintain. The report is published on the site
 // anyway, so link sharing does not expose anything new.
 
+import { unescapeMarkdown } from "@/lib/markdown-escape";
+
 const EXPORT_BASE = "https://docs.google.com/document/d";
 
 export type FetchedGoogleDoc = {
@@ -42,7 +44,7 @@ async function exportDoc(id: string, format: "md" | "txt"): Promise<Response> {
 }
 
 function normalize(text: string): string {
-  return text
+  return unescapeMarkdown(text)
     .replace(/^﻿/, "")
     .replace(/\r\n?/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
@@ -63,7 +65,7 @@ export async function fetchGoogleDocAsText(documentId: string): Promise<FetchedG
 
   if (res.status === 401 || res.status === 403) {
     throw new Error(
-      "Il Google Doc non è accessibile: condividilo con \"Chiunque abbia il link\" in sola lettura.",
+      'Il Google Doc non è accessibile: condividilo con "Chiunque abbia il link" in sola lettura.',
     );
   }
   if (res.status === 404) throw new Error("Google Doc non trovato: controlla l'ID.");
@@ -74,7 +76,7 @@ export async function fetchGoogleDocAsText(documentId: string): Promise<FetchedG
   // A private document can also answer 200 with Google's sign-in page.
   if (contentType.includes("text/html") || /^\s*<!doctype html/i.test(body)) {
     throw new Error(
-      "Il Google Doc non è accessibile: condividilo con \"Chiunque abbia il link\" in sola lettura.",
+      'Il Google Doc non è accessibile: condividilo con "Chiunque abbia il link" in sola lettura.',
     );
   }
 

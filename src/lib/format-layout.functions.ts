@@ -13,10 +13,10 @@ const LAYOUT_CACHE_TARGET = "it-layout";
 const SYSTEM_PROMPT =
   "You receive an Italian financial report stored as plain text from Google Docs. " +
   "Reformat it into clean Markdown: detect section titles and turn them into '## ' or '### ' headings, " +
-  "convert bullet-like lines into '- ' lists, group paragraphs with blank lines, mark obvious emphasis with **bold** or *italic*, " +
+  "convert bullet-like lines into '- ' lists, group paragraphs with blank lines. Never add bold or italic. " +
   "and preserve any tables. " +
   "STRICT RULES: do NOT translate, do NOT add, remove, summarize or rewrite any word; keep the Italian wording exactly as-is, " +
-  "including punctuation, numbers, currencies and proper nouns. Only add/normalize markdown structure (headings, lists, blank lines, bold/italic). " +
+  "including punctuation, numbers, currencies and proper nouns. Only add/normalize markdown structure (headings, lists, blank lines). " +
   'Return ONLY a JSON object: {"text":"..."} with the reformatted markdown.';
 
 /**
@@ -36,12 +36,14 @@ export const formatMarketReportLayout = createServerFn({ method: "POST" })
       .select("content")
       .eq("id", data.reportId)
       .maybeSingle();
-    const raw = (report?.content as string | undefined) ?? "";
+    const { unescapeMarkdown } = await import("@/lib/markdown-escape");
+    const raw = unescapeMarkdown((report?.content as string | undefined) ?? "");
     if (!raw.trim()) return { text: raw, fallback: true as const };
+    // Already written as Markdown (headings): show it exactly as written.
+    if (/^#{1,3}\s/m.test(raw)) return { text: raw, fallback: false as const };
 
-    const { readCachedTranslations, writeCachedTranslations } = await import(
-      "@/lib/translation-cache.server"
-    );
+    const { readCachedTranslations, writeCachedTranslations } =
+      await import("@/lib/translation-cache.server");
     const cached = await readCachedTranslations([raw], LAYOUT_CACHE_TARGET);
     const hit = cached.get(raw);
     if (hit) return { text: hit, fallback: false as const };
