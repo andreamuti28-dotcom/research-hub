@@ -39,7 +39,7 @@ export async function generateJson(system: string, user: string): Promise<AiJson
   return last;
 }
 
-async function callModel(
+export async function callModel(
   apiKey: string,
   model: string,
   system: string,
