@@ -157,15 +157,15 @@ function PaperDetail() {
     <div className="min-h-screen flex flex-col">
       <SiteHeader />
 
-      <article className="max-w-[1600px] mx-auto px-6 md:px-12 py-16 md:py-24 w-full">
+      <article className="max-w-[52rem] mx-auto px-5 md:px-8 py-10 md:py-16 w-full">
         <Link
           to="/archivio"
-          className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-12 inline-block"
+          className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors mb-8 inline-block"
         >
           {t("paper.back")}
         </Link>
 
-        <header className="mb-12 animate-fade-up">
+        <header className="mb-10 animate-fade-up">
           <div className="font-mono text-xs text-muted-foreground mb-6 flex flex-wrap items-center gap-3">
             <span>{formatDateShort(paper.publishedDate, lang)}</span>
             <span className="text-border">/</span>
@@ -175,22 +175,22 @@ function PaperDetail() {
               {paper.tags.map((tg: string) => `#${tg}`).join(" ")}
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tighter leading-[1.05] text-balance italic mb-8">
+          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight leading-[1.1] text-balance italic mb-5">
             {tTitle}
           </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed text-pretty">
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed text-pretty">
             {tAbstract}
           </p>
         </header>
 
         <div>
-          <div className="w-full space-y-6 text-lg leading-[1.75] text-foreground/90">
+          <div className="w-full space-y-5 text-base md:text-[17px] leading-[1.7] text-foreground/90">
             {blocks.map((block, i) =>
               block.type === "h2" ? (
                 <h2
                   key={i}
                   id={block.id}
-                  className="text-2xl md:text-3xl font-display font-bold tracking-tight italic pt-6 scroll-mt-24"
+                  className="text-xl md:text-2xl font-display font-bold tracking-tight italic pt-4 scroll-mt-24"
                 >
                   {block.text}
                 </h2>
@@ -210,7 +210,7 @@ function PaperDetail() {
                 <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-4">
                   {t("paper.toc")}
                 </div>
-                <nav className="grid gap-2 border-l border-border pl-4 sm:grid-cols-2 lg:grid-cols-3">
+                <nav className="grid gap-2 border-l border-border pl-4 sm:grid-cols-2">
                   {toc.map((entry) => (
                     <a
                       key={entry.id}
@@ -237,7 +237,7 @@ function PaperDetail() {
 
 function PdfPreview({ url, t }: { url: string; title: string; t: ReturnType<typeof useT> }) {
   return (
-    <section id="pdf-reader" className="mt-16 pt-10 border-t border-border scroll-mt-24">
+    <section id="pdf-reader" className="mt-12 pt-8 border-t border-border scroll-mt-24">
       <h2 className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-4">
         {t("paper.pdfHeading")}
       </h2>
