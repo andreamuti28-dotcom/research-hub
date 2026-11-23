@@ -4,7 +4,16 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Paper, PaperLanguage } from "@/data/papers";
 
 const SELECT_COLS =
-  "id, slug, title, abstract, content, tags, pdf_url, published_date, publish_at, is_published, views, downloads, language";
+  "id, slug, title, abstract, content, tags, pdf_url, pdf_urls, published_date, publish_at, is_published, views, downloads, language";
+
+function normalizePdfUrls(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof v === "string" && v.length > 0) out[k] = v;
+  }
+  return out;
+}
 
 function mapPaper(row: {
   id: string;
@@ -14,6 +23,7 @@ function mapPaper(row: {
   content: string;
   tags: string[];
   pdf_url: string | null;
+  pdf_urls?: unknown;
   published_date: string;
   is_published: boolean;
   views: number;
@@ -28,6 +38,7 @@ function mapPaper(row: {
     content: row.content,
     tags: row.tags ?? [],
     pdfUrl: row.pdf_url,
+    pdfUrls: normalizePdfUrls(row.pdf_urls),
     publishedDate: row.published_date,
     isPublished: row.is_published,
     views: row.views,

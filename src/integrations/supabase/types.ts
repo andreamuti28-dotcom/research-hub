@@ -153,6 +153,7 @@ export type Database = {
           is_published: boolean
           language: string
           pdf_url: string | null
+          pdf_urls: Json
           publish_at: string | null
           published_date: string
           slug: string
@@ -170,6 +171,7 @@ export type Database = {
           is_published?: boolean
           language?: string
           pdf_url?: string | null
+          pdf_urls?: Json
           publish_at?: string | null
           published_date?: string
           slug: string
@@ -187,6 +189,7 @@ export type Database = {
           is_published?: boolean
           language?: string
           pdf_url?: string | null
+          pdf_urls?: Json
           publish_at?: string | null
           published_date?: string
           slug?: string

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { Paper } from "@/data/papers";
-import { formatDate } from "@/data/papers";
+import { formatDate, pickPdfUrl } from "@/data/papers";
 import { useT } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
@@ -72,7 +72,7 @@ export function PaperRow({ paper }: { paper: Paper }) {
           >
             {t("paper.readOnline")}
           </Link>
-          {paper.pdfUrl && (
+          {pickPdfUrl(paper, lang) && (
             <Link
               to="/paper/$slug"
               params={{ slug: paper.slug }}

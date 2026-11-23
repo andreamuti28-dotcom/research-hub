@@ -10,6 +10,8 @@ export interface Paper {
   content: string;
   tags: string[];
   pdfUrl: string | null;
+  /** PDF per lingua (es. { it: "/pdf/slug/it.pdf" }). Ha la precedenza su pdfUrl. */
+  pdfUrls?: Partial<Record<string, string>>;
   publishedDate: string;
   isPublished: boolean;
   views: number;
@@ -52,4 +54,13 @@ export function formatDateShort(iso: string, lang: Lang = "it"): string {
     month: "short",
     year: "numeric",
   });
+}
+
+/**
+ * Sceglie il PDF nella lingua del visitatore. Se manca, ripiega su inglese,
+ * poi italiano, poi sul PDF unico storico (pdf_url).
+ */
+export function pickPdfUrl(paper: Pick<Paper, "pdfUrl" | "pdfUrls">, lang: string): string | null {
+  const urls = paper.pdfUrls ?? {};
+  return urls[lang] ?? urls.en ?? urls.it ?? paper.pdfUrl ?? null;
 }

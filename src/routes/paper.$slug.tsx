@@ -4,7 +4,7 @@ import "katex/dist/katex.min.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { PdfCanvasViewer } from "@/components/PdfCanvasViewer";
-import { formatDateShort } from "@/data/papers";
+import { formatDateShort, pickPdfUrl } from "@/data/papers";
 import { getPublishedPaperBySlug } from "@/lib/papers.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { parseContent, renderMathHtml, estimateReadingMinutes } from "@/lib/paper-reading";
@@ -147,6 +147,7 @@ function PaperDetail() {
     [rawToc, rawBlocks, tBlockTexts],
   );
   const readingMinutes = useMemo(() => estimateReadingMinutes(paper.content), [paper.content]);
+  const pdfUrl = pickPdfUrl(paper, lang);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -221,7 +222,7 @@ function PaperDetail() {
           )}
         </div>
 
-        {paper.pdfUrl && <PdfPreview url={paper.pdfUrl} title={paper.title} t={t} />}
+        {pdfUrl && <PdfPreview key={pdfUrl} url={pdfUrl} title={paper.title} t={t} />}
       </article>
 
       <div className="flex-1" />
