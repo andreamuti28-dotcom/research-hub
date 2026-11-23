@@ -4,7 +4,6 @@ import { formatDate, pickPdfUrl } from "@/data/papers";
 import { useT } from "@/lib/i18n";
 import { useLanguage } from "@/hooks/use-language";
 import { useTranslated } from "@/hooks/use-translated";
-import { LanguageFlags } from "@/components/Flag";
 import { estimateReadingMinutes } from "@/lib/paper-reading";
 import { tagAccentColor } from "@/lib/paper-tags";
 
@@ -21,22 +20,10 @@ export function PaperRow({ paper }: { paper: Paper }) {
   const [title, abstract] = useTranslated([paper.title, paper.abstract]);
   const accent = tagAccentColor(paper.tags ?? []);
   const minutes = estimateReadingMinutes(paper.content || paper.abstract);
-  const langLabel =
-    paper.language === "it"
-      ? t("lang.it")
-      : paper.language === "en"
-        ? t("lang.en")
-        : t("lang.both");
   return (
     <article className="group flex flex-wrap gap-x-12 gap-y-3 py-5 border-b border-border">
       <div className="basis-36 shrink-0 pt-1 flex sm:flex-col items-center sm:items-start gap-3 text-sm text-muted-foreground font-display">
         <span>{formatDate(paper.publishedDate, lang)}</span>
-        <span title={langLabel} aria-label={`${t("paper.languageLabel")}: ${langLabel}`}>
-          <LanguageFlags
-            language={paper.language}
-            className="inline-block w-5 h-auto align-middle"
-          />
-        </span>
       </div>
 
       <div className="flex-[999_1_480px] min-w-0">

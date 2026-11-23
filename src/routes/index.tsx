@@ -141,7 +141,7 @@ function Index() {
     ...routableDashboards.filter((d) => !featuredDashboards.includes(d)),
   ]
     .filter((d) => d.component_key !== "interesse-composto")
-    .slice(0, 5);
+    .slice(0, 3);
   const listDashboardLabels = useDashboardLabels(listDashboards);
   const interestPath = dashboardPath("interesse-composto");
 
@@ -362,7 +362,7 @@ function Index() {
       {/* ---------- Interactive dashboards ---------- */}
       {routableDashboards.length > 0 && (
         <section className="bg-brand text-brand-fg mt-8">
-          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-14">
+          <div className="max-w-[1240px] mx-auto px-6 sm:px-8 py-12">
             <div className="flex flex-wrap justify-between items-end gap-6">
               <div className="am-reveal">
                 <p className="text-[13px] font-semibold uppercase tracking-[0.1em] text-gold font-display">
@@ -384,16 +384,17 @@ function Index() {
               </Link>
             </div>
 
-            <div className="flex flex-wrap gap-6 mt-8">
-              <div className="am-reveal flex-[999_1_560px] min-w-0">
-                <InterestMini href={interestPath} />
+            <div className="grid gap-4 mt-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:items-stretch">
+              <div className="am-reveal min-w-0">
+                <InterestMini href={interestPath} className="h-full" />
               </div>
-              <div className="am-stagger flex-[1_1_360px] min-w-0 flex flex-col gap-3">
+              {/* Three equal boxes spanning exactly the height of the white panel. */}
+              <div className="am-stagger min-w-0 grid grid-rows-3 gap-3">
                 {listDashboards.map((d, i) => (
                   <Link
                     key={d.id}
                     to={dashboardPath(d.component_key)!}
-                    className="am-lift flex gap-4 items-center p-5 rounded-xl border border-brand-line text-brand-fg hover:bg-brand-2"
+                    className="am-lift flex gap-4 items-center px-5 py-4 rounded-xl border border-brand-line text-brand-fg hover:bg-brand-2"
                   >
                     <span className="shrink-0 w-11 h-11 rounded-[10px] bg-brand-2 flex items-center justify-center">
                       <svg

@@ -27,7 +27,7 @@ const DEFAULTS: SiteSettings = {
   homeMarketEnabled: true,
   homeMarketDisclaimer: "Intelligenza Artificiale integrata",
   homeMarketImageUrl: null,
-  archiveDisclaimer: "Intelligenza Artificiale integrata",
+  archiveDisclaimer: "",
   headerBg: "",
   newsApiUrl:
     "https://script.google.com/macros/s/AKfycbyS4MxYpizImm4c2KaO4JuvSCjKQyHRtwFw5lSqWuuy8pCQf01yLyfpv-zVcCJMnyRkiQ/exec",
