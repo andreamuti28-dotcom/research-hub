@@ -1,40 +1,39 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { generateJson, isAiConfigured } from "@/lib/ai.server";
+import { isAiConfigured } from "@/lib/ai.server";
 
-// Temporary diagnostic: checks whether each translation provider answers from
-// the Worker. Returns only status codes and short error snippets, no secrets.
+// Temporary diagnostic for the translation pipeline. No secrets returned.
 export const Route = createFileRoute("/api/public/translate-health")({
   server: {
     handlers: {
       GET: async () => {
-        const out: Record<string, unknown> = {
-          aiConfigured: isAiConfigured(),
-          model: process.env.AI_MODEL || "default",
-        };
+        const out: Record<string, unknown> = { aiConfigured: isAiConfigured() };
+        const t0 = Date.now();
         try {
-          const params = new URLSearchParams({
-            client: "gtx",
-            sl: "auto",
-            tl: "en",
-            dt: "t",
-            q: "Buongiorno a tutti",
-          });
-          const res = await fetch(`https://translate.googleapis.com/translate_a/single?${params}`);
-          out.google = { status: res.status, body: (await res.text()).slice(0, 160) };
+          const { translateTexts } = await import("@/lib/translate.server");
+          const r = await translateTexts(["Oggi i mercati europei hanno chiuso in forte calo."], "en");
+          out.short = { ms: Date.now() - t0, r };
         } catch (e) {
-          out.google = { error: String(e).slice(0, 200) };
+          out.short = { error: String(e).slice(0, 300) };
         }
-        const ai = await generateJson(
-          'Translate to English. Return {"t":"..."}',
-          "Buongiorno a tutti",
-        );
-        out.gemini = ai.ok
-          ? { ok: true, text: ai.text.slice(0, 120) }
-          : {
-              ok: false,
-              status: ai.status,
-              error: ai.error.replace(/AIza[\w-]+/g, "***").slice(0, 300),
-            };
+        const t1 = Date.now();
+        try {
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data } = await supabaseAdmin
+            .from("market_reports")
+            .select("content")
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          const { generateJson } = await import("@/lib/ai.server");
+          const text = String(data?.content ?? "").slice(0, 20000);
+          const res = await generateJson(
+            'Translate to English. Return ONLY {"translations":[{"i":0,"text":"..."}]}',
+            `[[0]]\n${text}`,
+          );
+          out.report = { ms: Date.now() - t1, len: text.length, ok: res.ok, info: res.ok ? res.text.slice(0, 200) : `${res.status} ${res.error}` };
+        } catch (e) {
+          out.report = { ms: Date.now() - t1, error: String(e).slice(0, 300) };
+        }
         return new Response(JSON.stringify(out), {
           headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
         });
