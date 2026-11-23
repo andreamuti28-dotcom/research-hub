@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "katex/dist/katex.min.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -147,7 +147,11 @@ function PaperDetail() {
     [rawToc, rawBlocks, tBlockTexts],
   );
   const readingMinutes = useMemo(() => estimateReadingMinutes(paper.content), [paper.content]);
-  const pdfUrl = pickPdfUrl(paper, lang);
+  // The server renders Italian and the visitor's language is applied right
+  // after hydration: wait for mount so the PDF is fetched once, in the right language.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const pdfUrl = mounted ? pickPdfUrl(paper, lang) : null;
 
   return (
     <div className="min-h-screen flex flex-col">
