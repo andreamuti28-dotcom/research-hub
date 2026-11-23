@@ -386,6 +386,7 @@ export async function translateTexts(
       }),
     );
     const translated = results.flatMap((r) => r.translations);
+    const engineOk = results.flatMap((r, ci) => chunks[ci].map(() => !r.fallback));
     fallback = results.some((r) => r.fallback);
 
     const fresh: Array<{ source: string; translated: string }> = [];
@@ -394,7 +395,11 @@ export async function translateTexts(
       if (typeof value !== "string" || !value.trim()) return;
       cached.set(source, value);
       // Never cache a text that came back untranslated: it must be retried later.
-      if (value !== source && !looksUntranslated(value, target)) {
+      // Short names ("Bloomberg Market Concepts", "Python") legitimately stay the
+      // same: cache them when the engine worked, or they would be re-sent forever.
+      const sameShortName =
+        value === source && engineOk[i] && source.trim().split(/\s+/).length <= 6;
+      if ((value !== source || sameShortName) && !looksUntranslated(value, target)) {
         fresh.push({ source, translated: value });
       }
     });

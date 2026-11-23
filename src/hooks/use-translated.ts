@@ -137,6 +137,13 @@ export function useTranslatedLive(texts: string[], options: { force?: boolean } 
     retry: 1,
     staleTime: Infinity,
     gcTime: Infinity,
+    // A long text (the daily report) may still be translating server-side or
+    // hit a temporary quota limit: try again every 20 s, a few times.
+    refetchInterval: (query) => {
+      const d = query.state.data;
+      const untranslated = !d || d.every((t, i) => t === texts[i]);
+      return untranslated && query.state.dataUpdateCount < 8 ? 20_000 : false;
+    },
   });
 
   if (!needs) return texts;
