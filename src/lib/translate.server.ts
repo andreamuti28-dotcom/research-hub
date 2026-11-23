@@ -200,19 +200,88 @@ async function translateChunk(texts: string[], target: Lang): Promise<TranslateR
   return translateChunkGoogleFirst(texts, target);
 }
 
+const AI_PIECE_CHARS = 2500;
+const AI_BATCH_CHARS = 9000;
+const AI_BATCH_ITEMS = 15;
+
+/** Split a long text on paragraph breaks into pieces of manageable size. */
+function splitForAi(text: string): string[] {
+  if (text.length <= AI_PIECE_CHARS) return [text];
+  const paragraphs = text.split(/\n\n+/);
+  const pieces: string[] = [];
+  let current = "";
+  for (const para of paragraphs) {
+    if (current && current.length + para.length + 2 > AI_PIECE_CHARS) {
+      pieces.push(current);
+      current = para;
+    } else {
+      current = current ? `${current}\n\n${para}` : para;
+    }
+  }
+  if (current) pieces.push(current);
+  return pieces;
+}
+
 async function translateChunkAiFirst(texts: string[], target: Lang): Promise<TranslateResult> {
   const out = [...texts];
   let degraded = false;
-  try {
-    const ai = await translateWithAi(texts, target);
-    ai.translations.forEach((candidate, i) => {
-      if (typeof candidate === "string" && candidate.trim()) out[i] = candidate;
-    });
-    if (ai.fallback) degraded = true;
-  } catch (err) {
-    console.error("AI translation failed, trying the fallback engine:", err);
-    degraded = true;
+
+  // Long texts (the daily report, whole paper sections) are split into
+  // paragraphs and sent in small batches: one huge JSON answer is slow and
+  // easily comes back truncated or malformed.
+  const pieces: string[] = [];
+  const spans: Array<{ start: number; count: number }> = [];
+  for (const text of texts) {
+    const parts = text.trim() ? splitForAi(text) : [];
+    spans.push({ start: pieces.length, count: parts.length });
+    pieces.push(...parts);
   }
+  const batches: number[][] = [];
+  let batch: number[] = [];
+  let chars = 0;
+  pieces.forEach((piece, idx) => {
+    if (batch.length && (chars + piece.length > AI_BATCH_CHARS || batch.length >= AI_BATCH_ITEMS)) {
+      batches.push(batch);
+      batch = [];
+      chars = 0;
+    }
+    batch.push(idx);
+    chars += piece.length;
+  });
+  if (batch.length) batches.push(batch);
+
+  const translatedPieces: Array<string | null> = pieces.map(() => null);
+  await mapLimit(batches, 3, async (indexes) => {
+    try {
+      const ai = await translateWithAi(
+        indexes.map((k) => pieces[k]),
+        target,
+      );
+      if (ai.fallback) degraded = true;
+      indexes.forEach((k, j) => {
+        const candidate = ai.translations[j];
+        const src = pieces[k];
+        const unchanged =
+          typeof candidate !== "string" ||
+          !candidate.trim() ||
+          (candidate.trim() === src.trim() && src.trim().split(/\s+/).length >= 4) ||
+          looksUntranslated(candidate, target);
+        translatedPieces[k] = unchanged ? null : candidate;
+      });
+    } catch (err) {
+      console.error("AI translation batch failed:", err);
+      degraded = true;
+    }
+  });
+
+  spans.forEach(({ start, count }, i) => {
+    if (count === 0) return;
+    const parts = translatedPieces.slice(start, start + count);
+    // Only accept a text when every piece came back translated, so the cache
+    // never stores a half-Italian version.
+    if (parts.every((p): p is string => typeof p === "string")) out[i] = parts.join("\n\n");
+  });
+
   const retry = out
     .map((text, i) =>
       text.trim() && (text === texts[i] || looksUntranslated(text, target)) ? i : -1,
