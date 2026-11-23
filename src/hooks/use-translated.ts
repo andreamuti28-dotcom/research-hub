@@ -61,7 +61,9 @@ export function useTranslated(texts: string[]): string[] {
     retry: 1,
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchInterval: (query) => (query.state.data?.missing ? 1500 : false),
+    // Missing texts are being translated server-side: poll for about a minute, then stop.
+    refetchInterval: (query) =>
+      query.state.data?.missing && query.state.dataUpdateCount < 40 ? 1500 : false,
   });
 
   if (!needsTranslation) return texts;
@@ -95,7 +97,9 @@ export function useTranslatedAlways(texts: string[]): string[] {
     retry: 1,
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchInterval: (query) => (query.state.data?.missing ? 1500 : false),
+    // Missing texts are being translated server-side: poll for about a minute, then stop.
+    refetchInterval: (query) =>
+      query.state.data?.missing && query.state.dataUpdateCount < 40 ? 1500 : false,
   });
 
   if (!hasContent) return texts;

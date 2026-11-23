@@ -45,7 +45,6 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
-import { Route as ApiPublicTranslateHealthRouteImport } from './routes/api/public/translate-health'
 import { Route as ApiPublicHooksMarketSyncRouteImport } from './routes/api/public/hooks/market-sync'
 
 const IndexRoute = IndexRouteImport.update({
@@ -228,12 +227,6 @@ const ApiPublicMarketReportsRoute = ApiPublicMarketReportsRouteImport.update({
   path: '/api/public/market-reports',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicTranslateHealthRoute =
-  ApiPublicTranslateHealthRouteImport.update({
-    id: '/api/public/translate-health',
-    path: '/api/public/translate-health',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicHooksMarketSyncRoute =
   ApiPublicHooksMarketSyncRouteImport.update({
     id: '/api/public/hooks/market-sync',
@@ -278,7 +271,6 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
-  '/api/public/translate-health': typeof ApiPublicTranslateHealthRoute
   '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesByTo {
@@ -318,7 +310,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
-  '/api/public/translate-health': typeof ApiPublicTranslateHealthRoute
   '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesById {
@@ -359,7 +350,6 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
-  '/api/public/translate-health': typeof ApiPublicTranslateHealthRoute
   '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRouteTypes {
@@ -401,7 +391,6 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
-    | '/api/public/translate-health'
     | '/api/public/hooks/market-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -441,7 +430,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
-    | '/api/public/translate-health'
     | '/api/public/hooks/market-sync'
   id:
     | '__root__'
@@ -481,7 +469,6 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
-    | '/api/public/translate-health'
     | '/api/public/hooks/market-sync'
   fileRoutesById: FileRoutesById
 }
@@ -522,7 +509,6 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
   ApiPublicMarketReportsRoute: typeof ApiPublicMarketReportsRoute
-  ApiPublicTranslateHealthRoute: typeof ApiPublicTranslateHealthRoute
   ApiPublicHooksMarketSyncRoute: typeof ApiPublicHooksMarketSyncRoute
 }
 
@@ -780,13 +766,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMarketReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/translate-health': {
-      id: '/api/public/translate-health'
-      path: '/api/public/translate-health'
-      fullPath: '/api/public/translate-health'
-      preLoaderRoute: typeof ApiPublicTranslateHealthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/hooks/market-sync': {
       id: '/api/public/hooks/market-sync'
       path: '/api/public/hooks/market-sync'
@@ -834,7 +813,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminEditIdRoute: AdminEditIdRoute,
   ApiPublicMarketReportsRoute: ApiPublicMarketReportsRoute,
-  ApiPublicTranslateHealthRoute: ApiPublicTranslateHealthRoute,
   ApiPublicHooksMarketSyncRoute: ApiPublicHooksMarketSyncRoute,
 }
 export const routeTree = rootRouteImport

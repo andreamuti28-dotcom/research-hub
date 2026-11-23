@@ -88,7 +88,12 @@ async function mapLimit<T, R>(
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Google's free endpoint answers 429 ("Sorry...") to Cloudflare's datacenter
+// IPs. After a refusal, skip it for a while instead of retrying every chunk.
+let googleBlockedUntil = 0;
+
 async function googleTranslateChunk(chunk: string, target: Lang): Promise<string> {
+  if (Date.now() < googleBlockedUntil) throw new Error("Fallback translation temporarily blocked");
   const params = new URLSearchParams({
     client: "gtx",
     sl: "auto",
@@ -100,7 +105,10 @@ async function googleTranslateChunk(chunk: string, target: Lang): Promise<string
     `https://translate.googleapis.com/translate_a/single?${params.toString()}`,
     { headers: { Accept: "application/json" } },
   );
-  if (!res.ok) throw new Error(`Fallback translation failed: ${res.status}`);
+  if (!res.ok) {
+    if (res.status === 429 || res.status === 403) googleBlockedUntil = Date.now() + 10 * 60_000;
+    throw new Error(`Fallback translation failed: ${res.status}`);
+  }
   const json = (await res.json()) as unknown;
   if (!Array.isArray(json) || !Array.isArray(json[0])) {
     throw new Error("Fallback translation returned an unexpected payload");
@@ -115,10 +123,7 @@ async function googleTranslateChunk(chunk: string, target: Lang): Promise<string
   return joined;
 }
 
-async function translateWithFallback(
-  texts: string[],
-  target: Lang,
-): Promise<TranslateResult> {
+async function translateWithFallback(texts: string[], target: Lang): Promise<TranslateResult> {
   const translations = await mapLimit(texts, 3, async (text) => {
     if (!text.trim()) return text;
     const chunks = splitForFallback(text);
@@ -140,7 +145,6 @@ async function translateWithFallback(
   });
   return { translations, fallback: false };
 }
-
 
 async function translateWithAi(texts: string[], target: Lang): Promise<TranslateResult> {
   // Without an AI key the free translation endpoint is the only engine:
@@ -190,6 +194,42 @@ async function translateWithAi(texts: string[], target: Lang): Promise<Translate
 }
 
 async function translateChunk(texts: string[], target: Lang): Promise<TranslateResult> {
+  // With a Gemini key the AI is the primary engine: it keeps markdown and
+  // LaTeX intact and, unlike Google's free endpoint, works from the Worker.
+  if (isAiConfigured()) return translateChunkAiFirst(texts, target);
+  return translateChunkGoogleFirst(texts, target);
+}
+
+async function translateChunkAiFirst(texts: string[], target: Lang): Promise<TranslateResult> {
+  const out = [...texts];
+  let degraded = false;
+  try {
+    const ai = await translateWithAi(texts, target);
+    ai.translations.forEach((candidate, i) => {
+      if (typeof candidate === "string" && candidate.trim()) out[i] = candidate;
+    });
+    if (ai.fallback) degraded = true;
+  } catch (err) {
+    console.error("AI translation failed, trying the fallback engine:", err);
+    degraded = true;
+  }
+  const retry = out
+    .map((text, i) =>
+      text.trim() && (text === texts[i] || looksUntranslated(text, target)) ? i : -1,
+    )
+    .filter((i) => i >= 0);
+  await mapLimit(retry, 3, async (i) => {
+    try {
+      const res = await translateWithFallback([texts[i]], target);
+      out[i] = res.translations[0] ?? out[i];
+    } catch {
+      // Keep the original: translateTexts will not cache it, so it is retried later.
+    }
+  });
+  return degraded ? { translations: out, fallback: true } : { translations: out };
+}
+
+async function translateChunkGoogleFirst(texts: string[], target: Lang): Promise<TranslateResult> {
   const out = [...texts];
   const failed: number[] = [];
 
@@ -245,7 +285,6 @@ async function translateChunk(texts: string[], target: Lang): Promise<TranslateR
   return degraded ? { translations: out, fallback: true } : { translations: out };
 }
 
-
 /**
  * Translate a list of texts, reusing anything already stored in the
  * persistent translation cache. Only genuinely new strings hit the
@@ -296,5 +335,3 @@ export async function translateTexts(
     fallback,
   };
 }
-
-
