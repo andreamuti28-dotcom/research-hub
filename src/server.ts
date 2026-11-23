@@ -226,7 +226,20 @@ function withVisitorGeo(response: Response, request: Request): Response {
     .transform(response);
 }
 
+type ScheduledCtx = { waitUntil(promise: Promise<unknown>): void };
+
 export default {
+  // Cron trigger (see wrangler.jsonc): every morning, after the report sync,
+  // translate the new report into all site languages before anyone visits.
+  async scheduled(_controller: unknown, _env: unknown, ctx: ScheduledCtx) {
+    ctx.waitUntil(
+      import("./lib/report-pretranslate.server")
+        .then((m) => m.pretranslateCurrentReport())
+        .then((status) => console.log("[report-pretranslate]", JSON.stringify(status)))
+        .catch((err) => console.error("[report-pretranslate] failed", err)),
+    );
+  },
+
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const redirect = httpToHttpsRedirect(request) ?? apexToWwwRedirect(request);

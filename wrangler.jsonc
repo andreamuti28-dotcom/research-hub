@@ -23,5 +23,8 @@
   },
   // Keep secrets and variables added in the dashboard on every deploy.
   "keep_vars": true,
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Morning pre-translation of the market report (UTC): several runs after the
+  // 7:00 Rome sync, each one skips the languages already translated.
+  "triggers": { "crons": ["20 6 * * *", "50 6 * * *", "20 7 * * *", "20 8 * * *"] }
 }
