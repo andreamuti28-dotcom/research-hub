@@ -185,6 +185,8 @@ async function translateWithAi(texts: string[], target: Lang): Promise<Translate
     ) {
       const cleaned = item.text
         .replace(/\s*\[\[END\]\]\s*/g, "")
+        // The model sometimes echoes the numbering marker of the prompt.
+        .replace(/^\s*\[\[\d+\]\]\s*/, "")
         .replace(/^\s*-{3,}\s*|\s*-{3,}\s*$/g, "")
         .trim();
       out[item.i] = cleaned;
