@@ -4,9 +4,11 @@
 // the key is missing or the provider is unavailable.
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
-const DEFAULT_MODEL = "gemini-3.5-flash-lite";
+// gemini-2.5-flash is the model the free tier actually serves: 3.5-flash-lite
+// often answers 503 (high demand) and 3.6-flash has no free quota.
+const DEFAULT_MODEL = "gemini-2.5-flash";
 // Tried in order when the preferred model is overloaded (503) or rate-limited.
-const FALLBACK_MODELS = ["gemini-3.6-flash", "gemini-2.5-flash"];
+const FALLBACK_MODELS = ["gemini-3.5-flash-lite"];
 const RETRYABLE = new Set([429, 500, 503, 504]);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -33,13 +35,14 @@ export async function generateJson(system: string, user: string): Promise<AiJson
     for (let attempt = 0; attempt < 2; attempt++) {
       last = await callModel(apiKey, model, system, user);
       if (last.ok || !RETRYABLE.has(last.status)) return last;
-      await sleep(700 * (attempt + 1));
+      // A 429 is the per-minute quota: wait for the window to roll over.
+      await sleep(last.status === 429 ? 8000 : 1000 * (attempt + 1));
     }
   }
   return last;
 }
 
-export async function callModel(
+async function callModel(
   apiKey: string,
   model: string,
   system: string,
@@ -56,7 +59,12 @@ export async function callModel(
       body: JSON.stringify({
         systemInstruction: { parts: [{ text: system }] },
         contents: [{ role: "user", parts: [{ text: user }] }],
-        generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.2,
+          // Translation needs no reasoning: skipping it makes 2.5 models much faster.
+          ...(model.startsWith("gemini-2.5") ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+        },
       }),
     });
   } catch (err) {

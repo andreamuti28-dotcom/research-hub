@@ -251,7 +251,7 @@ async function translateChunkAiFirst(texts: string[], target: Lang): Promise<Tra
   if (batch.length) batches.push(batch);
 
   const translatedPieces: Array<string | null> = pieces.map(() => null);
-  await mapLimit(batches, 3, async (indexes) => {
+  await mapLimit(batches, 2, async (indexes) => {
     try {
       const ai = await translateWithAi(
         indexes.map((k) => pieces[k]),
