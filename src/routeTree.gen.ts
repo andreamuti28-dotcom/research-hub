@@ -17,7 +17,6 @@ import { Route as BetaVolatilitaRouteImport } from './routes/beta-volatilita'
 import { Route as BurnRatePensioneRouteImport } from './routes/burn-rate-pensione'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as CostoOpportunitaRouteImport } from './routes/costo-opportunita'
-import { Route as DiagTraduzioniRouteImport } from './routes/diag-traduzioni'
 import { Route as DividendYieldRouteImport } from './routes/dividend-yield'
 import { Route as EfficienzaFiscaleRouteImport } from './routes/efficienza-fiscale'
 import { Route as InteresseCompostoRouteImport } from './routes/interesse-composto'
@@ -86,11 +85,6 @@ const CookiePolicyRoute = CookiePolicyRouteImport.update({
 const CostoOpportunitaRoute = CostoOpportunitaRouteImport.update({
   id: '/costo-opportunita',
   path: '/costo-opportunita',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DiagTraduzioniRoute = DiagTraduzioniRouteImport.update({
-  id: '/diag-traduzioni',
-  path: '/diag-traduzioni',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DividendYieldRoute = DividendYieldRouteImport.update({
@@ -249,7 +243,6 @@ export interface FileRoutesByFullPath {
   '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/costo-opportunita': typeof CostoOpportunitaRoute
-  '/diag-traduzioni': typeof DiagTraduzioniRoute
   '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
@@ -289,7 +282,6 @@ export interface FileRoutesByTo {
   '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/costo-opportunita': typeof CostoOpportunitaRoute
-  '/diag-traduzioni': typeof DiagTraduzioniRoute
   '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
@@ -330,7 +322,6 @@ export interface FileRoutesById {
   '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/costo-opportunita': typeof CostoOpportunitaRoute
-  '/diag-traduzioni': typeof DiagTraduzioniRoute
   '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
@@ -372,7 +363,6 @@ export interface FileRouteTypes {
     | '/burn-rate-pensione'
     | '/cookie-policy'
     | '/costo-opportunita'
-    | '/diag-traduzioni'
     | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
@@ -412,7 +402,6 @@ export interface FileRouteTypes {
     | '/burn-rate-pensione'
     | '/cookie-policy'
     | '/costo-opportunita'
-    | '/diag-traduzioni'
     | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
@@ -452,7 +441,6 @@ export interface FileRouteTypes {
     | '/burn-rate-pensione'
     | '/cookie-policy'
     | '/costo-opportunita'
-    | '/diag-traduzioni'
     | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
@@ -493,7 +481,6 @@ export interface RootRouteChildren {
   BurnRatePensioneRoute: typeof BurnRatePensioneRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
   CostoOpportunitaRoute: typeof CostoOpportunitaRoute
-  DiagTraduzioniRoute: typeof DiagTraduzioniRoute
   DividendYieldRoute: typeof DividendYieldRoute
   EfficienzaFiscaleRoute: typeof EfficienzaFiscaleRoute
   InteresseCompostoRoute: typeof InteresseCompostoRoute
@@ -581,13 +568,6 @@ declare module '@tanstack/react-router' {
       path: '/costo-opportunita'
       fullPath: '/costo-opportunita'
       preLoaderRoute: typeof CostoOpportunitaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/diag-traduzioni': {
-      id: '/diag-traduzioni'
-      path: '/diag-traduzioni'
-      fullPath: '/diag-traduzioni'
-      preLoaderRoute: typeof DiagTraduzioniRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dividend-yield': {
@@ -805,7 +785,6 @@ const rootRouteChildren: RootRouteChildren = {
   BurnRatePensioneRoute: BurnRatePensioneRoute,
   CookiePolicyRoute: CookiePolicyRoute,
   CostoOpportunitaRoute: CostoOpportunitaRoute,
-  DiagTraduzioniRoute: DiagTraduzioniRoute,
   DividendYieldRoute: DividendYieldRoute,
   EfficienzaFiscaleRoute: EfficienzaFiscaleRoute,
   InteresseCompostoRoute: InteresseCompostoRoute,
