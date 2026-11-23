@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { isAiConfigured } from "@/lib/ai.server";
 
 // Temporary diagnostic for the translation pipeline. No secrets returned.
-export const Route = createFileRoute("/api/public/translate-health")({
+export const Route = createFileRoute("/diag-traduzioni")({
   server: {
     handlers: {
       GET: async () => {

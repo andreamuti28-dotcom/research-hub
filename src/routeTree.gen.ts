@@ -17,6 +17,7 @@ import { Route as BetaVolatilitaRouteImport } from './routes/beta-volatilita'
 import { Route as BurnRatePensioneRouteImport } from './routes/burn-rate-pensione'
 import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
 import { Route as CostoOpportunitaRouteImport } from './routes/costo-opportunita'
+import { Route as DiagTraduzioniRouteImport } from './routes/diag-traduzioni'
 import { Route as DividendYieldRouteImport } from './routes/dividend-yield'
 import { Route as EfficienzaFiscaleRouteImport } from './routes/efficienza-fiscale'
 import { Route as InteresseCompostoRouteImport } from './routes/interesse-composto'
@@ -45,7 +46,6 @@ import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as PaperSlugRouteImport } from './routes/paper.$slug'
 import { Route as AdminEditIdRouteImport } from './routes/admin.edit.$id'
 import { Route as ApiPublicMarketReportsRouteImport } from './routes/api/public/market-reports'
-import { Route as ApiPublicTranslateHealthRouteImport } from './routes/api/public/translate-health'
 import { Route as ApiPublicHooksMarketSyncRouteImport } from './routes/api/public/hooks/market-sync'
 
 const IndexRoute = IndexRouteImport.update({
@@ -86,6 +86,11 @@ const CookiePolicyRoute = CookiePolicyRouteImport.update({
 const CostoOpportunitaRoute = CostoOpportunitaRouteImport.update({
   id: '/costo-opportunita',
   path: '/costo-opportunita',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DiagTraduzioniRoute = DiagTraduzioniRouteImport.update({
+  id: '/diag-traduzioni',
+  path: '/diag-traduzioni',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DividendYieldRoute = DividendYieldRouteImport.update({
@@ -228,12 +233,6 @@ const ApiPublicMarketReportsRoute = ApiPublicMarketReportsRouteImport.update({
   path: '/api/public/market-reports',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicTranslateHealthRoute =
-  ApiPublicTranslateHealthRouteImport.update({
-    id: '/api/public/translate-health',
-    path: '/api/public/translate-health',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicHooksMarketSyncRoute =
   ApiPublicHooksMarketSyncRouteImport.update({
     id: '/api/public/hooks/market-sync',
@@ -250,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/costo-opportunita': typeof CostoOpportunitaRoute
+  '/diag-traduzioni': typeof DiagTraduzioniRoute
   '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
@@ -278,7 +278,6 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
-  '/api/public/translate-health': typeof ApiPublicTranslateHealthRoute
   '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesByTo {
@@ -290,6 +289,7 @@ export interface FileRoutesByTo {
   '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/costo-opportunita': typeof CostoOpportunitaRoute
+  '/diag-traduzioni': typeof DiagTraduzioniRoute
   '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
@@ -318,7 +318,6 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
-  '/api/public/translate-health': typeof ApiPublicTranslateHealthRoute
   '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRoutesById {
@@ -331,6 +330,7 @@ export interface FileRoutesById {
   '/burn-rate-pensione': typeof BurnRatePensioneRoute
   '/cookie-policy': typeof CookiePolicyRoute
   '/costo-opportunita': typeof CostoOpportunitaRoute
+  '/diag-traduzioni': typeof DiagTraduzioniRoute
   '/dividend-yield': typeof DividendYieldRoute
   '/efficienza-fiscale': typeof EfficienzaFiscaleRoute
   '/interesse-composto': typeof InteresseCompostoRoute
@@ -359,7 +359,6 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/edit/$id': typeof AdminEditIdRoute
   '/api/public/market-reports': typeof ApiPublicMarketReportsRoute
-  '/api/public/translate-health': typeof ApiPublicTranslateHealthRoute
   '/api/public/hooks/market-sync': typeof ApiPublicHooksMarketSyncRoute
 }
 export interface FileRouteTypes {
@@ -373,6 +372,7 @@ export interface FileRouteTypes {
     | '/burn-rate-pensione'
     | '/cookie-policy'
     | '/costo-opportunita'
+    | '/diag-traduzioni'
     | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
@@ -401,7 +401,6 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
-    | '/api/public/translate-health'
     | '/api/public/hooks/market-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -413,6 +412,7 @@ export interface FileRouteTypes {
     | '/burn-rate-pensione'
     | '/cookie-policy'
     | '/costo-opportunita'
+    | '/diag-traduzioni'
     | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
@@ -441,7 +441,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
-    | '/api/public/translate-health'
     | '/api/public/hooks/market-sync'
   id:
     | '__root__'
@@ -453,6 +452,7 @@ export interface FileRouteTypes {
     | '/burn-rate-pensione'
     | '/cookie-policy'
     | '/costo-opportunita'
+    | '/diag-traduzioni'
     | '/dividend-yield'
     | '/efficienza-fiscale'
     | '/interesse-composto'
@@ -481,7 +481,6 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/edit/$id'
     | '/api/public/market-reports'
-    | '/api/public/translate-health'
     | '/api/public/hooks/market-sync'
   fileRoutesById: FileRoutesById
 }
@@ -494,6 +493,7 @@ export interface RootRouteChildren {
   BurnRatePensioneRoute: typeof BurnRatePensioneRoute
   CookiePolicyRoute: typeof CookiePolicyRoute
   CostoOpportunitaRoute: typeof CostoOpportunitaRoute
+  DiagTraduzioniRoute: typeof DiagTraduzioniRoute
   DividendYieldRoute: typeof DividendYieldRoute
   EfficienzaFiscaleRoute: typeof EfficienzaFiscaleRoute
   InteresseCompostoRoute: typeof InteresseCompostoRoute
@@ -522,7 +522,6 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminEditIdRoute: typeof AdminEditIdRoute
   ApiPublicMarketReportsRoute: typeof ApiPublicMarketReportsRoute
-  ApiPublicTranslateHealthRoute: typeof ApiPublicTranslateHealthRoute
   ApiPublicHooksMarketSyncRoute: typeof ApiPublicHooksMarketSyncRoute
 }
 
@@ -582,6 +581,13 @@ declare module '@tanstack/react-router' {
       path: '/costo-opportunita'
       fullPath: '/costo-opportunita'
       preLoaderRoute: typeof CostoOpportunitaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/diag-traduzioni': {
+      id: '/diag-traduzioni'
+      path: '/diag-traduzioni'
+      fullPath: '/diag-traduzioni'
+      preLoaderRoute: typeof DiagTraduzioniRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dividend-yield': {
@@ -780,13 +786,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMarketReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/translate-health': {
-      id: '/api/public/translate-health'
-      path: '/api/public/translate-health'
-      fullPath: '/api/public/translate-health'
-      preLoaderRoute: typeof ApiPublicTranslateHealthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/hooks/market-sync': {
       id: '/api/public/hooks/market-sync'
       path: '/api/public/hooks/market-sync'
@@ -806,6 +805,7 @@ const rootRouteChildren: RootRouteChildren = {
   BurnRatePensioneRoute: BurnRatePensioneRoute,
   CookiePolicyRoute: CookiePolicyRoute,
   CostoOpportunitaRoute: CostoOpportunitaRoute,
+  DiagTraduzioniRoute: DiagTraduzioniRoute,
   DividendYieldRoute: DividendYieldRoute,
   EfficienzaFiscaleRoute: EfficienzaFiscaleRoute,
   InteresseCompostoRoute: InteresseCompostoRoute,
@@ -834,7 +834,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminEditIdRoute: AdminEditIdRoute,
   ApiPublicMarketReportsRoute: ApiPublicMarketReportsRoute,
-  ApiPublicTranslateHealthRoute: ApiPublicTranslateHealthRoute,
   ApiPublicHooksMarketSyncRoute: ApiPublicHooksMarketSyncRoute,
 }
 export const routeTree = rootRouteImport
