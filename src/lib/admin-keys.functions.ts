@@ -55,13 +55,37 @@ export const getProjectKeys = createServerFn({ method: "GET" })
     const projectId = env.SUPABASE_URL?.match(/https:\/\/([^.]+)\./)?.[1] ?? null;
 
     return [
-      publicKey("VITE_SUPABASE_URL", env.SUPABASE_URL ?? null, "URL pubblico del backend. Usato dal frontend."),
-      publicKey("VITE_SUPABASE_PUBLISHABLE_KEY", env.SUPABASE_PUBLISHABLE_KEY ?? null, "Chiave pubblica (anon) del backend. Sicura da esporre."),
+      publicKey(
+        "VITE_SUPABASE_URL",
+        env.SUPABASE_URL ?? null,
+        "URL pubblico del backend. Usato dal frontend.",
+      ),
+      publicKey(
+        "VITE_SUPABASE_PUBLISHABLE_KEY",
+        env.SUPABASE_PUBLISHABLE_KEY ?? null,
+        "Chiave pubblica (anon) del backend. Sicura da esporre.",
+      ),
       publicKey("VITE_SUPABASE_PROJECT_ID", projectId, "ID del progetto backend."),
       publicKey("SUPABASE_URL", env.SUPABASE_URL ?? null, "URL backend (lato server)."),
-      publicKey("SUPABASE_PUBLISHABLE_KEY", env.SUPABASE_PUBLISHABLE_KEY ?? null, "Anon key lato server."),
-      secretKey("SUPABASE_SERVICE_ROLE_KEY", env.SUPABASE_SERVICE_ROLE_KEY, "Chiave admin. Bypassa RLS. Si gestisce nei secret del Worker su Cloudflare."),
-      secretKey("GEMINI_API_KEY", env.GEMINI_API_KEY, "Chiave Google Gemini per impaginazione del report e traduzioni di riserva. Facoltativa. Si gestisce nei secret del Worker su Cloudflare."),
-      secretKey("MARKET_REPORTS_WEBHOOK_SECRET", env.MARKET_REPORTS_WEBHOOK_SECRET, "Secret del webhook report di mercato. Si gestisce nei secret del Worker su Cloudflare."),
+      publicKey(
+        "SUPABASE_PUBLISHABLE_KEY",
+        env.SUPABASE_PUBLISHABLE_KEY ?? null,
+        "Anon key lato server.",
+      ),
+      secretKey(
+        "SUPABASE_SERVICE_ROLE_KEY",
+        env.SUPABASE_SERVICE_ROLE_KEY,
+        "Chiave admin. Bypassa RLS. Si gestisce nei secret del Worker su Cloudflare.",
+      ),
+      secretKey(
+        "GEMINI_API_KEY",
+        env.GEMINI_API_KEY,
+        "Chiave Google Gemini per impaginazione del report e traduzioni di riserva. Facoltativa. Si gestisce nei secret del Worker su Cloudflare.",
+      ),
+      secretKey(
+        "MARKET_REPORTS_WEBHOOK_SECRET",
+        env.MARKET_REPORTS_WEBHOOK_SECRET,
+        "Secret del webhook report di mercato. Si gestisce nei secret del Worker su Cloudflare.",
+      ),
     ];
   });

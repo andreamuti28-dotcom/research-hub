@@ -27,18 +27,16 @@ async function assertAdmin(userId: string) {
   if (!data) throw new Error("Forbidden: admin role required");
 }
 
-export const listPublishedDashboards = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const { data, error } = await supabaseAdmin
-      .from("dashboards")
-      .select("*")
-      .eq("is_published", true)
-      .order("sort_order", { ascending: true })
-      .order("created_at", { ascending: true });
-    if (error) throw new Error(error.message);
-    return (data ?? []) as DashboardRow[];
-  },
-);
+export const listPublishedDashboards = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabaseAdmin
+    .from("dashboards")
+    .select("*")
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []) as DashboardRow[];
+});
 
 export const listAllDashboards = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -113,15 +111,10 @@ export const updateDashboard = createServerFn({ method: "POST" })
 
 export const deleteDashboard = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { error } = await supabaseAdmin
-      .from("dashboards")
-      .delete()
-      .eq("id", data.id);
+    const { error } = await supabaseAdmin.from("dashboards").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

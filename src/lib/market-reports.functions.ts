@@ -59,16 +59,21 @@ export async function syncMarketReportFromGoogleDocInternal(opts?: {
 export const syncMarketReportFromGoogleDoc = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z
-      .object({ documentId: z.string().trim().min(10).max(200).optional() })
-      .parse(input ?? {}),
+    z.object({ documentId: z.string().trim().min(10).max(200).optional() }).parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
     return syncMarketReportFromGoogleDocInternal({ documentId: data.documentId });
   });
 
-export const SCHEDULE_VALUES = ["manual", "hourly", "daily", "weekly", "weekdays_7am", "daily_7am"] as const;
+export const SCHEDULE_VALUES = [
+  "manual",
+  "hourly",
+  "daily",
+  "weekly",
+  "weekdays_7am",
+  "daily_7am",
+] as const;
 export type MarketSchedule = (typeof SCHEDULE_VALUES)[number];
 
 const marketSyncConfigSchema = z.object({
@@ -171,7 +176,10 @@ const updateSchema = z.object({
   id: z.string().uuid(),
   title: z.string().trim().min(1).max(300),
   content: z.string().trim().min(1).max(200_000),
-  reportDate: z.string().trim().regex(/^\d{4}-\d{2}-\d{2}$/),
+  reportDate: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 
 export const updateMarketReport = createServerFn({ method: "POST" })
@@ -193,15 +201,10 @@ export const updateMarketReport = createServerFn({ method: "POST" })
 
 export const deleteMarketReport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { error } = await supabaseAdmin
-      .from("market_reports")
-      .delete()
-      .eq("id", data.id);
+    const { error } = await supabaseAdmin.from("market_reports").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

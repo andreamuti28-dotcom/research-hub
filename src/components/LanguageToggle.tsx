@@ -8,9 +8,11 @@ const LANG_LABELS: Record<Lang, string> = {
   en: "English",
   es: "Español",
   de: "Deutsch",
+  fr: "Français",
   zh: "中文",
   ru: "Русский",
   ar: "العربية",
+  hi: "हिन्दी",
 };
 
 export function LanguageToggle({ onBrand = false }: { onBrand?: boolean }) {

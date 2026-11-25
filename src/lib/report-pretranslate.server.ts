@@ -4,7 +4,7 @@ import { readCachedTranslations } from "@/lib/translation-cache.server";
 import { translateTexts } from "@/lib/translate.server";
 import type { Lang } from "@/hooks/use-language";
 
-const TARGETS: Lang[] = ["en", "de", "es", "zh", "ru", "ar"];
+const TARGETS: Lang[] = ["en", "de", "es", "fr", "zh", "ru", "ar", "hi"];
 
 /**
  * Translate the current market report into every site language and store it

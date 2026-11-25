@@ -3,9 +3,11 @@ import { z } from "zod";
 
 export const warmupTranslations = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
-    z.object({
-      target: z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]),
-    }).parse(input),
+    z
+      .object({
+        target: z.enum(["it", "en", "es", "de", "fr", "zh", "ru", "ar", "hi"]),
+      })
+      .parse(input),
   )
   .handler(async ({ data }) => {
     const { warmupLanguage } = await import("@/lib/translate-warmup.server");

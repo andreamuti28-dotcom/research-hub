@@ -36,16 +36,8 @@ const paperInputSchema = z.object({
   abstract: z.string().trim().min(1, "Abstract obbligatorio").max(1000),
   content: z.string().max(100_000).default(""),
   tags: z.array(z.string().trim().min(1).max(40)).max(20).default([]),
-  pdfUrl: z
-    .string()
-    .trim()
-    .url("URL non valido")
-    .max(500)
-    .nullable()
-    .optional(),
-  publishedDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data non valida (YYYY-MM-DD)"),
+  pdfUrl: z.string().trim().url("URL non valido").max(500).nullable().optional(),
+  publishedDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data non valida (YYYY-MM-DD)"),
   publishAt: z
     .string()
     .trim()
@@ -83,9 +75,7 @@ export const listAllPapers = createServerFn({ method: "GET" })
 
 export const getPaperForEdit = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
     const { data: row, error } = await supabaseAdmin
@@ -153,15 +143,10 @@ export const updatePaper = createServerFn({ method: "POST" })
 
 export const deletePaper = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ id: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await assertAdmin(context.userId);
-    const { error } = await supabaseAdmin
-      .from("papers")
-      .delete()
-      .eq("id", data.id);
+    const { error } = await supabaseAdmin.from("papers").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

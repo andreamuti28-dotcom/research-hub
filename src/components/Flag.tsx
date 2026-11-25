@@ -1,5 +1,5 @@
 interface FlagProps {
-  country: "it" | "gb" | "es" | "de" | "cn" | "ru" | "sa" | "ar";
+  country: "it" | "gb" | "es" | "de" | "fr" | "in" | "cn" | "ru" | "sa" | "ar";
   className?: string;
   title?: string;
 }
@@ -33,12 +33,7 @@ export function Flag({ country, className, title }: FlagProps) {
         </clipPath>
         <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
         <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
-        <path
-          d="M0,0 L60,30 M60,0 L0,30"
-          clipPath="url(#gb-c)"
-          stroke="#C8102E"
-          strokeWidth="4"
-        />
+        <path d="M0,0 L60,30 M60,0 L0,30" clipPath="url(#gb-c)" stroke="#C8102E" strokeWidth="4" />
         <path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" />
         <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
       </svg>
@@ -74,13 +69,40 @@ export function Flag({ country, className, title }: FlagProps) {
         {title && <title>{title}</title>}
         <rect width="3" height="2" fill="#DE2910" />
         <g fill="#FFDE00">
-          <path d="M0.45,0.35 l0.12,0.37 l0.39,0 h-0.31 l0.12,-0.37 z" transform="scale(0.7) translate(0.2,0.1)" />
+          <path
+            d="M0.45,0.35 l0.12,0.37 l0.39,0 h-0.31 l0.12,-0.37 z"
+            transform="scale(0.7) translate(0.2,0.1)"
+          />
           <circle cx="0.75" cy="0.45" r="0.08" />
           <circle cx="0.95" cy="0.55" r="0.06" />
           <circle cx="0.95" cy="0.78" r="0.06" />
           <circle cx="0.75" cy="0.95" r="0.06" />
           <circle cx="0.55" cy="0.78" r="0.06" />
         </g>
+      </svg>
+    );
+  }
+
+  if (country === "fr") {
+    return (
+      <svg {...common} viewBox="0 0 3 2">
+        {title && <title>{title}</title>}
+        <rect width="1" height="2" x="0" y="0" fill="#002654" />
+        <rect width="1" height="2" x="1" y="0" fill="#ffffff" />
+        <rect width="1" height="2" x="2" y="0" fill="#CE1126" />
+      </svg>
+    );
+  }
+
+  if (country === "in") {
+    return (
+      <svg {...common} viewBox="0 0 3 2">
+        {title && <title>{title}</title>}
+        <rect width="3" height="0.667" x="0" y="0" fill="#FF9933" />
+        <rect width="3" height="0.667" x="0" y="0.667" fill="#ffffff" />
+        <rect width="3" height="0.666" x="0" y="1.333" fill="#138808" />
+        <circle cx="1.5" cy="1" r="0.25" fill="none" stroke="#000080" strokeWidth="0.05" />
+        <circle cx="1.5" cy="1" r="0.05" fill="#000080" />
       </svg>
     );
   }
@@ -107,11 +129,13 @@ export function Flag({ country, className, title }: FlagProps) {
   );
 }
 
-const LANG_TO_FLAG: Record<string, "it" | "gb" | "es" | "de" | "cn" | "ru" | "sa"> = {
+const LANG_TO_FLAG: Record<string, "it" | "gb" | "es" | "de" | "fr" | "in" | "cn" | "ru" | "sa"> = {
   it: "it",
   en: "gb",
   es: "es",
   de: "de",
+  fr: "fr",
+  hi: "in",
   zh: "cn",
   ru: "ru",
   ar: "sa",
@@ -122,7 +146,7 @@ export function LanguageFlags({
   className,
   title,
 }: {
-  language: "it" | "en" | "es" | "de" | "zh" | "ru" | "ar" | "both";
+  language: "it" | "en" | "es" | "de" | "fr" | "zh" | "ru" | "ar" | "hi" | "both";
   className?: string;
   title?: string;
 }) {

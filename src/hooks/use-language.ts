@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 
-export const LANGUAGES = ["it", "en", "es", "de", "zh", "ru", "ar"] as const;
+export const LANGUAGES = ["it", "en", "es", "de", "fr", "zh", "ru", "ar", "hi"] as const;
 export type Lang = (typeof LANGUAGES)[number];
 export type LangDir = "ltr" | "rtl";
 
@@ -89,6 +89,24 @@ const COUNTRY_LANG: Record<string, Lang> = {
   SD: "ar",
   PS: "ar",
   MR: "ar",
+  FR: "fr",
+  BE: "fr",
+  LU: "fr",
+  MC: "fr",
+  SN: "fr",
+  CI: "fr",
+  CM: "fr",
+  ML: "fr",
+  BF: "fr",
+  NE: "fr",
+  TG: "fr",
+  BJ: "fr",
+  GA: "fr",
+  CG: "fr",
+  CD: "fr",
+  MG: "fr",
+  HT: "fr",
+  IN: "hi",
 };
 
 const BOT_RE =
@@ -129,8 +147,7 @@ export function detectLanguage(): Lang {
   if (!country || country === "XX" || country === "T1") return "it";
   if (country === "CH") {
     if (region === "TI") return "it";
-    // French-speaking cantons: no French version, English is the closer fit.
-    if (["GE", "VD", "NE", "JU"].includes(region)) return "en";
+    if (["GE", "VD", "NE", "JU"].includes(region)) return "fr";
     return "de";
   }
   return COUNTRY_LANG[country] ?? "en";

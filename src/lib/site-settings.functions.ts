@@ -138,7 +138,7 @@ const DEFAULTS: SiteSettings = {
   themeOverrides: {},
 };
 
-const SUPPORTED_LANGS: Lang[] = ["it", "en", "es", "de", "zh", "ru", "ar"];
+const SUPPORTED_LANGS: Lang[] = ["it", "en", "es", "de", "fr", "zh", "ru", "ar", "hi"];
 
 function coerceI18nOverrides(v: unknown): Record<string, Partial<Record<Lang, string>>> {
   if (!v || typeof v !== "object") return {};
@@ -384,7 +384,10 @@ const updateSchema = z.object({
   i18nOverrides: z
     .record(
       z.string().min(1).max(120),
-      z.record(z.enum(["it", "en", "es", "de", "zh", "ru", "ar"]), z.string().max(2000)),
+      z.record(
+        z.enum(["it", "en", "es", "de", "fr", "zh", "ru", "ar", "hi"]),
+        z.string().max(2000),
+      ),
     )
     .default({}),
   themeOverrides: z

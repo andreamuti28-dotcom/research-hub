@@ -47,28 +47,26 @@ function mapPaper(row: {
   };
 }
 
-export const listPublishedPapers = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const nowIso = new Date().toISOString();
-    const { data, error } = await supabaseAdmin
-      .from("papers")
-      .select(SELECT_COLS)
-      .or(`is_published.eq.true,and(publish_at.not.is.null,publish_at.lte.${nowIso})`);
+export const listPublishedPapers = createServerFn({ method: "GET" }).handler(async () => {
+  const nowIso = new Date().toISOString();
+  const { data, error } = await supabaseAdmin
+    .from("papers")
+    .select(SELECT_COLS)
+    .or(`is_published.eq.true,and(publish_at.not.is.null,publish_at.lte.${nowIso})`);
 
-    if (error) throw new Error(error.message);
-    const rows = (data ?? []) as Array<Parameters<typeof mapPaper>[0] & { publish_at: string | null }>;
-    // Order by the effective public-visibility date (publish_at when set, else published_date), newest first.
-    const effective = (r: { publish_at: string | null; published_date: string }) =>
-      new Date(r.publish_at ?? r.published_date).getTime();
-    rows.sort((a, b) => effective(b) - effective(a));
-    return rows.map(mapPaper).map((p) => ({ ...p, isPublished: true }));
-  },
-);
+  if (error) throw new Error(error.message);
+  const rows = (data ?? []) as Array<
+    Parameters<typeof mapPaper>[0] & { publish_at: string | null }
+  >;
+  // Order by the effective public-visibility date (publish_at when set, else published_date), newest first.
+  const effective = (r: { publish_at: string | null; published_date: string }) =>
+    new Date(r.publish_at ?? r.published_date).getTime();
+  rows.sort((a, b) => effective(b) - effective(a));
+  return rows.map(mapPaper).map((p) => ({ ...p, isPublished: true }));
+});
 
 export const getPublishedPaperBySlug = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) =>
-    z.object({ slug: z.string().min(1).max(200) }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ slug: z.string().min(1).max(200) }).parse(input))
   .handler(async ({ data }) => {
     const nowIso = new Date().toISOString();
     const { data: row, error } = await supabaseAdmin

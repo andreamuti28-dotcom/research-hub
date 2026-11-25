@@ -15,7 +15,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { i18n } from "@/lib/i18n";
 
-
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -23,10 +22,10 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">{i18n.en["root.notFound.title"]}</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {i18n.en["root.notFound.body"]}
-        </p>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">
+          {i18n.en["root.notFound.title"]}
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">{i18n.en["root.notFound.body"]}</p>
         <div className="mt-6">
           <Link
             to="/"
@@ -50,9 +49,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           {i18n.en["root.error.title"]}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {i18n.en["root.error.body"]}
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">{i18n.en["root.error.body"]}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {
@@ -94,10 +91,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:locale", content: "it_IT" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@andreamuti" },
-      { property: "og:title", content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management" },
-      { name: "twitter:title", content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management" },
-      { property: "og:description", content: "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica." },
-      { name: "twitter:description", content: "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica." },
+      {
+        property: "og:title",
+        content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management",
+      },
+      {
+        name: "twitter:title",
+        content: "Andrea Muti — Ricerca in Finanza Quantitativa e Risk Management",
+      },
+      {
+        property: "og:description",
+        content:
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Studente di Economia e finanza. Pubblico analisi tecniche su risk management, derivati, crypto, mercati finanziari e geopolitica.",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -111,6 +122,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "alternate", hrefLang: "en", href: "https://www.andreamuti.com/" },
       { rel: "alternate", hrefLang: "es", href: "https://www.andreamuti.com/" },
       { rel: "alternate", hrefLang: "de", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "fr", href: "https://www.andreamuti.com/" },
+      { rel: "alternate", hrefLang: "hi", href: "https://www.andreamuti.com/" },
       { rel: "alternate", hrefLang: "zh", href: "https://www.andreamuti.com/" },
       { rel: "alternate", hrefLang: "ru", href: "https://www.andreamuti.com/" },
       { rel: "alternate", hrefLang: "ar", href: "https://www.andreamuti.com/" },
@@ -135,8 +148,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           name: "Andrea Muti",
           url: "https://www.andreamuti.com/",
           jobTitle: "Ricercatore indipendente",
-          description:
-            "Ricercatore indipendente in finanza quantitativa, mercati e investimenti.",
+          description: "Ricercatore indipendente in finanza quantitativa, mercati e investimenti.",
           sameAs: ["https://www.linkedin.com"],
         }),
       },

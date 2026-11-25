@@ -5,7 +5,6 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 const DEFAULT_NEWS_URL =
   "https://script.google.com/macros/s/AKfycbyS4MxYpizImm4c2KaO4JuvSCjKQyHRtwFw5lSqWuuy8pCQf01yLyfpv-zVcCJMnyRkiQ/exec";
 
-
 const MAX_DISPLAYED = 10;
 
 export interface NewsItem {
@@ -73,7 +72,9 @@ async function syncFromSource(): Promise<void> {
     console.log(`[news ${resTs}] received ${raw.length} articles (${resTs - reqTs}ms)`);
 
     const items = (raw as ExternalNewsItem[])
-      .filter((it) => it && typeof it.url === "string" && it.url.trim() && typeof it.titolo === "string")
+      .filter(
+        (it) => it && typeof it.url === "string" && it.url.trim() && typeof it.titolo === "string",
+      )
       .map((it) => ({
         url: it.url!.trim(),
         title: it.titolo!.trim(),

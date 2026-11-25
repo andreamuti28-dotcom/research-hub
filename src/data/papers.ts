@@ -27,6 +27,8 @@ const LOCALE_MAP: Record<Lang, string> = {
   zh: "zh-CN",
   ru: "ru-RU",
   ar: "ar-SA",
+  fr: "fr-FR",
+  hi: "hi-IN",
 };
 
 export function formatLanguage(lang: PaperLanguage): string {

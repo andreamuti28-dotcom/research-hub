@@ -29,19 +29,13 @@ export interface AdminSignInResult {
 export const adminSignIn = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => credsSchema.parse(data))
   .handler(async ({ data }): Promise<AdminSignInResult> => {
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const rawIp =
-      getRequestHeader("cf-connecting-ip") ??
-      getRequestIP({ xForwardedFor: true }) ??
-      "unknown";
+      getRequestHeader("cf-connecting-ip") ?? getRequestIP({ xForwardedFor: true }) ?? "unknown";
     const ipHash = await sha256(`login:${rawIp}`);
     const emailHash = await sha256(data.email);
-    const since = new Date(
-      Date.now() - WINDOW_MINUTES * 60 * 1000,
-    ).toISOString();
+    const since = new Date(Date.now() - WINDOW_MINUTES * 60 * 1000).toISOString();
 
     // Server-side rate limit: cannot be bypassed by the client.
     const { count } = await supabaseAdmin
@@ -71,11 +65,10 @@ export const adminSignIn = createServerFn({ method: "POST" })
       },
     );
 
-    const { data: signIn, error: signInError } =
-      await authClient.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
+    const { data: signIn, error: signInError } = await authClient.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
 
     const fail = async (message: string) => {
       await supabaseAdmin
@@ -108,10 +101,7 @@ export const adminSignIn = createServerFn({ method: "POST" })
     await supabaseAdmin
       .from("login_attempts")
       .delete()
-      .lt(
-        "created_at",
-        new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      );
+      .lt("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
     return {
       ok: true,

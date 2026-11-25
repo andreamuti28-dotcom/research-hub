@@ -15,7 +15,12 @@ async function assertAdmin(userId: string) {
 }
 
 const recordSchema = z.object({
-  visitorToken: z.string().trim().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/),
+  visitorToken: z
+    .string()
+    .trim()
+    .min(1)
+    .max(64)
+    .regex(/^[a-zA-Z0-9_-]+$/),
   path: z.string().trim().max(255).default("/"),
 });
 
@@ -44,11 +49,7 @@ export const getSiteVisitsStats = createServerFn({ method: "GET" })
 
     const now = new Date();
     const since30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    const sinceToday = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    ).toISOString();
+    const sinceToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
 
     const [totalRes, last30Res, todayRes, tokensAllRes, tokens30Res] = await Promise.all([
       supabaseAdmin.from("site_visits").select("id", { count: "exact", head: true }),
@@ -69,14 +70,10 @@ export const getSiteVisitsStats = createServerFn({ method: "GET" })
     ]);
 
     const uniqueAll = new Set(
-      (tokensAllRes.data ?? [])
-        .map((r) => r.visitor_token)
-        .filter((t): t is string => !!t),
+      (tokensAllRes.data ?? []).map((r) => r.visitor_token).filter((t): t is string => !!t),
     ).size;
     const unique30 = new Set(
-      (tokens30Res.data ?? [])
-        .map((r) => r.visitor_token)
-        .filter((t): t is string => !!t),
+      (tokens30Res.data ?? []).map((r) => r.visitor_token).filter((t): t is string => !!t),
     ).size;
 
     return {

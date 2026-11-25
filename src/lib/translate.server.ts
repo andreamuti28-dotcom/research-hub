@@ -13,6 +13,8 @@ const TARGET_NAMES: Record<Lang, string> = {
   zh: "Chinese (Simplified)",
   ru: "Russian",
   ar: "Arabic",
+  fr: "French",
+  hi: "Hindi",
 };
 
 // Google's endpoint expects locale-style codes for some languages.
@@ -24,6 +26,8 @@ const GOOGLE_TL: Record<Lang, string> = {
   zh: "zh-CN",
   ru: "ru",
   ar: "ar",
+  fr: "fr",
+  hi: "hi",
 };
 
 // Scripts we can verify: if the "translation" contains none of the target
@@ -32,6 +36,7 @@ const TARGET_SCRIPT: Partial<Record<Lang, RegExp>> = {
   zh: /[\u4e00-\u9fff]/,
   ru: /[\u0400-\u04ff]/,
   ar: /[\u0600-\u06ff]/,
+  hi: /[\u0900-\u097f]/,
 };
 
 function looksUntranslated(text: string, target: Lang): boolean {

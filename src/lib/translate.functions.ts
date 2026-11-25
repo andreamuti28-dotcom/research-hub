@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-const LANGS = ["it", "en", "es", "de", "zh", "ru", "ar"] as const;
+const LANGS = ["it", "en", "es", "de", "fr", "zh", "ru", "ar", "hi"] as const;
 
 // Public endpoints: cap the payload so they cannot be used as a free
 // general-purpose translation proxy or to flood the translation cache.
@@ -12,10 +12,12 @@ const totalChars = (texts: string[]) => texts.reduce((n, t) => n + t.length, 0);
 
 export const getCachedTranslationBatch = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) =>
-    z.object({
-      texts: z.array(z.string().max(50000)).min(1).max(300),
-      target: z.enum(LANGS),
-    }).parse(input),
+    z
+      .object({
+        texts: z.array(z.string().max(50000)).min(1).max(300),
+        target: z.enum(LANGS),
+      })
+      .parse(input),
   )
   .handler(async ({ data }) => {
     if (data.target === "it") {
